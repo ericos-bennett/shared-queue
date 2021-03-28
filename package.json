@@ -1,0 +1,24 @@
+{
+  "name": "shared-queue",
+  "version": "1.0.0",
+  "description": "A simple queue for shared Spotify listening sessions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericos-bennett/shared-queue.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ericos-bennett/shared-queue/issues"
+  },
+  "homepage": "https://github.com/ericos-bennett/shared-queue#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
