@@ -4,10 +4,14 @@
   "description": "A simple queue for shared Spotify listening sessions",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node dist/server/index.js",
-    "dev": "nodemon src/server/index.ts",
-    "build": "tsc -p ."
+    "server": "nodemon src/server/index.ts",
+    "dist": "node dist/server/index.js",
+    "build": "tsc -p .",
+    "client": "cd src/client && npm run start",
+    "build:client": "cd src/client && npm run build",
+    "iall": "npm i && cd src/client && npm i",
+    "startboth": "npm run server & npm run client",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
