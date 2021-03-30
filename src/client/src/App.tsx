@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const hitBackend = async () => {
-  const res = await axios.get('/test')
+  const res = await axios.get('/api/test')
   console.log(res.data);
 }
 
