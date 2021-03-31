@@ -1,14 +1,16 @@
-import { Request, response, Response } from 'express';
-import { getAuthUrl } from '../services';
+import { Request, Response } from 'express';
+import { getAuthUrl, setAuthTokens } from '../services';
 
-const getAuthToken = (req: Request, res: Response) => {
+const getAuthCode = (req: Request, res: Response) => {
   const authUrl: string = getAuthUrl();
   res.send(authUrl);
 };
 
-const getAuthCode = (req: Request, res: Response) => {
-  console.log(req.body);
+const getAuthTokens = async (req: Request, res: Response) => {
+  const { code, state } = req.query;
+  console.log('Code: ', code);
+  await setAuthTokens(code);
   res.send('You made it!');
 };
 
-export { getAuthToken, getAuthCode };
+export { getAuthCode, getAuthTokens };
