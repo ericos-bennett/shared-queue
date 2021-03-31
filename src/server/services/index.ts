@@ -1,3 +1,3 @@
-import { getAuthorizeUrl } from './auth';
+import { getAuthUrl } from './auth';
 
-export { getAuthorizeUrl };
+export { getAuthUrl };

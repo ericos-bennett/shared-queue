@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 const userAuthRedirect = async () => {
-  const res = await axios.post('/api/room')
+  const res = await axios.get('/api/auth/token');
   window.location.href = res.data;
 }
 
 export default function App() {
   return (
     <div className="App">
-      <button onClick={userAuthRedirect}>Create a Room</button>
+      <button onClick={userAuthRedirect}>Sing In</button>
     </div>
   );
 }

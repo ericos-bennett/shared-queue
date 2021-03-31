@@ -1,11 +1,14 @@
-import { Request, Response } from 'express';
-import { getAuthorizeUrl } from '../services';
-import axios from 'axios';
+import { Request, response, Response } from 'express';
+import { getAuthUrl } from '../services';
 
-const createRoom = async (req: Request, res: Response) => {
-  const authorizeUrl: string = getAuthorizeUrl();
-  const response: string = await axios.get(authorizeUrl);
-  res.send(authorizeUrl)
-}
+const getAuthToken = (req: Request, res: Response) => {
+  const authUrl: string = getAuthUrl();
+  res.send(authUrl);
+};
 
-export { createRoom };
+const getAuthCode = (req: Request, res: Response) => {
+  console.log(req.body);
+  res.send('You made it!');
+};
+
+export { getAuthToken, getAuthCode };

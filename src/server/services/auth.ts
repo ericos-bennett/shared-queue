@@ -1,13 +1,13 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 
-const getAuthorizeUrl = (): string => {
+const getAuthUrl = (): string => {
 
-  const scopes: string[] = ['user-read-private', 'user-read-email'];
+  const scopes: string[] = ['playlist-modify-private'];
   const state: string = 'some-state-of-my-choice';
   
   const clientId: string = process.env.CLIENT_ID!;
   const clientSecret: string = process.env.CLIENT_SECRET!;
-  const redirectUri: string = 'https://example.com/callback';
+  const redirectUri: string = 'http://localhost:3000/api/auth/code';
   
   const spotifyApi = new SpotifyWebApi({
     clientId,
@@ -20,4 +20,4 @@ const getAuthorizeUrl = (): string => {
 
 };
 
-export { getAuthorizeUrl };
+export { getAuthUrl };
