@@ -6,8 +6,8 @@ const getAuthUrl = (): string => {
   const clientSecret: string = process.env.CLIENT_SECRET!;
   const redirectUri: string = 'http://localhost:8080/api/auth/token';
 
-  const scopes: string[] = ['playlist-modify-private'];
-  const state: string = 'some-state-of-my-choice';
+  const scopes: string[] = ['playlist-modify-private, playlist-modify-public'];
+  const state: string = 'some-state-of-my-choice'; // Implement security here
   
   const spotifyApi = new SpotifyWebApi({
     clientId,

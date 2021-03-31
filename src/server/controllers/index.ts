@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getAuthUrl, setAuthTokens } from '../services';
+import { getAuthUrl, setAuthTokens, addPlaylist } from '../services';
 
 const getAuthCode = (req: Request, res: Response): void => {
   const authUrl: string = getAuthUrl();
@@ -18,4 +18,18 @@ const getAuthTokens = async (req: Request, res: Response) => {
   res.redirect('http://localhost:3000');
 };
 
-export { getAuthCode, getAuthTokens };
+const createPlaylist = async (req: Request, res: Response) => {
+
+  if (!req.cookies.userId) return res.status(401).send('user not signed in');
+  
+  const name: string = req.body.name;
+  const accessToken: string = req.cookies.accessToken;
+  const refreshToken: string = req.cookies.refreshToken;
+
+  const body = await addPlaylist(name, accessToken, refreshToken);
+
+  return res.send(body);
+
+};
+
+export { getAuthCode, getAuthTokens, createPlaylist };
