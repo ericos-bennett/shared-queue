@@ -11,6 +11,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function JoinButton() {
   const [open, setOpen] = useState(false);
+  const [textValue, setTextValue] = useState('');  
   
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -33,13 +34,18 @@ export default function JoinButton() {
             label="Room Link"
             type="text"
             fullWidth
+            value={textValue}
+            onChange={e => setTextValue(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button
+            onClick={() => window.location.href=`/room/${textValue}`}
+            color="primary"
+          >
             Join Room
           </Button>
         </DialogActions>
