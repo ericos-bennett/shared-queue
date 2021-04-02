@@ -12,20 +12,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function CreateButton() {
   const [open, setOpen] = useState(false);
+  const [textValue, setTextValue] = useState('');  
   
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   let history = useHistory();
 
-  const userAuthRedirect = async () => {
-    const res = await axios.get('/api/auth/code');
-    window.location.href = res.data;
-  }
-
-  const createPlaylist = async () => {
-    const res = await axios.post('/api/room', {name: 'abc'});
-    history.push(`/rooms/${res.data}`)
+  const createPlaylist = async (name: string) => {
+    const res = await axios.post('/api/room', { name });
+    history.push(`/rooms/${res.data}`);
   }
 
   return (
@@ -46,17 +42,20 @@ export default function CreateButton() {
             label="Room Name"
             type="text"
             fullWidth
+            value={textValue}
+            onChange={e => setTextValue(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={createPlaylist} color="primary">
+          <Button onClick={() => createPlaylist(textValue)} color="primary">
             Create Room
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
+  
 }

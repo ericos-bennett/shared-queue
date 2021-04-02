@@ -3,6 +3,7 @@ import Typography from '@material-ui/core/Typography';
 
 import JoinButton from './JoinButton';
 import CreateButton from './CreateButton';
+import AuthButton from './AuthButton';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -52,6 +53,7 @@ export default function Home() {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Typography>
       </div>
+      <AuthButton/>
       <div className={classes.buttons}>
         <CreateButton/>
         <JoinButton/>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -8,13 +9,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-
 export default function JoinButton() {
   const [open, setOpen] = useState(false);
   const [textValue, setTextValue] = useState('');  
   
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  let history = useHistory();
 
   return (
     <div>
@@ -43,7 +45,7 @@ export default function JoinButton() {
             Cancel
           </Button>
           <Button
-            onClick={() => window.location.href=`/room/${textValue}`}
+            onClick={() => history.push(`/rooms/${textValue}`)}
             color="primary"
           >
             Join Room
