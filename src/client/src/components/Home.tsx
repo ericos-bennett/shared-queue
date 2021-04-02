@@ -1,16 +1,8 @@
-import axios from 'axios';
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
-const userAuthRedirect = async () => {
-  const res = await axios.get('/api/auth/code');
-  window.location.href = res.data;
-}
-
-// const createPlaylist = async () => {
-//   const res = await axios.post('/api/playlist', {name: 'abc'});
-//   console.log(res)
-// }
+import JoinButton from './JoinButton';
+import CreateButton from './CreateButton';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,7 +14,6 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     backgroundImage: 'linear-gradient(90deg, #2c5e92 0%, #552f6d 80%)'
-
   },
   banner: {
     width: '60%',
@@ -36,15 +27,14 @@ const useStyles = makeStyles(() => ({
     textAlign: 'center'
   },
   buttons: {
-    width: '60%',
+    width: '40%',
     display: 'flex',
-    justifyContent: 'space-between'
-  },
-  button: {
-    width: '25%',
-    height: '150%',
-    color: 'white',
-    borderColor: 'white'
+    justifyContent: 'space-between',
+    '& > * > *:first-child': {
+      height: '150%',
+      color: 'white',
+      borderColor: 'white'
+    }
   }
 }));
 
@@ -63,20 +53,8 @@ export default function Home() {
         </Typography>
       </div>
       <div className={classes.buttons}>
-        <Button
-          className={classes.button}
-          variant="outlined"
-          onClick={userAuthRedirect}
-        >
-          New Mix
-        </Button>
-        <Button
-          className={classes.button}
-          variant="outlined"
-          onClick={() => console.log('implement me!')}
-        >
-          Tune In
-        </Button>
+        <CreateButton/>
+        <JoinButton/>
       </div>
     </div>
   );
