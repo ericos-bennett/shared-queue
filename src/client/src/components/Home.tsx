@@ -2,7 +2,6 @@ import axios from 'axios';
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Typography } from '@material-ui/core';
 
-
 const userAuthRedirect = async () => {
   const res = await axios.get('/api/auth/code');
   window.location.href = res.data;
@@ -49,7 +48,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function App() {
+export default function Home() {
 
   const classes = useStyles();
 
