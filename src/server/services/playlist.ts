@@ -1,7 +1,6 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 
-
-const addPlaylist = async (name: string, accessToken: string, refreshToken: string): Promise<Object> => {
+const addPlaylist = async (name: string, accessToken: string, refreshToken: string): Promise<String> => {
 
   const clientId: string = process.env.CLIENT_ID!;
   const clientSecret: string = process.env.CLIENT_SECRET!;
@@ -17,7 +16,8 @@ const addPlaylist = async (name: string, accessToken: string, refreshToken: stri
   spotifyApi.setRefreshToken(refreshToken);
 
   const response = await spotifyApi.createPlaylist(name);
-  return response.body;
+  
+  return response.body.id;
 
 }
 

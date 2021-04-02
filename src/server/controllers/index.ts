@@ -6,7 +6,7 @@ const getAuthCode = (req: Request, res: Response): void => {
   res.send(authUrl);
 };
 
-const getAuthTokens = async (req: Request, res: Response) => {
+const getAuthToken = async (req: Request, res: Response): Promise<void> => {
   const code = req.query.code as string;
   // const state = req.query.state as string;
 
@@ -15,21 +15,25 @@ const getAuthTokens = async (req: Request, res: Response) => {
   res.cookie('userId', userId);
   res.cookie('accessToken', accessToken);
   res.cookie('refreshToken', refreshToken);
-  res.redirect('http://localhost:3000');
-};
 
-const createPlaylist = async (req: Request, res: Response) => {
+  res.redirect('/');
+}
 
-  if (!req.cookies.userId) return res.status(401).send('user not signed in');
+const createRoom = async (req: Request, res: Response): Promise<void> => {
+  
+  if (!req.cookies.userId) {
+    res.status(401).send('user not signed in');
+    return;
+  }
   
   const name: string = req.body.name;
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
 
-  const body = await addPlaylist(name, accessToken, refreshToken);
+  const id = await addPlaylist(name, accessToken, refreshToken);
 
-  return res.send(body);
+  res.send(id);
 
 };
 
-export { getAuthCode, getAuthTokens, createPlaylist };
+export { getAuthCode, getAuthToken, createRoom };

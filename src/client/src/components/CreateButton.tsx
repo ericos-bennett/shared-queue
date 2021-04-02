@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -15,15 +16,17 @@ export default function CreateButton() {
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  let history = useHistory();
+
   const userAuthRedirect = async () => {
     const res = await axios.get('/api/auth/code');
     window.location.href = res.data;
   }
 
-  // const createPlaylist = async () => {
-  //   const res = await axios.post('/api/playlist', {name: 'abc'});
-  //   console.log(res)
-  // }
+  const createPlaylist = async () => {
+    const res = await axios.post('/api/room', {name: 'abc'});
+    history.push(`/rooms/${res.data}`)
+  }
 
   return (
     <div>
@@ -49,7 +52,7 @@ export default function CreateButton() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={userAuthRedirect} color="primary">
+          <Button onClick={createPlaylist} color="primary">
             Create Room
           </Button>
         </DialogActions>
