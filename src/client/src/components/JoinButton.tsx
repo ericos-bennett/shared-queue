@@ -45,7 +45,7 @@ export default function JoinButton() {
             Cancel
           </Button>
           <Button
-            onClick={() => history.push(`/rooms/${textValue}`)}
+            onClick={() => history.push(`/room/${textValue}`)}
             color="primary"
           >
             Join Room

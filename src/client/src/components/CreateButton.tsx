@@ -21,7 +21,7 @@ export default function CreateButton() {
 
   const createPlaylist = async (name: string) => {
     const res = await axios.post('/api/room', { name });
-    history.push(`/rooms/${res.data}`);
+    history.push(`/room/${res.data}`);
   }
 
   return (
@@ -57,5 +57,5 @@ export default function CreateButton() {
       </Dialog>
     </div>
   );
-  
+
 }

@@ -16,7 +16,7 @@ const getAuthToken = async (req: Request, res: Response): Promise<void> => {
   res.cookie('accessToken', accessToken);
   res.cookie('refreshToken', refreshToken);
 
-  res.redirect('/');
+  res.redirect('http://localhost:3000');
 }
 
 const createRoom = async (req: Request, res: Response): Promise<void> => {
