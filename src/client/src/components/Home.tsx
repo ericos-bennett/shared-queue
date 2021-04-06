@@ -32,14 +32,18 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     justifyContent: 'space-between',
     '& > * > *:first-child': {
-      height: '150%',
+      height: '3rem',
       color: 'white',
       borderColor: 'white'
     }
   }
 }));
 
-export default function Home() {
+type HomeProps = {
+  user: string
+}
+
+export default function Home({user}: HomeProps) {
 
   const classes = useStyles();
 
@@ -53,11 +57,13 @@ export default function Home() {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Typography>
       </div>
-      <AuthButton/>
-      <div className={classes.buttons}>
-        <CreateButton/>
-        <JoinButton/>
-      </div>
+      {user 
+        ? <div className={classes.buttons}>
+            <CreateButton/>
+            <JoinButton/>
+          </div>
+        : <AuthButton/>
+      }
     </div>
   );
 }

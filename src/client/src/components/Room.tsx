@@ -4,7 +4,11 @@ import io from "socket.io-client";
 
 const ENDPOINT = 'http://localhost:3000'
 
-export default function Room() {
+type RoomProps = {
+  user: string
+}
+
+export default function Room({user}: RoomProps) {
 
   const { id } = useParams<{ id: string }>();
   
@@ -21,7 +25,6 @@ export default function Room() {
     }
 
   }, [id]);
-
 
   return(
     <h1>Welcome to room {id}!</h1>

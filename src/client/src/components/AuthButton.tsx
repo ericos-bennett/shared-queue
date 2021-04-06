@@ -6,7 +6,12 @@ import Button from '@material-ui/core/Button';
 const useStyles = makeStyles(() => ({
   root: {
       color: 'white',
-      borderColor: 'white'
+      borderColor: 'white',
+      backgroundColor: '#159442',
+      height: '3rem',
+      ' &:hover': {
+        backgroundColor: '#1DB954'
+      }
     }
 }));
 
@@ -21,12 +26,11 @@ export default function AuthButton() {
 
   return (
     <Button
-      variant="outlined"
-      color="primary"
+      variant="contained"
       onClick={userAuthRedirect}
       className={classes.root}
     >
-        Sign In With Spotify
+        Login With Spotify
     </Button>
   )
 
