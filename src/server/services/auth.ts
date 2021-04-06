@@ -2,12 +2,12 @@ import SpotifyWebApi from 'spotify-web-api-node';
 
 const getAuthUrl = (): string => {
 
-  const clientId: string = process.env.CLIENT_ID!;
-  const clientSecret: string = process.env.CLIENT_SECRET!;
-  const redirectUri: string = 'http://localhost:8080/api/auth/token';
+  const clientId = process.env.CLIENT_ID;
+  const clientSecret = process.env.CLIENT_SECRET;
+  const redirectUri = 'http://localhost:8080/api/auth/token';
 
   const scopes: string[] = ['playlist-modify-private, playlist-modify-public'];
-  const state: string = 'some-state-of-my-choice'; // Implement security here
+  const state = 'some-state-of-my-choice'; // Implement security here
   
   const spotifyApi = new SpotifyWebApi({
     clientId,
@@ -15,16 +15,15 @@ const getAuthUrl = (): string => {
     redirectUri
   });
   
-  const authorizeURL: string = spotifyApi.createAuthorizeURL(scopes, state);
-  return authorizeURL;
+  return spotifyApi.createAuthorizeURL(scopes, state);
 
 };
 
 const setAuthTokens = async (code: string) => {
 
-  const clientId: string = process.env.CLIENT_ID!;
-  const clientSecret: string = process.env.CLIENT_SECRET!;
-  const redirectUri: string = 'http://localhost:8080/api/auth/token';
+  const clientId = process.env.CLIENT_ID;
+  const clientSecret = process.env.CLIENT_SECRET;
+  const redirectUri = 'http://localhost:8080/api/auth/token';
 
   const spotifyApi = new SpotifyWebApi({
     clientId,
@@ -33,15 +32,15 @@ const setAuthTokens = async (code: string) => {
   });
 
   const response = await spotifyApi.authorizationCodeGrant(code)
-  const accessToken = response.body['access_token'];
-  const refreshToken = response.body['refresh_token'];
+  const accessToken: string = response.body['access_token'];
+  const refreshToken: string = response.body['refresh_token'];
 
   // Set the access token on the API object to use it in the user call
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
   
   const user = await spotifyApi.getMe();
-  const userId = user.body['id'];
+  const userId: string = user.body['id'];
   
   return { userId, accessToken, refreshToken };
 
