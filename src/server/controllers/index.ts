@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getAuthUrl, setAuthTokens, addPlaylist } from '../services';
+import { getAuthUrl, setAuthTokens, addPlaylist, getPlaylist } from '../services';
 
 /*--------------------
 -- Auth Controllers --
@@ -39,9 +39,21 @@ const createRoom = async (req: Request, res: Response): Promise<void> => {
 
   const id = await addPlaylist(name, accessToken, refreshToken);
 
-  // Return the playlist object to the client after adding it to Spotify
+  // Return the playlist id to the client after adding it to Spotify
   res.send(id);
 
 };
 
-export { getAuthCode, getAuthToken, createRoom };
+const getRoom = async (req: Request, res: Response): Promise<void> => {
+
+  const playlistId: string = req.params.id;
+  const accessToken: string = req.cookies.accessToken;
+  const refreshToken: string = req.cookies.refreshToken;
+
+  const playlist = await getPlaylist(playlistId, accessToken, refreshToken);
+  res.send(playlist);
+
+}
+
+
+export { getAuthCode, getAuthToken, createRoom, getRoom };

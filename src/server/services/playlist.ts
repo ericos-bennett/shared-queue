@@ -21,4 +21,29 @@ const addPlaylist = async (name: string, accessToken: string, refreshToken: stri
 
 }
 
-export { addPlaylist }
+const getPlaylist = async (id: string, accessToken: string, refreshToken: string) => {
+
+  const clientId = process.env.CLIENT_ID;
+  const clientSecret = process.env.CLIENT_SECRET;
+  const redirectUri = 'http://localhost:3000';
+
+  const spotifyApi = new SpotifyWebApi({
+    clientId,
+    clientSecret,
+    redirectUri,
+  });
+
+  spotifyApi.setAccessToken(accessToken);
+  spotifyApi.setRefreshToken(refreshToken);
+
+  try {
+    const playlist = await spotifyApi.getPlaylist(id);
+    return playlist;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+
+}
+
+export { addPlaylist, getPlaylist }
