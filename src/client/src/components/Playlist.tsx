@@ -1,34 +1,39 @@
 import { makeStyles } from "@material-ui/core/styles";
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(() => ({
   root: {
-  },
-  tracks: {
     padding: '0',
     listStyleType: 'none'
   },
   track: {
     display: 'flex',
+    alignItems: 'center',
     margin: '1rem'
   },
   trackLabel: {
+    marginLeft: '1rem'
+  },
+  deleteIcon: {
     marginLeft: '1rem'
   }
 }));
 
 type PlaylistProps = {
-  name: string
-  tracks: any
+  playlistId: string,
+  snapshotId: string,
+  tracks: any[],
+  deleteTrack: (id: string, index: number, snapshotId: string) => void
 }
 
-export default function Playlist({name, tracks}: PlaylistProps) {
+export default function Playlist({playlistId, snapshotId, tracks, deleteTrack}: PlaylistProps) {
 
   const classes = useStyles();
 
-  const listItems = tracks.map((track: any) => {
+  const listItems = tracks.map((track: any, i) => {
     return (
-      <ul className={classes.tracks}>
-        <li className={classes.track}>
+        <li className={classes.track} key={track.track.id}>
           <img
             src={track.track.album.images[2].url}
             alt={track.track.album.name}
@@ -36,15 +41,20 @@ export default function Playlist({name, tracks}: PlaylistProps) {
           <h4 className={classes.trackLabel}>
             {track.track.artists[0].name} - {track.track.name}
           </h4>
+          <IconButton
+            aria-label="delete"
+            onClick={() => deleteTrack(playlistId, i, snapshotId)}
+            className={classes.deleteIcon}
+          >
+            <DeleteIcon fontSize="large"/>
+          </IconButton>
         </li>
-      </ul>
     )
   })
 
   return (
-    <div className={classes.root}>
-      <h1>Welcome to room {name}!</h1>
+    <ul className={classes.root}>
       {listItems}
-    </div>
+    </ul>
   )
 };

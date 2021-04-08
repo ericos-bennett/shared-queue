@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/ericos-bennett/shared-queue#readme",
   "dependencies": {
+    "@types/spotify-api": "^0.0.8",
     "axios": "^0.21.1",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",

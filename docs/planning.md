@@ -8,8 +8,8 @@
 - Async Await
 
 ### Next Steps
-- Send entire playlist object to client on room creation
-- Send entire playlist object to client on room join
+  - Delete button deletes track from playlist in Spotify DB
+  - Delete button sends new state to other peers on WS
 - User can search for a track + add it
   - Main user can add tracks to playlist from app
     - Changes pushed to Spotify API and other clients via WS

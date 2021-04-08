@@ -18,6 +18,9 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     backgroundImage: 'linear-gradient(90deg, #2c5e92 0%, #552f6d 80%)'
+  },
+  title: {
+    textAlign: 'center'
   }
 }));
 
@@ -25,17 +28,24 @@ type RoomProps = {
   user: string
 }
 
+type RoomParams = {
+  id: string
+}
+
+type PlaylistType = SpotifyApi.SinglePlaylistResponse | null | undefined;
+
 export default function Room({user}: RoomProps) {
 
-  const { id } = useParams<{ id: string }>();
-  const [playlist, setPlaylist] = useState({name: ''});
+  const { id } = useParams<RoomParams>();
+  const [playlist, setPlaylist] = useState<PlaylistType>();
   const classes = useStyles();
   
   // Gets the playlist object if one exists
   useEffect(() => {
     (async () => {
       const res = await axios.get(`/api/room/${id}`);
-      setPlaylist(res.data.body);
+      const spotifyResponse: SpotifyApi.SinglePlaylistResponse = res.data.body;
+      setPlaylist(spotifyResponse);
     })();
 
   }, [id])
@@ -56,16 +66,38 @@ export default function Room({user}: RoomProps) {
 
   }, [id]);
 
-  const playlistCheck = (playlist: any) => {
-    if (!playlist) {
+  const deleteTrack = async (playlistId: string, index: number, snapshotId: string): Promise<void> => {
+
+    const res = await axios.delete(`${ENDPOINT}/api/room/${playlistId}/${index}`, 
+      { data: { snapshotId }}
+    );
+
+    const playlistClone = { ...playlist };
+    const tracks = playlistClone.tracks!.items;
+    tracks?.splice(index, 1);
+    playlistClone.tracks!.items = tracks;
+    // @ts-ignore - fix this!
+    setPlaylist(playlistClone);
+  };
+
+  const playlistCheck = (playlist: PlaylistType) => {
+    if (playlist === null) {
       return <h1>404</h1>
-    } else if (playlist.name !== '') {
-      return <Playlist
-        name={playlist.name}
-        tracks={playlist.tracks.items}
-      />
+    } else if (playlist) {
+      return (
+        <div>
+          <h1 className={classes.title}>Welcome to room {playlist.name}!</h1>
+          <Playlist
+            playlistId={playlist.id}
+            snapshotId={playlist.snapshot_id}
+            tracks={playlist.tracks.items}
+            deleteTrack={deleteTrack}
+          />
+        </div>
+      )
     }
   }
+
 
   return (
     <div className={classes.root}>

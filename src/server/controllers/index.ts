@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getAuthUrl, setAuthTokens, addPlaylist, getPlaylist } from '../services';
+import { getAuthUrl, setAuthTokens, addPlaylist, getPlaylist, deleteTrackSpotify } from '../services';
 
 /*--------------------
 -- Auth Controllers --
@@ -55,5 +55,17 @@ const getRoom = async (req: Request, res: Response): Promise<void> => {
 
 }
 
+const deleteTrack = async (req: Request, res: Response): Promise<void> => {
 
-export { getAuthCode, getAuthToken, createRoom, getRoom };
+  const playlistId: string = req.params.playlistId;
+  const index: string = req.params.index;
+  const snapshotId: string = req.body.snapshotId;
+  const accessToken: string = req.cookies.accessToken;
+  const refreshToken: string = req.cookies.refreshToken;
+
+  const response = await deleteTrackSpotify(playlistId, parseInt(index), snapshotId, accessToken, refreshToken);
+  res.send(response);
+
+}
+
+export { getAuthCode, getAuthToken, createRoom, getRoom, deleteTrack };
