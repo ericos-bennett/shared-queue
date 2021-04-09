@@ -40,8 +40,7 @@ io.on("connection", (socket: Socket) => {
 
   // Delete Track handler
   socket.on('delete', (playlistId: string, index: number) => {
-    console.log('received');
-    console.log(playlistId);
+    console.log(`Deleting track ${index} from playlist id: ${playlistId}`);
     socket.to(playlistId).emit('delete', index);
   })
 

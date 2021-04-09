@@ -42,7 +42,7 @@ export default function Room({user}: RoomProps) {
   const classes = useStyles();
 
 
-  const deleteTrackLocally = useCallback((index: number) => {
+  const deleteTrack = useCallback((index: number) => {
     
     // @ts-ignore - fix this!
     setPlaylist(prev => {
@@ -72,26 +72,26 @@ export default function Room({user}: RoomProps) {
       const listener = (data: string) => console.log(data);
       socket.on("data", listener);
       
-      socket.on('delete', deleteTrackLocally);
+      socket.on('delete', deleteTrack);
       
       setPlaylist(spotifyResponse);
       setSocket(socket);
       
       return () => {
-        socket.off("data", listener);
+        socket.disconnect();
       }
 
     })();
 
-  }, [id, deleteTrackLocally])
+  }, [id, deleteTrack])
 
 
-  const deleteTrack = async (playlistId: string, index: number, snapshotId: string): Promise<void> => {
+  const deleteTrackHandler = async (playlistId: string, index: number, snapshotId: string): Promise<void> => {
     // Delete the track on the Spotify DB
     // await axios.delete(`${ENDPOINT}/api/room/${playlistId}/${index}`, 
     //   { data: { snapshotId }}
     // );
-    deleteTrackLocally(index);
+    deleteTrack(index);
     
     // Delete the track for all peers in the same WS room
     socket!.emit('delete', playlistId, index);
@@ -109,7 +109,7 @@ export default function Room({user}: RoomProps) {
             playlistId={playlist.id}
             snapshotId={playlist.snapshot_id}
             tracks={playlist.tracks.items}
-            deleteTrack={deleteTrack}
+            deleteTrackHandler={deleteTrackHandler}
           />
         </div>
       )

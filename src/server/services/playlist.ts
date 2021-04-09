@@ -40,7 +40,7 @@ const getPlaylist = async (id: string, accessToken: string, refreshToken: string
     const playlist = await spotifyApi.getPlaylist(id);
     return playlist;
   } catch (err) {
-    console.log(err);
+    console.log('Bad Playlist Lookup OR access token expired');
     return null;
   }
 
