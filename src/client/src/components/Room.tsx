@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
 import axios from 'axios';
@@ -38,49 +38,67 @@ export default function Room({user}: RoomProps) {
 
   const { id } = useParams<RoomParams>();
   const [playlist, setPlaylist] = useState<PlaylistType>();
+  const [socket, setSocket] = useState<SocketIOClient.Socket>();
   const classes = useStyles();
-  
-  // Gets the playlist object if one exists
+
+
+  const deleteTrackLocally = useCallback((index: number) => {
+    
+    // @ts-ignore - fix this!
+    setPlaylist(prev => {
+      console.log(prev);
+      const playlistClone = { ...prev };
+      console.log(playlistClone);
+      const tracks = playlistClone.tracks!.items;
+      tracks?.splice(index, 1);
+      playlistClone.tracks!.items = tracks;
+      
+      return playlistClone;
+
+    });
+
+  }, [])
+
   useEffect(() => {
     (async () => {
+      // Gets the playlist object if one exists
       const res = await axios.get(`/api/room/${id}`);
       const spotifyResponse: SpotifyApi.SinglePlaylistResponse = res.data.body;
+
+      // Initiate the websocket and add its listeners
+      const socket = io(ENDPOINT);
+      socket.emit('join', `${id}`);
+
+      const listener = (data: string) => console.log(data);
+      socket.on("data", listener);
+      
+      socket.on('delete', deleteTrackLocally);
+      
       setPlaylist(spotifyResponse);
+      setSocket(socket);
+      
+      return () => {
+        socket.off("data", listener);
+      }
+
     })();
 
-  }, [id])
+  }, [id, deleteTrackLocally])
 
-
-  // Establishes the WebSocket Connection
-  useEffect(() => {
-    
-    const socket = io(ENDPOINT);
-    socket.emit('join room', `${id}`);
-
-    const listener = (data: string) => console.log(data);
-    socket.on("data", listener);
-
-    return () => {
-      socket.off("data", listener);
-    }
-
-  }, [id]);
 
   const deleteTrack = async (playlistId: string, index: number, snapshotId: string): Promise<void> => {
+    // Delete the track on the Spotify DB
+    // await axios.delete(`${ENDPOINT}/api/room/${playlistId}/${index}`, 
+    //   { data: { snapshotId }}
+    // );
+    deleteTrackLocally(index);
+    
+    // Delete the track for all peers in the same WS room
+    socket!.emit('delete', playlistId, index);
 
-    const res = await axios.delete(`${ENDPOINT}/api/room/${playlistId}/${index}`, 
-      { data: { snapshotId }}
-    );
-
-    const playlistClone = { ...playlist };
-    const tracks = playlistClone.tracks!.items;
-    tracks?.splice(index, 1);
-    playlistClone.tracks!.items = tracks;
-    // @ts-ignore - fix this!
-    setPlaylist(playlistClone);
   };
 
-  const playlistCheck = (playlist: PlaylistType) => {
+  const playlistValidation = (playlist: PlaylistType) => {
     if (playlist === null) {
       return <h1>404</h1>
     } else if (playlist) {
@@ -101,7 +119,7 @@ export default function Room({user}: RoomProps) {
 
   return (
     <div className={classes.root}>
-      { playlistCheck(playlist) }
+      { playlistValidation(playlist) }
     </div>
   )
 

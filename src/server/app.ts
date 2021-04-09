@@ -30,13 +30,21 @@ const io = new Server(server, {
 io.on("connection", (socket: Socket) => {
   console.log('Socket connected:', socket.id);
 
-  // Join Room socket hanlder
-  socket.on('join room', (roomId: string) => {
+  // Join Room hanlder
+  socket.on('join', (roomId: string) => {
     socket.join(roomId);
     console.log(`Socket joined room: ${roomId}`);
     console.log('Rooms: ', io.sockets.adapter.rooms);
     socket.to(roomId).emit('data', 'Another user joined the room!');
   });
+
+  // Delete Track handler
+  socket.on('delete', (playlistId: string, index: number) => {
+    console.log('received');
+    console.log(playlistId);
+    socket.to(playlistId).emit('delete', index);
+  })
+
 });
 
 /*---------------
