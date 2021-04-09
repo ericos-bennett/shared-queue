@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
+import Cookie from 'js-cookie';
 import axios from 'axios';
 import io from "socket.io-client";
 
@@ -53,6 +54,14 @@ export default function Room({user}: RoomProps) {
       tracks?.splice(index, 1);
       playlistClone.tracks!.items = tracks;
       
+      // If you are the playlist owner, delete the track on Spotify's DB
+      if (Cookie.get('userId') === prev?.owner.id) {
+        console.log('test');
+        axios.delete(`${ENDPOINT}/api/room/${prev?.id}/${index}`, 
+          { data: { snapshotId: prev?.snapshot_id }}
+        );
+      }
+
       return playlistClone;
 
     });
