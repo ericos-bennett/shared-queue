@@ -6,6 +6,7 @@ import axios from 'axios';
 import io from "socket.io-client";
 
 import Playlist from './Playlist';
+import Search from './Search'
 
 const ENDPOINT = 'http://localhost:3000'
 
@@ -95,41 +96,38 @@ export default function Room({user}: RoomProps) {
   }, [id, deleteTrack])
 
 
-  const deleteTrackHandler = async (playlistId: string, index: number, snapshotId: string): Promise<void> => {
-    // Delete the track on the Spotify DB
-    // await axios.delete(`${ENDPOINT}/api/room/${playlistId}/${index}`, 
-    //   { data: { snapshotId }}
-    // );
+  const deleteTrackHandler = (index: number): void => {
     deleteTrack(index);
-    
     // Delete the track for all peers in the same WS room
-    socket!.emit('delete', playlistId, index);
+    socket!.emit('delete', playlist!.id, index);
+  };
+
+  const addTrackHandler = (id: string): void => {
 
   };
 
-  const playlistValidation = (playlist: PlaylistType) => {
-    if (playlist === null) {
-      return <h1>404</h1>
-    } else if (playlist) {
-      return (
-        <div>
-          <h1 className={classes.title}>Welcome to room {playlist.name}!</h1>
-          <Playlist
-            playlistId={playlist.id}
-            snapshotId={playlist.snapshot_id}
-            tracks={playlist.tracks.items}
-            deleteTrackHandler={deleteTrackHandler}
-          />
-        </div>
-      )
-    }
+  const searchHandler = (query: string): void => {
+    console.log('searched for', query);
+  };
+
+  if (playlist === null) {
+    return <h1>404</h1>
+  } else if (playlist) {
+    return (
+      <div className={classes.root}>
+        <h1 className={classes.title}>Welcome to room {playlist.name}!</h1>
+      <Search
+          addTrackHandler={addTrackHandler}
+          searchHandler={searchHandler}
+        />
+        <Playlist
+          tracks={playlist.tracks.items}
+          deleteTrackHandler={deleteTrackHandler}
+        />
+      </div>
+    )
+  } else {
+    return <div></div>
   }
-
-
-  return (
-    <div className={classes.root}>
-      { playlistValidation(playlist) }
-    </div>
-  )
 
 };

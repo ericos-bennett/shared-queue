@@ -21,13 +21,11 @@ const useStyles = makeStyles(() => ({
 }));
 
 type PlaylistProps = {
-  playlistId: string,
-  snapshotId: string,
   tracks: any[],
-  deleteTrackHandler: (id: string, index: number, snapshotId: string) => void
+  deleteTrackHandler: (index: number) => void
 }
 
-export default function Playlist({playlistId, snapshotId, tracks, deleteTrackHandler}: PlaylistProps) {
+export default function Playlist({tracks, deleteTrackHandler}: PlaylistProps) {
 
   const classes = useStyles();
 
@@ -43,7 +41,7 @@ export default function Playlist({playlistId, snapshotId, tracks, deleteTrackHan
           </h4>
           <IconButton
             aria-label="delete"
-            onClick={() => deleteTrackHandler(playlistId, i, snapshotId)}
+            onClick={() => deleteTrackHandler(i)}
             className={classes.deleteIcon}
           >
             <DeleteIcon fontSize="large"/>
