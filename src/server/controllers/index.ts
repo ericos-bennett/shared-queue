@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
-import { getAuthUrl, setAuthTokens, addPlaylist, getPlaylist, deleteTrackSpotify } from '../services';
+import { 
+  getAuthUrl, setAuthTokens, 
+  addPlaylist, getPlaylist, deleteTrackSpotify, 
+  getSpotifyTracks 
+} from '../services';
 
 /*--------------------
 -- Auth Controllers --
@@ -21,7 +25,7 @@ const getAuthToken = async (req: Request, res: Response): Promise<void> => {
   res.cookie('refreshToken', refreshToken);
 
   res.redirect('http://localhost:3000');
-}
+};
 
 /*--------------------
 -- Room Controllers --
@@ -53,7 +57,7 @@ const getRoom = async (req: Request, res: Response): Promise<void> => {
   const playlist = await getPlaylist(playlistId, accessToken, refreshToken);
   res.send(playlist);
 
-}
+};
 
 const deleteTrack = async (req: Request, res: Response): Promise<void> => {
 
@@ -66,6 +70,25 @@ const deleteTrack = async (req: Request, res: Response): Promise<void> => {
   const response = await deleteTrackSpotify(playlistId, parseInt(index), snapshotId, accessToken, refreshToken);
   res.send(response);
 
-}
+};
 
-export { getAuthCode, getAuthToken, createRoom, getRoom, deleteTrack };
+/*---------------------
+-- Track Controllers --
+---------------------*/
+
+const searchTrack = async (req: Request, res: Response): Promise<void> => {
+
+  const query: string = req.params.query;
+  const accessToken: string = req.cookies.accessToken;
+  const refreshToken: string = req.cookies.refreshToken;
+  
+  const tracks = await getSpotifyTracks(query, accessToken, refreshToken);
+  res.send(tracks);
+
+};
+
+export { 
+  getAuthCode, getAuthToken, 
+  createRoom, getRoom, deleteTrack, 
+  searchTrack 
+};

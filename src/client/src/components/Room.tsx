@@ -41,6 +41,7 @@ export default function Room({user}: RoomProps) {
   const { id } = useParams<RoomParams>();
   const [playlist, setPlaylist] = useState<PlaylistType>();
   const [socket, setSocket] = useState<SocketIOClient.Socket>();
+  const [searchTracks, setSearchTracks] = useState();
   const classes = useStyles();
 
 
@@ -79,7 +80,7 @@ export default function Room({user}: RoomProps) {
       const socket = io(ENDPOINT);
       socket.emit('join', `${id}`);
 
-      const listener = (data: string) => console.log(data);
+      const listener = (data: string): void => console.log(data);
       socket.on("data", listener);
       
       socket.on('delete', deleteTrack);
@@ -106,8 +107,11 @@ export default function Room({user}: RoomProps) {
 
   };
 
-  const searchHandler = (query: string): void => {
+  const searchHandler = async (query: string): Promise<void> => {
     console.log('searched for', query);
+    const response = await axios.get(`${ENDPOINT}/api/search/${query}`);
+    console.log(response);
+    setSearchTracks(response.data);
   };
 
   if (playlist === null) {
@@ -119,6 +123,7 @@ export default function Room({user}: RoomProps) {
       <Search
           addTrackHandler={addTrackHandler}
           searchHandler={searchHandler}
+          searchTracks={searchTracks}
         />
         <Playlist
           tracks={playlist.tracks.items}
