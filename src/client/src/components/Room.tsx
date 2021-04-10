@@ -35,16 +35,16 @@ type RoomParams = {
 }
 
 type PlaylistType = SpotifyApi.SinglePlaylistResponse | null | undefined;
+type SearchTracksType = SpotifyApi.TrackObjectFull[] | null | undefined;
 
 export default function Room({user}: RoomProps) {
 
   const { id } = useParams<RoomParams>();
   const [playlist, setPlaylist] = useState<PlaylistType>();
   const [socket, setSocket] = useState<SocketIOClient.Socket>();
-  const [searchTracks, setSearchTracks] = useState();
+  const [searchTracks, setSearchTracks] = useState<SearchTracksType>();
   const classes = useStyles();
-
-
+  
   const deleteTrack = useCallback((index: number) => {
     
     // @ts-ignore - fix this!
