@@ -1,41 +1,31 @@
 import SpotifyWebApi from 'spotify-web-api-node';
+import { createSpotifyApi } from '../utils';
 
 const getAuthUrl = (): string => {
 
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = 'http://localhost:8080/api/auth/token';
+  const spotifyApi = createSpotifyApi();
 
   const scopes: string[] = ['playlist-modify-private, playlist-modify-public'];
   const state = 'some-state-of-my-choice'; // Implement security here
-  
-  const spotifyApi = new SpotifyWebApi({
-    clientId,
-    clientSecret,
-    redirectUri
-  });
   
   return spotifyApi.createAuthorizeURL(scopes, state);
 
 };
 
-const setAuthTokens = async (code: string) => {
+type Credentials = {
+  userId: string,
+  accessToken: string,
+  refreshToken: string
+};
 
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = 'http://localhost:8080/api/auth/token';
+const setCredentials = async (code: string): Promise<Credentials> => {
 
-  const spotifyApi = new SpotifyWebApi({
-    clientId,
-    clientSecret,
-    redirectUri,
-  });
+  const spotifyApi = createSpotifyApi();
 
   const response = await spotifyApi.authorizationCodeGrant(code)
   const accessToken: string = response.body['access_token'];
   const refreshToken: string = response.body['refresh_token'];
 
-  // Set the access token on the API object to use it in the user call
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
   
@@ -46,4 +36,4 @@ const setAuthTokens = async (code: string) => {
 
 };
 
-export { getAuthUrl, setAuthTokens };
+export { getAuthUrl, setCredentials };

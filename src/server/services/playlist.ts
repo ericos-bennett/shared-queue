@@ -1,91 +1,61 @@
-import SpotifyWebApi from 'spotify-web-api-node';
+import { createSpotifyApi } from '../utils';
 
-const addPlaylist = async (name: string, accessToken: string, refreshToken: string): Promise<String> => {
+const addPlaylist = async (name: string, accessToken: string, refreshToken: string) => {
 
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = 'http://localhost:3000';
-
-  const spotifyApi = new SpotifyWebApi({
-    clientId,
-    clientSecret,
-    redirectUri,
-  });
-
+  const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
 
-  const response = await spotifyApi.createPlaylist(name);
-  
-  return response.body.id;
+  try {
+    return await spotifyApi.createPlaylist(name);
+  } catch (error) {
+    console.log(error);
+  }
 
 }
 
 const getPlaylist = async (id: string, accessToken: string, refreshToken: string) => {
 
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = 'http://localhost:3000';
-
-  const spotifyApi = new SpotifyWebApi({
-    clientId,
-    clientSecret,
-    redirectUri,
-  });
-
+  const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
 
   try {
-    const playlist = await spotifyApi.getPlaylist(id);
-    return playlist;
-  } catch (err) {
-    console.log('Bad Playlist Lookup OR access token expired');
+    return await spotifyApi.getPlaylist(id);
+  } catch (error) {
     return null;
   }
 
-}
+};
 
 const deleteTrackSpotify = async (playlistId: string, index: number, snapshotId: string, accessToken: string, refreshToken: string) => {
 
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = 'http://localhost:3000';
-
-  const spotifyApi = new SpotifyWebApi({
-    clientId,
-    clientSecret,
-    redirectUri,
-  });
-
+  const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
 
-  const response = await spotifyApi.removeTracksFromPlaylistByPosition(playlistId, [index], snapshotId)
-  return response;
+  try {
+    return await spotifyApi.removeTracksFromPlaylistByPosition(playlistId, [index], snapshotId)
+  } catch (error) {
+    console.log(error);
+  }
+
 };
 
 const addTrackSpotify = async (playlistId: string, trackId: string, accessToken: string, refreshToken: string) => {
   
-  const clientId = process.env.CLIENT_ID;
-  const clientSecret = process.env.CLIENT_SECRET;
-  const redirectUri = 'http://localhost:3000';
-
-  const spotifyApi = new SpotifyWebApi({
-    clientId,
-    clientSecret,
-    redirectUri,
-  });
-
+  const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
 
-  const trackArr = [`spotify:track:${trackId}`];
+  const tracksArray = [`spotify:track:${trackId}`];
 
-  const response = await spotifyApi.addTracksToPlaylist(playlistId, trackArr);
-  console.log(response);
-  return response;
+  try {
+    return await spotifyApi.addTracksToPlaylist(playlistId, tracksArray);
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
-export { addPlaylist, getPlaylist, deleteTrackSpotify, addTrackSpotify }
+export { addPlaylist, getPlaylist, deleteTrackSpotify, addTrackSpotify };
