@@ -13,18 +13,28 @@ const getAuthCode = (req: Request, res: Response): void => {
   res.send(authUrl);
 };
 
-const getAuthToken = async (req: Request, res: Response): Promise<void> => {
+const authenticateUser = async (req: Request, res: Response): Promise<void> => {
+  
   const code = req.query.code as string;
   // TODO: check state against cookie for extra security
   // const state = req.query.state as string;
 
-  const { userId, accessToken, refreshToken } = await setCredentials(code);
-  
-  res.cookie('userId', userId);
-  res.cookie('accessToken', accessToken);
-  res.cookie('refreshToken', refreshToken);
+  try {
 
-  res.redirect('http://localhost:3000');
+    const response = await setCredentials(code);
+    
+    if (response) {
+      const { userId, accessToken, refreshToken } = response;
+      res.cookie('userId', userId);
+      res.cookie('accessToken', accessToken);
+      res.cookie('refreshToken', refreshToken);
+      res.redirect(process.env.ROOT_URL!);
+    }
+    
+  } catch (error) {
+    console.log(error);
+  }
+
 };
 
 /*--------------------
@@ -36,10 +46,12 @@ const createRoom = async (req: Request, res: Response): Promise<void> => {
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
 
-  const playlist = await addPlaylist(name, accessToken, refreshToken);
-
-  // Return the playlist id to the client after adding it to Spotify
-  res.send(playlist && playlist.body.id);
+  try {
+    const playlist = await addPlaylist(name, accessToken, refreshToken);
+    res.send(playlist && playlist.body.id);
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
@@ -49,8 +61,12 @@ const getRoom = async (req: Request, res: Response): Promise<void> => {
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
 
-  const playlist = await getPlaylist(playlistId, accessToken, refreshToken);
-  res.send(playlist);
+  try {
+    const playlist = await getPlaylist(playlistId, accessToken, refreshToken);
+    res.send(playlist);
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
@@ -62,8 +78,12 @@ const deleteTrack = async (req: Request, res: Response): Promise<void> => {
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
 
-  const response = await deleteTrackSpotify(playlistId, parseInt(index), snapshotId, accessToken, refreshToken);
-  res.send(response);
+  try {
+    const response = await deleteTrackSpotify(playlistId, parseInt(index), snapshotId, accessToken, refreshToken);
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
@@ -74,12 +94,14 @@ const addTrack = async (req: Request, res: Response): Promise<void> => {
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
 
-  console.log(playlistId, trackId);
+  try {
+    const response = await addTrackSpotify(playlistId, trackId, accessToken, refreshToken);
+    res.send(response);
+  } catch (error) {
+    console.log(error);
+  }
 
-  const response = await addTrackSpotify(playlistId, trackId, accessToken, refreshToken);
-  res.send(response);
-
-}
+};
 
 /*---------------------
 -- Search Controllers --
@@ -91,13 +113,17 @@ const searchTrack = async (req: Request, res: Response): Promise<void> => {
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
   
-  const tracks = await getSpotifyTracks(query, accessToken, refreshToken);
-  res.send(tracks);
+  try {
+    const tracks = await getSpotifyTracks(query, accessToken, refreshToken);
+    res.send(tracks);
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
 export { 
-  getAuthCode, getAuthToken, 
+  getAuthCode, authenticateUser, 
   createRoom, getRoom, deleteTrack, addTrack,
   searchTrack 
 };

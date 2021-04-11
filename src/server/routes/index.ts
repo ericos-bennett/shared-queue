@@ -1,6 +1,6 @@
 import express from 'express';
 import { 
-  getAuthCode, getAuthToken, 
+  getAuthCode, authenticateUser, 
   createRoom, getRoom, deleteTrack, addTrack,
   searchTrack 
 } from '../controllers';
@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Auth routes
 router.get('/auth/code', getAuthCode);
-router.get('/auth/token', getAuthToken);
+router.get('/auth/token', authenticateUser);
 
 // Room routes
 router.post('/room', createRoom);

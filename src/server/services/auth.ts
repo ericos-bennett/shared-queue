@@ -1,4 +1,3 @@
-import SpotifyWebApi from 'spotify-web-api-node';
 import { createSpotifyApi } from '../utils';
 
 const getAuthUrl = (): string => {
@@ -18,21 +17,27 @@ type Credentials = {
   refreshToken: string
 };
 
-const setCredentials = async (code: string): Promise<Credentials> => {
+const setCredentials = async (code: string): Promise<Credentials | undefined> => {
 
   const spotifyApi = createSpotifyApi();
 
-  const response = await spotifyApi.authorizationCodeGrant(code)
-  const accessToken: string = response.body['access_token'];
-  const refreshToken: string = response.body['refresh_token'];
+  try {
 
-  spotifyApi.setAccessToken(accessToken);
-  spotifyApi.setRefreshToken(refreshToken);
+    const response = await spotifyApi.authorizationCodeGrant(code);
+    const accessToken: string = response.body['access_token'];
+    const refreshToken: string = response.body['refresh_token'];
   
-  const user = await spotifyApi.getMe();
-  const userId: string = user.body['id'];
-  
-  return { userId, accessToken, refreshToken };
+    spotifyApi.setAccessToken(accessToken);
+    spotifyApi.setRefreshToken(refreshToken);
+    
+    const user = await spotifyApi.getMe();
+    const userId: string = user.body['id'];
+    
+    return { userId, accessToken, refreshToken };
+    
+  } catch (error) {
+    console.log(error);
+  }
 
 };
 
