@@ -1,10 +1,9 @@
 import { createSpotifyApi } from '../utils';
 
-const getSpotifyTracks = async (query: string, accessToken: string, refreshToken: string) => {
+const getSpotifyTracks = async (query: string, accessToken: string) => {
 
   const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
-  spotifyApi.setRefreshToken(refreshToken);
   
   try {
     const res = await spotifyApi.searchTracks(query, {limit: 5});

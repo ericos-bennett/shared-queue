@@ -1,10 +1,9 @@
 import { createSpotifyApi } from '../utils';
 
-const addPlaylist = async (name: string, accessToken: string, refreshToken: string) => {
+const addPlaylist = async (name: string, accessToken: string) => {
 
   const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
-  spotifyApi.setRefreshToken(refreshToken);
 
   try {
     return await spotifyApi.createPlaylist(name);
@@ -14,11 +13,10 @@ const addPlaylist = async (name: string, accessToken: string, refreshToken: stri
 
 }
 
-const getPlaylist = async (id: string, accessToken: string, refreshToken: string) => {
+const getPlaylist = async (id: string, accessToken: string) => {
 
   const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
-  spotifyApi.setRefreshToken(refreshToken);
 
   try {
     return await spotifyApi.getPlaylist(id);
@@ -28,11 +26,10 @@ const getPlaylist = async (id: string, accessToken: string, refreshToken: string
 
 };
 
-const deleteTrackSpotify = async (playlistId: string, index: number, snapshotId: string, accessToken: string, refreshToken: string) => {
+const deleteTrackSpotify = async (playlistId: string, index: number, snapshotId: string, accessToken: string) => {
 
   const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
-  spotifyApi.setRefreshToken(refreshToken);
 
   try {
     return await spotifyApi.removeTracksFromPlaylistByPosition(playlistId, [index], snapshotId)
@@ -42,11 +39,10 @@ const deleteTrackSpotify = async (playlistId: string, index: number, snapshotId:
 
 };
 
-const addTrackSpotify = async (playlistId: string, trackId: string, accessToken: string, refreshToken: string) => {
+const addTrackSpotify = async (playlistId: string, trackId: string, accessToken: string) => {
   
   const spotifyApi = createSpotifyApi();
   spotifyApi.setAccessToken(accessToken);
-  spotifyApi.setRefreshToken(refreshToken);
 
   const tracksArray = [`spotify:track:${trackId}`];
 

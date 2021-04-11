@@ -39,10 +39,10 @@ type SearchTracksType = SpotifyApi.TrackObjectFull[] | null | undefined;
 
 export default function Room({user}: RoomProps) {
 
-  const { id } = useParams<RoomParams>();
   const [playlist, setPlaylist] = useState<PlaylistType>();
   const [socket, setSocket] = useState<SocketIOClient.Socket>();
   const [searchTracks, setSearchTracks] = useState<SearchTracksType>();
+  const { id } = useParams<RoomParams>();
   const classes = useStyles();
   
   const deleteTrack = useCallback((index: number) => {
@@ -73,9 +73,8 @@ export default function Room({user}: RoomProps) {
     
     // @ts-ignore - fix this!
     setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
-      console.log(prev);
+      
       const playlistClone = { ...prev };
-      console.log(playlistClone);
       const tracks = playlistClone.tracks.items;
       // @ts-ignore - fix this!
       tracks.push({ track })
@@ -83,10 +82,7 @@ export default function Room({user}: RoomProps) {
       
       // If you are the playlist owner, add the track to it on Spotify's DB
       if (Cookie.get('userId') === prev.owner.id) {
-        console.log(track);
-        axios.put(`${ENDPOINT}/api/room/${prev.id}`, 
-          { trackId: track.id }
-        );
+        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.id });
       }
 
       return playlistClone;
@@ -104,11 +100,9 @@ export default function Room({user}: RoomProps) {
       // Initiate the websocket and add its listeners
       const socket = io(ENDPOINT);
       socket.emit('join', `${id}`);
-
-      const listener = (data: string): void => console.log(data);
-      socket.on("data", listener);
       
       socket.on('delete', deleteTrack);
+      socket.on('add', addTrack);
       
       setPlaylist(spotifyResponse);
       setSocket(socket);
@@ -119,7 +113,7 @@ export default function Room({user}: RoomProps) {
 
     })();
 
-  }, [id, deleteTrack])
+  }, [id, deleteTrack, addTrack])
 
 
   const deleteTrackHandler = (index: number): void => {
@@ -130,6 +124,8 @@ export default function Room({user}: RoomProps) {
 
   const addTrackHandler = (track: SpotifyApi.TrackObjectFull): void => {
     addTrack(track);
+    // Send the new track to all peers in the same WS room
+    socket!.emit('add', playlist!.id, track);
   };
 
   const searchHandler = async (query: string): Promise<void> => {

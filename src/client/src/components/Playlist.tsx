@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 type PlaylistProps = {
-  tracks: any[],
+  tracks: SpotifyApi.PlaylistTrackObject[],
   deleteTrackHandler: (index: number) => void
 }
 

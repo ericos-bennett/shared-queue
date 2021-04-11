@@ -27,11 +27,11 @@ const io = new Server(server, {
   // Options ...
 });
 
-io.on("connection", (socket: Socket) => {
+io.on("connection", (socket: Socket): void => {
   console.log('Socket connected:', socket.id);
 
   // Join Room hanlder
-  socket.on('join', (roomId: string) => {
+  socket.on('join', (roomId: string): void => {
     socket.join(roomId);
     console.log(`Socket joined room: ${roomId}`);
     console.log('Rooms: ', io.sockets.adapter.rooms);
@@ -39,10 +39,14 @@ io.on("connection", (socket: Socket) => {
   });
 
   // Delete Track handler
-  socket.on('delete', (playlistId: string, index: number) => {
-    console.log(`Deleting track ${index} from playlist id: ${playlistId}`);
+  socket.on('delete', (playlistId: string, index: number): void => {
     socket.to(playlistId).emit('delete', index);
-  })
+  });
+
+  // Add Track hanlder
+  socket.on('add', (playlistId: string, track: SpotifyApi.TrackObjectFull): void => {
+    socket.to(playlistId).emit('add', track);
+  });
 
 });
 
