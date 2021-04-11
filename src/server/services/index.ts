@@ -1,9 +1,9 @@
 import { getAuthUrl, setAuthTokens } from './auth';
-import { addPlaylist, getPlaylist, deleteTrackSpotify } from './playlist';
+import { addPlaylist, getPlaylist, deleteTrackSpotify, addTrackSpotify } from './playlist';
 import { getSpotifyTracks } from './search';
 
 export { 
   getAuthUrl, setAuthTokens, 
-  addPlaylist, getPlaylist, deleteTrackSpotify, 
+  addPlaylist, getPlaylist, deleteTrackSpotify, addTrackSpotify,
   getSpotifyTracks
 };

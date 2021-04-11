@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 type searchProps = {
-  addTrackHandler: (id: string) => void,
+  addTrackHandler: (track: SpotifyApi.TrackObjectFull) => void,
   searchHandler: (id: string) => void,
   searchTracks: any
 }
@@ -46,7 +46,7 @@ export default function Search({ addTrackHandler, searchHandler, searchTracks }:
           </h4>
           <IconButton
             aria-label="delete"
-            onClick={() => addTrackHandler(track.id)}
+            onClick={() => addTrackHandler(track)}
             className={classes.addIcon}
           >
             <AddIcon fontSize="large"/>

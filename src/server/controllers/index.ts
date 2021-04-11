@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { 
   getAuthUrl, setAuthTokens, 
-  addPlaylist, getPlaylist, deleteTrackSpotify, 
+  addPlaylist, getPlaylist, deleteTrackSpotify, addTrackSpotify,
   getSpotifyTracks 
 } from '../services';
 
@@ -72,8 +72,22 @@ const deleteTrack = async (req: Request, res: Response): Promise<void> => {
 
 };
 
+const addTrack = async (req: Request, res: Response): Promise<void> => {
+
+  const playlistId: string = req.params.playlistId;
+  const trackId: string = req.body.trackId;
+  const accessToken: string = req.cookies.accessToken;
+  const refreshToken: string = req.cookies.refreshToken;
+
+  console.log(playlistId, trackId);
+
+  const response = await addTrackSpotify(playlistId, trackId, accessToken, refreshToken);
+  res.send(response);
+
+}
+
 /*---------------------
--- Track Controllers --
+-- Search Controllers --
 ---------------------*/
 
 const searchTrack = async (req: Request, res: Response): Promise<void> => {
@@ -89,6 +103,6 @@ const searchTrack = async (req: Request, res: Response): Promise<void> => {
 
 export { 
   getAuthCode, getAuthToken, 
-  createRoom, getRoom, deleteTrack, 
+  createRoom, getRoom, deleteTrack, addTrack,
   searchTrack 
 };

@@ -49,18 +49,43 @@ export default function Room({user}: RoomProps) {
     
     // @ts-ignore - fix this!
     setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
-      console.log(prev);
+
+      //Remove the track in local state
       const playlistClone = { ...prev };
-      console.log(playlistClone);
       const tracks = playlistClone.tracks.items;
       tracks?.splice(index, 1);
       playlistClone.tracks.items = tracks;
       
-      // If you are the playlist owner, delete the track on Spotify's DB
+      // If you are the playlist owner, also delete the track on Spotify's DB
       if (Cookie.get('userId') === prev.owner.id) {
-        console.log('test');
         axios.delete(`${ENDPOINT}/api/room/${prev.id}/${index}`, 
           { data: { snapshotId: prev.snapshot_id }}
+        );
+      }
+
+      return playlistClone;
+
+    });
+
+  }, []);
+
+  const addTrack = useCallback((track: SpotifyApi.TrackObjectFull) => {
+    
+    // @ts-ignore - fix this!
+    setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
+      console.log(prev);
+      const playlistClone = { ...prev };
+      console.log(playlistClone);
+      const tracks = playlistClone.tracks.items;
+      // @ts-ignore - fix this!
+      tracks.push({ track })
+      playlistClone.tracks.items = tracks;
+      
+      // If you are the playlist owner, add the track to it on Spotify's DB
+      if (Cookie.get('userId') === prev.owner.id) {
+        console.log(track);
+        axios.put(`${ENDPOINT}/api/room/${prev.id}`, 
+          { trackId: track.id }
         );
       }
 
@@ -103,19 +128,17 @@ export default function Room({user}: RoomProps) {
     socket!.emit('delete', playlist!.id, index);
   };
 
-  const addTrackHandler = (id: string): void => {
-
+  const addTrackHandler = (track: SpotifyApi.TrackObjectFull): void => {
+    addTrack(track);
   };
 
   const searchHandler = async (query: string): Promise<void> => {
-    console.log('searched for', query);
     const response = await axios.get(`${ENDPOINT}/api/search/${query}`);
-    console.log(response);
     setSearchTracks(response.data);
   };
 
   if (playlist === null) {
-    return <h1>404</h1>
+    return <h1 className={classes.root}>404</h1>
   } else if (playlist) {
     return (
       <div className={classes.root}>
@@ -132,7 +155,7 @@ export default function Room({user}: RoomProps) {
       </div>
     )
   } else {
-    return <div></div>
+    return <div className={classes.root}></div>
   }
 
 };
