@@ -17,10 +17,6 @@ const useStyles = makeStyles(() => ({
     width: '100vw',
     height: '100vh',
     overflow: 'auto',
-    // display: 'flex',
-    // flexDirection: 'column',
-    // justifyContent: 'space-evenly',
-    // alignItems: 'center',
     backgroundImage: 'linear-gradient(90deg, #2c5e92 0%, #552f6d 80%)'
   },
   title: {
@@ -152,7 +148,7 @@ export default function Room({user}: RoomProps) {
         />
         <Player
           accessToken={Cookies.get('accessToken')!}
-          playlistId={id}
+          tracks={playlist.tracks.items}
         />
       </div>
     )
