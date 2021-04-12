@@ -6,7 +6,9 @@ import axios from 'axios';
 import io from "socket.io-client";
 
 import Playlist from './Playlist';
-import Search from './Search'
+import Search from './Search';
+import Player from './Player';
+import Cookies from 'js-cookie';
 
 const ENDPOINT = 'http://localhost:3000'
 
@@ -15,10 +17,10 @@ const useStyles = makeStyles(() => ({
     width: '100vw',
     height: '100vh',
     overflow: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    // display: 'flex',
+    // flexDirection: 'column',
+    // justifyContent: 'space-evenly',
+    // alignItems: 'center',
     backgroundImage: 'linear-gradient(90deg, #2c5e92 0%, #552f6d 80%)'
   },
   title: {
@@ -147,6 +149,10 @@ export default function Room({user}: RoomProps) {
         <Playlist
           tracks={playlist.tracks.items}
           deleteTrackHandler={deleteTrackHandler}
+        />
+        <Player
+          accessToken={Cookies.get('accessToken')!}
+          playlistId={id}
         />
       </div>
     )
