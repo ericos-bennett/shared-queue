@@ -9,7 +9,6 @@
 - Async Await
 
 ### Next Steps
-- Use refresh token if access token has expired
 - User can pause + start playback from app
 - Other users pause + stop playback from app
 

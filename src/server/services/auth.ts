@@ -4,7 +4,13 @@ const getAuthUrl = (): string => {
 
   const spotifyApi = createSpotifyApi();
 
-  const scopes: string[] = ['playlist-modify-private, playlist-modify-public'];
+  const scopes: string[] = [
+    'playlist-modify-private', 
+    'playlist-modify-public', 
+    'streaming', 
+    'user-read-email', 
+    'user-read-private'
+  ];
   const state = 'some-state-of-my-choice'; // Implement security here
   
   return spotifyApi.createAuthorizeURL(scopes, state);
