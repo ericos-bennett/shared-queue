@@ -31,7 +31,7 @@ export default function Playlist({tracks, deleteTrackHandler}: PlaylistProps) {
 
   const listItems = tracks.map((track: any, i) => {
     return (
-        <li className={classes.track} key={track.track.id}>
+        <li className={classes.track} key={i}>
           <img
             src={track.track.album.images[2].url}
             alt={track.track.album.name}

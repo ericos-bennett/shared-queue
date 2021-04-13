@@ -45,8 +45,6 @@ export default function Room({user}: RoomProps) {
   
   const deleteTrack = useCallback((index: number) => {
 
-    console.log('deleting track: ', index)
-    
     // @ts-ignore - fix this!
     setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
       
@@ -58,16 +56,13 @@ export default function Room({user}: RoomProps) {
       
       // If you are the playlist owner, also delete the track on Spotify's DB
       if (Cookie.get('userId') === prev.owner.id) {
-        console.log('deleting track on DB: ', index)
         axios.delete(`${ENDPOINT}/api/room/${prev.id}/${index}`, 
           { data: { snapshotId: prev.snapshot_id }}
-        ).then(res => {
-          playlistClone.snapshot_id = res.data.body.snapshot_id;
-        });
+        ).then(res => playlistClone.snapshot_id = res.data.body.snapshot_id)
+        .catch(err => console.log(err));
       }
-      
-      return playlistClone;
 
+      return playlistClone;
     });
 
   }, []);
@@ -85,11 +80,12 @@ export default function Room({user}: RoomProps) {
       
       // If you are the playlist owner, add the track to it on Spotify's DB
       if (Cookie.get('userId') === prev.owner.id) {
-        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.id });
+        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.id })
+          .then(res => playlistClone.snapshot_id = res.data.body.snapshot_id)
+          .catch(err => console.log(err));
       }
-
+      
       return playlistClone;
-
     });
 
   }, [])
