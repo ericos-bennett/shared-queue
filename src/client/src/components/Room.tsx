@@ -44,23 +44,28 @@ export default function Room({user}: RoomProps) {
   const classes = useStyles();
   
   const deleteTrack = useCallback((index: number) => {
+
+    console.log('deleting track: ', index)
     
     // @ts-ignore - fix this!
     setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
-
+      
       //Remove the track in local state
-      const playlistClone = { ...prev };
+      let playlistClone = { ...prev };
       const tracks = playlistClone.tracks.items;
       tracks?.splice(index, 1);
       playlistClone.tracks.items = tracks;
       
       // If you are the playlist owner, also delete the track on Spotify's DB
       if (Cookie.get('userId') === prev.owner.id) {
+        console.log('deleting track on DB: ', index)
         axios.delete(`${ENDPOINT}/api/room/${prev.id}/${index}`, 
           { data: { snapshotId: prev.snapshot_id }}
-        );
+        ).then(res => {
+          playlistClone.snapshot_id = res.data.body.snapshot_id;
+        });
       }
-
+      
       return playlistClone;
 
     });

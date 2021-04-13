@@ -5,11 +5,14 @@ const getAuthUrl = (): string => {
   const spotifyApi = createSpotifyApi();
 
   const scopes: string[] = [
-    'playlist-modify-private', 
-    'playlist-modify-public', 
-    'streaming', 
-    'user-read-email', 
-    'user-read-private'
+    'playlist-modify-public',  // To create + modify playlists
+    'streaming', // For the Web Playback SDK
+    'user-read-email', // For the Web Playback SDK
+    'user-read-private', // For the Web Playback SDK
+    'user-read-playback-state', // to read other devices' statuses
+    'user-modify-playback-state', // to update other devices
+    'user-library-read', // For the favorite button
+    'user-library-modify' // For the favorite button
   ];
   const state = 'some-state-of-my-choice'; // Implement security here
   
