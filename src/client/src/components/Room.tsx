@@ -8,7 +8,6 @@ import io from "socket.io-client";
 import Playlist from './Playlist';
 import Search from './Search';
 import Player from './Player';
-import Cookies from 'js-cookie';
 
 const ENDPOINT = 'http://localhost:3000'
 
@@ -64,7 +63,6 @@ export default function Room({user}: RoomProps) {
 
       return playlistClone;
     });
-
   }, []);
 
   const addTrack = useCallback((track: SpotifyApi.TrackObjectFull) => {
@@ -87,7 +85,6 @@ export default function Room({user}: RoomProps) {
       
       return playlistClone;
     });
-
   }, [])
 
   useEffect(() => {
@@ -106,12 +103,8 @@ export default function Room({user}: RoomProps) {
       setPlaylist(spotifyResponse);
       setSocket(socket);
       
-      return () => {
-        socket.disconnect();
-      }
-
+      return () => socket.disconnect();
     })();
-
   }, [id, deleteTrack, addTrack])
 
 
@@ -148,7 +141,7 @@ export default function Room({user}: RoomProps) {
           deleteTrackHandler={deleteTrackHandler}
         />
         <Player
-          accessToken={Cookies.get('accessToken')!}
+          accessToken={Cookie.get('accessToken')!}
           tracks={playlist.tracks.items}
         />
       </div>

@@ -8,6 +8,12 @@ import {
 /*--------------------
 -- Auth Controllers --
 --------------------*/
+// add these for other cookies for production
+const cookieOptions = {
+  httpOnly: true,
+  secure: true
+};
+
 const getAuthCode = (req: Request, res: Response): void => {
   const authUrl: string = getAuthUrl();
   res.send(authUrl);
@@ -27,8 +33,8 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
       const { userId, accessToken, refreshToken, expiration } = credentials;
       res.cookie('userId', userId);
       res.cookie('accessToken', accessToken);
-      res.cookie('refreshToken', refreshToken);
-      res.cookie('expiration', expiration);
+      res.cookie('refreshToken', refreshToken, cookieOptions);
+      res.cookie('expiration', expiration, cookieOptions);
       res.redirect(process.env.ROOT_URL!);
     }
     
@@ -54,7 +60,7 @@ const createRoom = async (req: Request, res: Response): Promise<void> => {
     if (expiration < Date.now()) {
       const { newAccessToken, newExpiration } = await refreshSession(refreshToken);
       res.cookie('accessToken', newAccessToken);
-      res.cookie('expiration', newExpiration);
+      res.cookie('expiration', newExpiration, cookieOptions);
     }
     const playlist = await addPlaylist(name, accessToken);
     res.send(playlist && playlist.body.id);
@@ -77,7 +83,7 @@ const getRoom = async (req: Request, res: Response): Promise<void> => {
     if (expiration < Date.now()) {
       const { newAccessToken, newExpiration } = await refreshSession(refreshToken);
       res.cookie('accessToken', newAccessToken);
-      res.cookie('expiration', newExpiration);
+      res.cookie('expiration', newExpiration, cookieOptions);
     }
     const playlist = await getPlaylist(playlistId, accessToken);
     res.send(playlist);
@@ -102,7 +108,7 @@ const deleteTrack = async (req: Request, res: Response): Promise<void> => {
     if (expiration < Date.now()) {
       const { newAccessToken, newExpiration } = await refreshSession(refreshToken);
       res.cookie('accessToken', newAccessToken);
-      res.cookie('expiration', newExpiration);
+      res.cookie('expiration', newExpiration, cookieOptions);
     }
     const response = await deleteTrackSpotify(playlistId, parseInt(index), snapshotId, accessToken);
     res.send(response);
@@ -126,7 +132,7 @@ const addTrack = async (req: Request, res: Response): Promise<void> => {
     if (expiration < Date.now()) {
       const { newAccessToken, newExpiration } = await refreshSession(refreshToken);
       res.cookie('accessToken', newAccessToken);
-      res.cookie('expiration', newExpiration);
+      res.cookie('expiration', newExpiration, cookieOptions);
     }
     const response = await addTrackSpotify(playlistId, trackId, accessToken);
     res.send(response);
@@ -153,7 +159,7 @@ const searchTrack = async (req: Request, res: Response): Promise<void> => {
     if (expiration < Date.now()) {
       const { newAccessToken, newExpiration } = await refreshSession(refreshToken);
       res.cookie('accessToken', newAccessToken);
-      res.cookie('expiration', newExpiration);
+      res.cookie('expiration', newExpiration, cookieOptions);
     }
     const tracks = await getSpotifyTracks(query, accessToken);
     res.send(tracks);

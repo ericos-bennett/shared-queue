@@ -1,7 +1,7 @@
 import httpServer from 'http';
 import { Server, Socket } from "socket.io";
 
-const initializeWs = (server: httpServer.Server) => {
+const initializeWs = (server: httpServer.Server): void => {
 
   const io = new Server(server, {
     // Options ...

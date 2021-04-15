@@ -19,7 +19,7 @@ export default function CreateButton() {
 
   let history = useHistory();
 
-  const createPlaylist = async (name: string) => {
+  const createRoom = async (name: string) => {
     const res = await axios.post('/api/room', { name });
     history.push(`/room/${res.data}`);
   }
@@ -50,7 +50,7 @@ export default function CreateButton() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => createPlaylist(textValue)} color="primary">
+          <Button onClick={() => createRoom(textValue)} color="primary">
             Create Room
           </Button>
         </DialogActions>
