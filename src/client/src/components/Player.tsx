@@ -1,41 +1,24 @@
-import SpotifyPlayer from 'react-spotify-web-playback';
-import { makeStyles } from "@material-ui/core/styles";
+import { useState, useEffect } from "react";
+import playbackLoader from '../helpers/spotifyPlaybackLoader';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    position: 'fixed',
-    bottom: '0',
-    width: '100%',
-    '& button': {
-      outline: 'none'
-    }
-  }
-}));
-
-type PlayerProps = {
+type SpotifyPlayer = {
   accessToken: string,
-  tracks: SpotifyApi.PlaylistTrackObject[],
+  tracks: SpotifyApi.PlaylistTrackObject[]
 }
 
-export default function Player({accessToken, tracks}: PlayerProps) {
+export default function Player({ accessToken, tracks }: SpotifyPlayer) {
 
-  const classes = useStyles();
+  const [player, setPlayer] = useState()
+  useEffect(() => {
+    (async () => {
+      const spotifyPlayer = await playbackLoader(accessToken);
+      console.log(spotifyPlayer);
+      setPlayer(spotifyPlayer);
+    })();
+  }, [accessToken])
 
-  // useEffect(() => {
-
-  // }, [tracks])
-
-  return(
-    <div className={classes.root}>
-      <SpotifyPlayer
-        token={accessToken}
-        uris={tracks.map(track => `spotify:track:${track.track.id}`)}
-        showSaveIcon={true}
-        name="Spotify Mix"
-        styles={{
-          height: 80,
-        }}
-      />
+  return (
+    <div>
     </div>
   )
 

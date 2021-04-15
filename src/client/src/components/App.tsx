@@ -8,11 +8,10 @@ export default function App() {
   
   const [user, setUser] = useState('');
 
-  useEffect(() => {
+  useEffect((): void => {
     const userId = Cookies.get('userId');
     if (userId) setUser(userId);
   }, []);
-
 
   return (
     <Router>
