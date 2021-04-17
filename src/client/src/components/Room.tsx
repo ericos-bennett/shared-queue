@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
+import { Container } from '@material-ui/core';
+
 import Cookie from 'js-cookie';
 import axios from 'axios';
 import io from "socket.io-client";
@@ -16,7 +18,7 @@ const useStyles = makeStyles(() => ({
     width: '100vw',
     height: '100vh',
     overflow: 'auto',
-    backgroundImage: 'linear-gradient(90deg, #2c5e92 0%, #552f6d 80%)'
+    backgroundColor: '#CDCDCD'
   },
   title: {
     textAlign: 'center'
@@ -31,6 +33,13 @@ type RoomParams = {
   id: string
 }
 
+type trackType = {
+  artist: string,
+  title: string,
+  uri: string,
+  albumUrl: string
+}
+
 type PlaylistType = SpotifyApi.SinglePlaylistResponse | null | undefined;
 type SearchTracksType = SpotifyApi.TrackObjectFull[] | null | undefined;
 
@@ -38,7 +47,6 @@ export default function Room({user}: RoomProps) {
 
   const [playlist, setPlaylist] = useState<PlaylistType>();
   const [socket, setSocket] = useState<SocketIOClient.Socket>();
-  const [searchTracks, setSearchTracks] = useState<SearchTracksType>();
   const { id } = useParams<RoomParams>();
   const classes = useStyles();
   
@@ -65,7 +73,7 @@ export default function Room({user}: RoomProps) {
     });
   }, []);
 
-  const addTrack = useCallback((track: SpotifyApi.TrackObjectFull) => {
+  const addTrack = useCallback((track: trackType) => {
     
     // @ts-ignore - fix this!
     setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
@@ -78,7 +86,7 @@ export default function Room({user}: RoomProps) {
       
       // If you are the playlist owner, add the track to it on Spotify's DB
       if (Cookie.get('userId') === prev.owner.id) {
-        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.id })
+        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.uri })
           .then(res => playlistClone.snapshot_id = res.data.body.snapshot_id)
           .catch(err => console.log(err));
       }
@@ -114,40 +122,40 @@ export default function Room({user}: RoomProps) {
     socket!.emit('delete', playlist!.id, index);
   };
 
-  const addTrackHandler = (track: SpotifyApi.TrackObjectFull): void => {
+  const addTrackHandler = (track: trackType): void => {
     addTrack(track);
-    // Send the new track to all peers in the same WS room
+    // Send the new track to all peers in the same WS room COME BACK TO REFACTOR!
     socket!.emit('add', playlist!.id, track);
   };
 
-  const searchHandler = async (query: string): Promise<void> => {
-    const response = await axios.get(`${ENDPOINT}/api/search/${query}`);
-    setSearchTracks(response.data);
-  };
-
   if (playlist === null) {
-    return <h1 className={classes.root}>404</h1>
+    return <Container className={classes.root}>404</Container>
   } else if (playlist) {
     return (
       <div className={classes.root}>
-        <h1 className={classes.title}>Welcome to room {playlist.name}!</h1>
-      <Search
-          addTrackHandler={addTrackHandler}
-          searchHandler={searchHandler}
-          searchTracks={searchTracks}
-        />
-        <Playlist
-          tracks={playlist.tracks.items}
-          deleteTrackHandler={deleteTrackHandler}
-        />
+        <Container>
+          <h1 className={classes.title}>Welcome to room {playlist.name}!</h1>
+          <Search
+            addTrackHandler={addTrackHandler}
+            accessToken={Cookie.get('accessToken')!}
+          />
+          <Playlist
+            tracks={playlist.tracks.items}
+            deleteTrackHandler={deleteTrackHandler}
+          />
+        </Container>
         <Player
-          accessToken={Cookie.get('accessToken')!}
           tracks={playlist.tracks.items}
+          accessToken={Cookie.get('accessToken')!}
         />
       </div>
     )
   } else {
-    return <div className={classes.root}></div>
+    return (
+      <Container className={classes.root}>
+        <div></div>
+      </Container>
+    )
   }
 
 };

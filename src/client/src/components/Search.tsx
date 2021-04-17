@@ -1,75 +1,79 @@
-import { useState } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import AddIcon from '@material-ui/icons/Add';
+import { useEffect, useState } from 'react';
+import SpotifyWebApi from "spotify-web-api-node"
+import SearchBar from "material-ui-search-bar";
 
-const useStyles = makeStyles(() => ({
-  root: {
-  },
-  searchIcon: {
-  },
-  track: {
-    display: 'flex',
-    alignItems: 'center',
-    margin: '1rem'
-  },
-  trackLabel: {
-    marginLeft: '1rem'
-  },
-  addIcon: {
-    marginLeft: '1rem'
-  }
-}));
+import TrackSearchResult from './TrackSearchResult';
 
-type searchProps = {
-  addTrackHandler: (track: SpotifyApi.TrackObjectFull) => void,
-  searchHandler: (id: string) => void,
-  searchTracks: any
+const spotifyApi = new SpotifyWebApi({
+  clientId: process.env.REACT_APP_CLIENT_ID,
+})
+
+type trackType = {
+  artist: string,
+  title: string,
+  uri: string,
+  albumUrl: string
 }
 
-export default function Search({ addTrackHandler, searchHandler, searchTracks }: searchProps) {
+type searchProps = {
+  accessToken: string
+  addTrackHandler: (track: trackType) => void,
+}
 
-  const [textValue, setTextValue] = useState('');
-  const classes = useStyles();
+export default function Search({ addTrackHandler, accessToken }: searchProps) {
 
-  const listItems = searchTracks && searchTracks.map((track: any) => {
-    return (
-        <li className={classes.track} key={track.id}>
-          <img
-            src={track.album.images[2].url}
-            alt={track.album.name}
-          ></img>
-          <h4 className={classes.trackLabel}>
-            {track.artists[0].name} - {track.name}
-          </h4>
-          <IconButton
-            aria-label="delete"
-            onClick={() => addTrackHandler(track)}
-            className={classes.addIcon}
-          >
-            <AddIcon fontSize="large"/>
-          </IconButton>
-        </li>
-    )
-  })
+  const [search, setSearch] = useState('');
+  const [searchTracks, setSearchTracks] = useState<trackType[]>([]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    spotifyApi.setAccessToken(accessToken);
+  }, [accessToken])
+
+  useEffect(() => {
+    if (!search) return setSearchTracks([]);
+    if (!accessToken) return;
+
+    let cancel = false
+    spotifyApi.searchTracks(search, {limit: 5}).then(res => {
+      if (cancel) return
+      setSearchTracks(
+        res!.body!.tracks!.items.map(track => {
+          return {
+            artist: track.artists[0].name,
+            title: track.name,
+            uri: track.uri,
+            albumUrl: track.album.images[2].url
+          }
+        })
+      )
+    });
+
+    return function() {
+      cancel = true;
+    };
+  }, [search, accessToken]);
+
+  const chooseTrack = (track: trackType): void => {
+    setSearchTracks([])
+    addTrackHandler(track)
+  };
 
   return (
 
-    <div className={classes.root}>
-      <TextField
-           value={textValue}
-           onChange={e => setTextValue(e.target.value)}
-        />
-      <IconButton
-        aria-label="search"
-        onClick={() => searchHandler(textValue)}
-      >
-        <SearchIcon className={classes.searchIcon} fontSize="large"/>
-      </IconButton>
+    <div>
+      <SearchBar
+        value={search}
+        onChange={value => setSearch(value)}
+      />
       <ul>
-        {listItems}
+        {searchTracks.map(track => (
+          <TrackSearchResult
+            track={track}
+            key={track.uri}
+            chooseTrack={chooseTrack}
+          />
+        ))}
       </ul>
     </div>
 
