@@ -1,16 +1,16 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 
 import Cookie from 'js-cookie';
-import axios from 'axios';
 import io from "socket.io-client";
 
 import Playlist from './Playlist';
 import Search from './Search';
 import Player from './Player';
+import usePlaylist from '../hooks/usePlaylist';
 
 const ENDPOINT = 'http://localhost:3000'
 
@@ -36,98 +36,15 @@ type Track = {
   albumUrl: string
 }
 
-type PlaylistType = {
-  name: string,
-  id: string,
-  owner: string,
-  snapshotId: string,
-  tracks: Track[]
-}
-
 export default function Room() {
 
-  const [playlist, setPlaylist] = useState<PlaylistType | null>();
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
   const webSocket = useRef<SocketIOClient.Socket | null>(null);
+  const { playlist, addTrack, deleteTrack } = usePlaylist();
   const { id } = useParams<{id: string}>();
   const history = useHistory();
   const classes = useStyles();
   
-  const deleteTrack = useCallback((index: number) => {
-
-    // @ts-ignore - fix this!
-    setPlaylist((prev: PlaylistType): PlaylistType => {
-      
-      // Remove the track in local state
-      let playlistClone = { ...prev };
-      const tracks = [ ...playlistClone.tracks ];
-      tracks?.splice(index, 1);
-      playlistClone.tracks = tracks;
-      
-      // If you are the playlist owner, also delete the track on Spotify's DB
-      if (Cookie.get('userId') === prev.owner) {
-        axios.delete(`${ENDPOINT}/api/room/${prev.id}/${index}`, 
-          { data: { snapshotId: prev.snapshotId }}
-        ).then(res => playlistClone.snapshotId = res.data.body.snapshot_id)
-        .catch(err => console.log(err));
-      }
-
-      return playlistClone;
-    });
-  }, []);
-
-  const addTrack = useCallback((track: Track): void => {
-    
-    // @ts-ignore - fix this!
-    setPlaylist((prev: PlaylistType): PlaylistType => {
-
-      // Add the track in local state
-      const playlistClone = { ...prev };
-      const tracks = [ ...playlistClone.tracks ];
-      tracks.push(track);
-      playlistClone.tracks = tracks;
-      
-      // If you are the playlist owner, add the track to it on Spotify's DB
-      if (Cookie.get('userId') === prev.owner) {
-        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.id })
-          .then(res => playlistClone.snapshotId = res.data.body.snapshot_id)
-          .catch(err => console.log(err));
-      }
-      
-      return playlistClone;
-    });
-  }, [])
-
-  // Gets the playlist object if the user is signed in and one exists
-  useEffect(() => {
-    if (!Cookie.get('userId')) {
-      history.push('/')
-    } else {
-      (async () => {
-        const res = await axios.get(`/api/room/${id}`);
-        const spotifyResponse: SpotifyApi.SinglePlaylistResponse = res.data.body;
-        
-        const playlist = !res.data.body ? null : {
-          name: spotifyResponse.name,
-          id: spotifyResponse.id,
-          owner: spotifyResponse.owner.id,
-          snapshotId: spotifyResponse.snapshot_id,
-          tracks: spotifyResponse.tracks.items.map(track => {
-            return {
-              artist: track.track.artists[0].name,
-              title: track.track.name,
-              id: track.track.id,
-              albumUrl: track.track.album.images[2].url
-            }
-          })
-        };
-  
-        setPlaylist(playlist);
-
-      })();
-    }
-  }, [id, history])
-
   // Initiate the websocket and add its listeners
   useEffect(() => {
 
