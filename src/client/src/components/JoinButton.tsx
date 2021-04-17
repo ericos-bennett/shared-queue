@@ -45,7 +45,9 @@ export default function JoinButton() {
             Cancel
           </Button>
           <Button
-            onClick={() => history.push(`/room/${textValue}`)}
+            autoFocus
+            type="submit"
+            onSubmit={() => history.push(`/room/${textValue}`)}
             color="primary"
           >
             Join Room

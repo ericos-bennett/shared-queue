@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from '@material-ui/core';
@@ -29,14 +29,6 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-type RoomProps = {
-  user: string
-}
-
-type RoomParams = {
-  id: string
-}
-
 type Track = {
   artist: string,
   title: string,
@@ -52,12 +44,12 @@ type PlaylistType = {
   tracks: Track[]
 }
 
-export default function Room({user}: RoomProps) {
+export default function Room() {
 
   const [playlist, setPlaylist] = useState<PlaylistType | null>();
-  const [socket, setSocket] = useState<SocketIOClient.Socket>();
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
-  const { id } = useParams<RoomParams>();
+  const webSocket = useRef<SocketIOClient.Socket | null>(null);
+  const { id } = useParams<{id: string}>();
   const history = useHistory();
   const classes = useStyles();
   
@@ -66,7 +58,7 @@ export default function Room({user}: RoomProps) {
     // @ts-ignore - fix this!
     setPlaylist((prev: PlaylistType): PlaylistType => {
       
-      //Remove the track in local state
+      // Remove the track in local state
       let playlistClone = { ...prev };
       const tracks = [ ...playlistClone.tracks ];
       tracks?.splice(index, 1);
@@ -88,7 +80,8 @@ export default function Room({user}: RoomProps) {
     
     // @ts-ignore - fix this!
     setPlaylist((prev: PlaylistType): PlaylistType => {
-      
+
+      // Add the track in local state
       const playlistClone = { ...prev };
       const tracks = [ ...playlistClone.tracks ];
       tracks.push(track);
@@ -105,52 +98,63 @@ export default function Room({user}: RoomProps) {
     });
   }, [])
 
+  // Gets the playlist object if the user is signed in and one exists
   useEffect(() => {
-    (async () => {
-      // Gets the playlist object if one exists
-      const res = await axios.get(`/api/room/${id}`);
-      const spotifyResponse: SpotifyApi.SinglePlaylistResponse = res.data.body;
+    if (!Cookie.get('userId')) {
+      history.push('/')
+    } else {
+      (async () => {
+        const res = await axios.get(`/api/room/${id}`);
+        const spotifyResponse: SpotifyApi.SinglePlaylistResponse = res.data.body;
+        
+        const playlist = !res.data.body ? null : {
+          name: spotifyResponse.name,
+          id: spotifyResponse.id,
+          owner: spotifyResponse.owner.id,
+          snapshotId: spotifyResponse.snapshot_id,
+          tracks: spotifyResponse.tracks.items.map(track => {
+            return {
+              artist: track.track.artists[0].name,
+              title: track.track.name,
+              id: track.track.id,
+              albumUrl: track.track.album.images[2].url
+            }
+          })
+        };
+  
+        setPlaylist(playlist);
 
-      // Initiate the websocket and add its listeners
-      const socket = io(ENDPOINT);
-      socket.emit('join', `${id}`);
-      
-      socket.on('delete', deleteTrack);
-      socket.on('add', addTrack);
-      
-      const playlist = !res.data.body ? null : {
-        name: spotifyResponse.name,
-        id: spotifyResponse.id,
-        owner: spotifyResponse.owner.id,
-        snapshotId: spotifyResponse.snapshot_id,
-        tracks: spotifyResponse.tracks.items.map(track => {
-          return {
-            artist: track.track.artists[0].name,
-            title: track.track.name,
-            id: track.track.id,
-            albumUrl: track.track.album.images[2].url
-          }
-        })
-      };
+      })();
+    }
+  }, [id, history])
 
-      setPlaylist(playlist);
-      setSocket(socket);
-      
-      return () => socket.disconnect();
-    })();
-  }, [id, deleteTrack, addTrack])
+  // Initiate the websocket and add its listeners
+  useEffect(() => {
 
+    const socket = io(ENDPOINT);
+    socket.emit('join', `${id}`, Cookie.get('userId'));
+    socket.on('peerJoin', (message: string) => console.log(message))
+    
+    socket.on('delete', deleteTrack);
+    socket.on('add', addTrack);
+
+    webSocket.current = socket;
+
+    return () => {
+      webSocket.current!.disconnect()
+    };
+  }, [id, addTrack, deleteTrack])
 
   const deleteTrackHandler = (index: number): void => {
     deleteTrack(index);
     // Delete the track for all peers in the same WS room
-    socket!.emit('delete', playlist!.id, index);
+    webSocket.current!.emit('delete', playlist!.id, index);
   };
 
   const addTrackHandler = (track: Track): void => {
     addTrack(track);
     // Send the new track to all peers in the same WS room
-    socket!.emit('add', playlist!.id, track);
+    webSocket.current!.emit('add', playlist!.id, track);
   };
 
   let content;

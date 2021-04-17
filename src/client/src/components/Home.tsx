@@ -1,3 +1,4 @@
+import Cookie from 'js-cookie';
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 
@@ -39,11 +40,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-type HomeProps = {
-  user: string
-}
-
-export default function Home({user}: HomeProps) {
+export default function Home() {
 
   const classes = useStyles();
 
@@ -57,7 +54,7 @@ export default function Home({user}: HomeProps) {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Typography>
       </div>
-      {user 
+      {Cookie.get('userId') 
         ? <div className={classes.buttons}>
             <CreateButton/>
             <JoinButton/>
