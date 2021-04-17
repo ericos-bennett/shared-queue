@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Cookies from "js-cookie";
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import Home from './Home';
 import Room from './Room';
 
@@ -23,6 +23,7 @@ export default function App() {
         <Route path='/room/:id'>
           <Room user={user}/>
         </Route>
+        <Redirect from="*" to="/"/>
       </Switch>
     </Router>
   )
