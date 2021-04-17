@@ -52,6 +52,7 @@ export default function Room({user}: RoomProps) {
 
   const [playlist, setPlaylist] = useState<PlaylistType | null>();
   const [socket, setSocket] = useState<SocketIOClient.Socket>();
+  const [searchTracks, setSearchTracks] = useState<Track[]>([]);
   const { id } = useParams<RoomParams>();
   const classes = useStyles();
   
@@ -126,7 +127,6 @@ export default function Room({user}: RoomProps) {
           }
         })
       };
-      console.log(playlist);
 
       setPlaylist(playlist);
       setSocket(socket);
@@ -154,15 +154,19 @@ export default function Room({user}: RoomProps) {
     return (
       <div className={classes.root}>
         <Container>
-          <h1 className={classes.title}>Welcome to room {playlist.name}!</h1>
+          <h1 className={classes.title}>{playlist.name}</h1>
           <Search
             addTrackHandler={addTrackHandler}
+            searchTracks={searchTracks}
+            setSearchTracks={setSearchTracks}
             accessToken={Cookie.get('accessToken')!}
           />
+          {searchTracks.length === 0 &&
           <Playlist
             tracks={playlist.tracks}
             deleteTrackHandler={deleteTrackHandler}
           />
+          }
         </Container>
         <Player
           tracks={playlist.tracks}

@@ -16,14 +16,15 @@ type Track = {
 }
 
 type searchProps = {
-  accessToken: string
+  searchTracks: Track[],
+  setSearchTracks: (tracks: Track[]) => void,
   addTrackHandler: (track: Track) => void,
+  accessToken: string
 }
 
-export default function Search({ addTrackHandler, accessToken }: searchProps) {
+export default function Search({ searchTracks, setSearchTracks, addTrackHandler, accessToken }: searchProps) {
 
   const [search, setSearch] = useState('');
-  const [searchTracks, setSearchTracks] = useState<Track[]>([]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -52,7 +53,7 @@ export default function Search({ addTrackHandler, accessToken }: searchProps) {
     return function() {
       cancel = true;
     };
-  }, [search, accessToken]);
+  }, [setSearchTracks, search, accessToken]);
 
   const chooseTrack = (track: Track): void => {
     setSearchTracks([])
