@@ -8,22 +8,22 @@ const spotifyApi = new SpotifyWebApi({
   clientId: process.env.REACT_APP_CLIENT_ID,
 })
 
-type trackType = {
+type Track = {
   artist: string,
   title: string,
-  uri: string,
+  id: string,
   albumUrl: string
 }
 
 type searchProps = {
   accessToken: string
-  addTrackHandler: (track: trackType) => void,
+  addTrackHandler: (track: Track) => void,
 }
 
 export default function Search({ addTrackHandler, accessToken }: searchProps) {
 
   const [search, setSearch] = useState('');
-  const [searchTracks, setSearchTracks] = useState<trackType[]>([]);
+  const [searchTracks, setSearchTracks] = useState<Track[]>([]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -42,7 +42,7 @@ export default function Search({ addTrackHandler, accessToken }: searchProps) {
           return {
             artist: track.artists[0].name,
             title: track.name,
-            uri: track.uri,
+            id: track.id,
             albumUrl: track.album.images[2].url
           }
         })
@@ -54,7 +54,7 @@ export default function Search({ addTrackHandler, accessToken }: searchProps) {
     };
   }, [search, accessToken]);
 
-  const chooseTrack = (track: trackType): void => {
+  const chooseTrack = (track: Track): void => {
     setSearchTracks([])
     addTrackHandler(track)
   };
@@ -70,7 +70,7 @@ export default function Search({ addTrackHandler, accessToken }: searchProps) {
         {searchTracks.map(track => (
           <TrackSearchResult
             track={track}
-            key={track.uri}
+            key={track.id}
             chooseTrack={chooseTrack}
           />
         ))}

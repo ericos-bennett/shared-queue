@@ -16,16 +16,16 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-type trackType = {
+type Track = {
   artist: string,
   title: string,
-  uri: string,
+  id: string,
   albumUrl: string
 }
 
 type TrackSearchResultProps = {
-  track: trackType,
-  chooseTrack: (track: trackType) => void
+  track: Track,
+  chooseTrack: (track: Track) => void
 }
 
 export default function TrackSearchResult({ track, chooseTrack }: TrackSearchResultProps) {
@@ -33,7 +33,7 @@ export default function TrackSearchResult({ track, chooseTrack }: TrackSearchRes
   const classes = useStyles();
 
   return (
-    <li className={classes.track} key={track.uri}>
+    <li className={classes.track} key={track.id}>
       <img
         src={track.albumUrl}
         alt={track.artist}

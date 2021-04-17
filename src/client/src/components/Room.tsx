@@ -33,19 +33,24 @@ type RoomParams = {
   id: string
 }
 
-type trackType = {
+type Track = {
   artist: string,
   title: string,
-  uri: string,
+  id: string,
   albumUrl: string
 }
 
-type PlaylistType = SpotifyApi.SinglePlaylistResponse | null | undefined;
-type SearchTracksType = SpotifyApi.TrackObjectFull[] | null | undefined;
+type PlaylistType = {
+  name: string,
+  id: string,
+  owner: string,
+  snapshotId: string,
+  tracks: Track[]
+}
 
 export default function Room({user}: RoomProps) {
 
-  const [playlist, setPlaylist] = useState<PlaylistType>();
+  const [playlist, setPlaylist] = useState<PlaylistType | null>();
   const [socket, setSocket] = useState<SocketIOClient.Socket>();
   const { id } = useParams<RoomParams>();
   const classes = useStyles();
@@ -53,19 +58,19 @@ export default function Room({user}: RoomProps) {
   const deleteTrack = useCallback((index: number) => {
 
     // @ts-ignore - fix this!
-    setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
+    setPlaylist((prev: PlaylistType): PlaylistType => {
       
       //Remove the track in local state
       let playlistClone = { ...prev };
-      const tracks = playlistClone.tracks.items;
+      const tracks = [ ...playlistClone.tracks ];
       tracks?.splice(index, 1);
-      playlistClone.tracks.items = tracks;
+      playlistClone.tracks = tracks;
       
       // If you are the playlist owner, also delete the track on Spotify's DB
-      if (Cookie.get('userId') === prev.owner.id) {
+      if (Cookie.get('userId') === prev.owner) {
         axios.delete(`${ENDPOINT}/api/room/${prev.id}/${index}`, 
-          { data: { snapshotId: prev.snapshot_id }}
-        ).then(res => playlistClone.snapshot_id = res.data.body.snapshot_id)
+          { data: { snapshotId: prev.snapshotId }}
+        ).then(res => playlistClone.snapshotId = res.data.body.snapshot_id)
         .catch(err => console.log(err));
       }
 
@@ -73,21 +78,20 @@ export default function Room({user}: RoomProps) {
     });
   }, []);
 
-  const addTrack = useCallback((track: trackType) => {
+  const addTrack = useCallback((track: Track): void => {
     
     // @ts-ignore - fix this!
-    setPlaylist((prev: SpotifyApi.SinglePlaylistResponse): SpotifyApi.SinglePlaylistResponse => {
+    setPlaylist((prev: PlaylistType): PlaylistType => {
       
       const playlistClone = { ...prev };
-      const tracks = playlistClone.tracks.items;
-      // @ts-ignore - fix this!
-      tracks.push({ track })
-      playlistClone.tracks.items = tracks;
+      const tracks = [ ...playlistClone.tracks ];
+      tracks.push(track);
+      playlistClone.tracks = tracks;
       
       // If you are the playlist owner, add the track to it on Spotify's DB
-      if (Cookie.get('userId') === prev.owner.id) {
-        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.uri })
-          .then(res => playlistClone.snapshot_id = res.data.body.snapshot_id)
+      if (Cookie.get('userId') === prev.owner) {
+        axios.put(`${ENDPOINT}/api/room/${prev.id}`, { trackId: track.id })
+          .then(res => playlistClone.snapshotId = res.data.body.snapshot_id)
           .catch(err => console.log(err));
       }
       
@@ -108,7 +112,23 @@ export default function Room({user}: RoomProps) {
       socket.on('delete', deleteTrack);
       socket.on('add', addTrack);
       
-      setPlaylist(spotifyResponse);
+      const playlist = !res.data.body ? null : {
+        name: spotifyResponse.name,
+        id: spotifyResponse.id,
+        owner: spotifyResponse.owner.id,
+        snapshotId: spotifyResponse.snapshot_id,
+        tracks: spotifyResponse.tracks.items.map(track => {
+          return {
+            artist: track.track.artists[0].name,
+            title: track.track.name,
+            id: track.track.id,
+            albumUrl: track.track.album.images[2].url
+          }
+        })
+      };
+      console.log(playlist);
+
+      setPlaylist(playlist);
       setSocket(socket);
       
       return () => socket.disconnect();
@@ -122,7 +142,7 @@ export default function Room({user}: RoomProps) {
     socket!.emit('delete', playlist!.id, index);
   };
 
-  const addTrackHandler = (track: trackType): void => {
+  const addTrackHandler = (track: Track): void => {
     addTrack(track);
     // Send the new track to all peers in the same WS room COME BACK TO REFACTOR!
     socket!.emit('add', playlist!.id, track);
@@ -140,12 +160,12 @@ export default function Room({user}: RoomProps) {
             accessToken={Cookie.get('accessToken')!}
           />
           <Playlist
-            tracks={playlist.tracks.items}
+            tracks={playlist.tracks}
             deleteTrackHandler={deleteTrackHandler}
           />
         </Container>
         <Player
-          tracks={playlist.tracks.items}
+          tracks={playlist.tracks}
           accessToken={Cookie.get('accessToken')!}
         />
       </div>

@@ -12,24 +12,27 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+type Track = {
+  artist: string,
+  title: string,
+  id: string,
+  albumUrl: string
+}
+
 type PlayerProps = {
   accessToken: string,
-  tracks: SpotifyApi.PlaylistTrackObject[],
+  tracks: Track[],
 }
 
 export default function Player({accessToken, tracks}: PlayerProps) {
 
   const classes = useStyles();
 
-  // useEffect(() => {
-
-  // }, [tracks])
-
   return(
     <div className={classes.root}>
       <SpotifyPlayer
         token={accessToken}
-        uris={tracks.map(track => `spotify:track:${track.track.id}`)}
+        uris={tracks.map(track => `spotify:track:${track.id}`)}
         showSaveIcon={true}
         name="Spotify Mix"
         styles={{

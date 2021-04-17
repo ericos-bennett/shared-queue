@@ -20,8 +20,15 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+type Track = {
+  artist: string,
+  title: string,
+  id: string,
+  albumUrl: string
+}
+
 type PlaylistProps = {
-  tracks: SpotifyApi.PlaylistTrackObject[],
+  tracks: Track[],
   deleteTrackHandler: (index: number) => void
 }
 
@@ -33,11 +40,11 @@ export default function Playlist({tracks, deleteTrackHandler}: PlaylistProps) {
     return (
         <li className={classes.track} key={i}>
           <img
-            src={track.track.album.images[2].url}
-            alt={track.track.album.name}
+            src={track.albumUrl}
+            alt={track.artist}
           ></img>
           <h4 className={classes.trackLabel}>
-            {track.track.artists[0].name} - {track.track.name}
+            {track.artist} - {track.title}
           </h4>
           <IconButton
             aria-label="delete"
