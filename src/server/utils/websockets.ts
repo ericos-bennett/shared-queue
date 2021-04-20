@@ -32,6 +32,11 @@ const initializeWs = (server: httpServer.Server): void => {
     socket.on('add', (playlistId: string, track: SpotifyApi.TrackObjectFull): void => {
       socket.to(playlistId).emit('add', track);
     });
+
+    // Toggle play hanlder
+    socket.on('togglePlay', (playlistId: string, isPlaying: boolean): void => {
+      socket.to(playlistId).emit('togglePlay', isPlaying);
+    });
   
   });
 

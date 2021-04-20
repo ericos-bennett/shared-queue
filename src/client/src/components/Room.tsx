@@ -102,6 +102,8 @@ export default function Room() {
         <Player
           tracks={playlist.tracks}
           accessToken={Cookie.get('accessToken')!}
+          webSocket={webSocket}
+          playlistId={playlist.id}
         />
       </div>
     )
