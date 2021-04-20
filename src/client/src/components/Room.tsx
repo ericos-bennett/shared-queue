@@ -3,7 +3,6 @@ import { useParams, useHistory } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-
 import Cookie from 'js-cookie';
 import io from "socket.io-client";
 
@@ -11,6 +10,7 @@ import Playlist from './Playlist';
 import Search from './Search';
 import Player from './Player';
 import usePlaylist from '../hooks/usePlaylist';
+import { Track } from '../../types'
 
 const ENDPOINT = 'http://localhost:3000'
 
@@ -28,13 +28,6 @@ const useStyles = makeStyles(() => ({
     textAlign: 'center',
   }
 }));
-
-type Track = {
-  artist: string,
-  title: string,
-  id: string,
-  albumUrl: string
-}
 
 export default function Room() {
 

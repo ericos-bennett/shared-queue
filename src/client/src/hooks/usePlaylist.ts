@@ -3,14 +3,9 @@ import { useParams, useHistory } from 'react-router';
 import Cookie from 'js-cookie';
 import axios from 'axios';
 
-const ENDPOINT = 'http://localhost:3000'
+import { Track } from '../../types'
 
-type Track = {
-  artist: string,
-  title: string,
-  id: string,
-  albumUrl: string
-}
+const ENDPOINT = 'http://localhost:3000'
 
 type PlaylistType = {
   name: string,

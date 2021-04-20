@@ -3,17 +3,11 @@ import SpotifyWebApi from "spotify-web-api-node"
 import SearchBar from "material-ui-search-bar";
 
 import TrackSearchResult from './TrackSearchResult';
+import { Track } from '../../types'
 
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.REACT_APP_CLIENT_ID,
 })
-
-type Track = {
-  artist: string,
-  title: string,
-  id: string,
-  albumUrl: string
-}
 
 type searchProps = {
   searchTracks: Track[],

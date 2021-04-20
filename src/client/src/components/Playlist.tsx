@@ -2,6 +2,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import { Track } from '../../types'
+
 const useStyles = makeStyles(() => ({
   root: {
     padding: '0',
@@ -19,13 +21,6 @@ const useStyles = makeStyles(() => ({
     marginLeft: '1rem'
   }
 }));
-
-type Track = {
-  artist: string,
-  title: string,
-  id: string,
-  albumUrl: string
-}
 
 type PlaylistProps = {
   tracks: Track[],

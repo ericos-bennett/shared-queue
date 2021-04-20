@@ -2,6 +2,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 
+import { Track } from '../../types'
+
 const useStyles = makeStyles(() => ({
   track: {
     display: 'flex',
@@ -15,13 +17,6 @@ const useStyles = makeStyles(() => ({
     marginLeft: '1rem'
   }
 }));
-
-type Track = {
-  artist: string,
-  title: string,
-  id: string,
-  albumUrl: string
-}
 
 type TrackSearchResultProps = {
   track: Track,
