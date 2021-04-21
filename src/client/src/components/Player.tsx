@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import SpotifyPlayer from 'react-spotify-web-playback';
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -26,29 +26,57 @@ type PlayerProps = {
 export default function Player({accessToken, tracks, webSocket, playlistId}: PlayerProps) {
 
   const [play, setPlay] = useState(false)
+  const [currentTrack, setCurrentTrack] = useState<string | undefined>();
   const classes = useStyles();
   
-  const togglePlay = useCallback((isPlaying: boolean): void => {
-    // Toggles play prop for SpotifyPlayer
-    setPlay(isPlaying);
-  }, []);
+  const togglePlay = (isPlaying: boolean): void => setPlay(isPlaying);
+  const changeTrack = (trackId: string): void => setCurrentTrack(trackId);
   
   useEffect(() => {
+    if (tracks.length > 0 && !currentTrack) {
+      setCurrentTrack(tracks[0].id)
+    }
+  }, [tracks, currentTrack])
+
+  useEffect(() => {
     webSocket.current.on('togglePlay', togglePlay);
-  }, [webSocket, togglePlay])
+    webSocket.current.on('changeTrack', changeTrack);
+  }, [webSocket])
+
+  const getCurrentTrackIndex = (): number => {
+    let currentTrackIndex = -1;
+    for (let i = 0; i < tracks.length; i++) {
+      if (tracks[i].id === currentTrack) currentTrackIndex = i;
+    }
+    return currentTrackIndex;
+  }
 
   const togglePlayHandler = (): void => {
-    // Calls togglePlay
     togglePlay(!play);
-    // Send togglePlay message via WS
     webSocket.current!.emit('togglePlay', playlistId, !play);
   };
+
+  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
+    let currentTrackIndex = getCurrentTrackIndex();
+    const newTrackIndex = direction === 'prev' ? currentTrackIndex - 1 : currentTrackIndex + 1;
+    if (tracks[newTrackIndex]) {
+      const trackId = tracks[newTrackIndex].id
+      changeTrack(trackId);
+      webSocket.current!.emit('changeTrack', playlistId, trackId)
+    }
+  }
+
+  const getPositionInPlaylist = (): 'start' | 'middle' | 'end' => {
+    if (getCurrentTrackIndex() === 0) return 'start';
+    if (getCurrentTrackIndex() === tracks.length - 1) return 'end';
+    return 'middle';
+  }
 
   return(
     <div className={classes.root}>
       <SpotifyPlayer
         token={accessToken}
-        uris={tracks.map(track => `spotify:track:${track.id}`)}
+        uris={`spotify:track:${currentTrack}`}
         showSaveIcon={true}
         name="Spotify Mix"
         callback={state => setPlay(state.isPlaying)}
@@ -59,6 +87,8 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
       />
       <PlayerControls 
         togglePlayHandler={togglePlayHandler}
+        changeTrackHandler={changeTrackHandler}
+        positionInPlaylist = {getPositionInPlaylist()}
       />
     </div>
   )

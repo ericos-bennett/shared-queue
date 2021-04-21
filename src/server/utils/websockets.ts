@@ -17,11 +17,6 @@ const initializeWs = (server: httpServer.Server): void => {
       console.log('Rooms: ', io.sockets.adapter.rooms);
       socket.to(roomId).emit('peerJoin', `${username} joined the room!`);
     });
-
-    // Relay Playback Details handler
-    // socket.on('playbackDetails', (roomId: string, details: string) => {
-    //   console.log(details);
-    // });
   
     // Delete Track handler
     socket.on('delete', (playlistId: string, index: number): void => {
@@ -36,6 +31,11 @@ const initializeWs = (server: httpServer.Server): void => {
     // Toggle play hanlder
     socket.on('togglePlay', (playlistId: string, isPlaying: boolean): void => {
       socket.to(playlistId).emit('togglePlay', isPlaying);
+    });
+
+    // Change track hanlder
+    socket.on('changeTrack', (playlistId: string, trackId: string): void => {
+      socket.to(playlistId).emit('changeTrack', trackId);
     });
   
   });
