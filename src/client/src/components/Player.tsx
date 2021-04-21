@@ -66,7 +66,8 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
     }
   }
 
-  const getPositionInPlaylist = (): 'start' | 'middle' | 'end' => {
+  const getPositionInPlaylist = (): 'only' | 'start' | 'middle' | 'end' => {
+    if (getCurrentTrackIndex() === 0 && tracks.length === 1) return 'only';
     if (getCurrentTrackIndex() === 0) return 'start';
     if (getCurrentTrackIndex() === tracks.length - 1) return 'end';
     return 'middle';
@@ -89,6 +90,7 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
         togglePlayHandler={togglePlayHandler}
         changeTrackHandler={changeTrackHandler}
         positionInPlaylist = {getPositionInPlaylist()}
+        isPlaying={play}
       />
     </div>
   )
