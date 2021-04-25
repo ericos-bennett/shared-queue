@@ -44,11 +44,10 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
   }, [webSocket])
 
   const getCurrentTrackIndex = (): number => {
-    let currentTrackIndex = -1;
     for (let i = 0; i < tracks.length; i++) {
-      if (tracks[i].id === currentTrack) currentTrackIndex = i;
+      if (tracks[i].id === currentTrack) return i;
     }
-    return currentTrackIndex;
+    return -1;
   }
 
   const togglePlayHandler = (): void => {
@@ -66,7 +65,8 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
     }
   }
 
-  const getPositionInPlaylist = (): 'only' | 'start' | 'middle' | 'end' => {
+  const getPositionInPlaylist = (): 'only' | 'start' | 'middle' | 'end' | 'deleted' => {
+    if (getCurrentTrackIndex() === -1) return 'deleted';
     if (getCurrentTrackIndex() === 0 && tracks.length === 1) return 'only';
     if (getCurrentTrackIndex() === 0) return 'start';
     if (getCurrentTrackIndex() === tracks.length - 1) return 'end';

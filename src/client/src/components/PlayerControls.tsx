@@ -34,11 +34,16 @@ const useStyles = makeStyles(() => ({
 type PlayerControlsProps = {
   togglePlayHandler: () => void
   changeTrackHandler: (direction: 'prev' | 'next') => void
-  positionInPlaylist: 'only' | 'start' | 'middle' | 'end'
+  positionInPlaylist: 'only' | 'start' | 'middle' | 'end' | 'deleted'
   isPlaying: boolean
 }
 
-export default function PlayerControls({ togglePlayHandler, changeTrackHandler, positionInPlaylist, isPlaying }: PlayerControlsProps) {
+export default function PlayerControls({ 
+  togglePlayHandler, 
+  changeTrackHandler, 
+  positionInPlaylist, 
+  isPlaying 
+}: PlayerControlsProps) {
 
   const classes = useStyles();
 
@@ -80,7 +85,7 @@ export default function PlayerControls({ togglePlayHandler, changeTrackHandler, 
           </svg>
         </button>
       }
-      {positionInPlaylist === 'middle' || positionInPlaylist === 'start' ?
+      {positionInPlaylist === 'middle' || positionInPlaylist === 'start' || positionInPlaylist === 'deleted' ?
         <button
           type="button"
           aria-label="Next Track"

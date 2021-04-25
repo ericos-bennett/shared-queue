@@ -9,9 +9,13 @@
 - Async Await
 
 ### Next Steps
-- User can pause + start playback from app
-- Other users pause + stop playback from app
+- Add copy to homepage
+- Restyle homepage
+- Restyle room page
+- Sync up track, isPlayed, and progressMs for new user when they join
+- Set up on Heroku, run more tests in production (deploy directly from GitHub master)
 
 ### Bugs
 - If the authorized user has more than one session tab open, sends multiple spotify API requests
-- When playlist changes, playback starts at 0ms of first track
+- Clicking next/prev while paused doesn't change image or playback progress bar
+- Deleting the playing track should move playback to next track in playlist
