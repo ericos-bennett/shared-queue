@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import SpotifyPlayer from 'react-spotify-web-playback';
 import { makeStyles } from "@material-ui/core/styles";
+import Button from '@material-ui/core/Button';
 
 import PlayerControls from './PlayerControls';
 import { Track } from '../../types';
@@ -23,8 +24,15 @@ type PlayerProps = {
   playlistId: string
 }
 
+type PlaybackStatus = {
+  currentTrack: string | undefined,
+  isPlaying: boolean,
+  progressMs: number
+}
+
 export default function Player({accessToken, tracks, webSocket, playlistId}: PlayerProps) {
 
+  const [active, setActive] = useState(false);
   const [play, setPlay] = useState(false)
   const [currentTrack, setCurrentTrack] = useState<string | undefined>();
   const classes = useStyles();
@@ -73,14 +81,42 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
     return 'middle';
   }
 
+  const spotifyCallback = (state: any) => {
+    setPlay(state.isPlaying);
+    if (!active && state.type === 'player_update') setActive(true);
+    console.log(state);
+  }
+
+  const getTrackProgress = (): number => {
+    if (active) {
+      const slider = document.querySelector('[aria-label="slider handle"]');
+      const percentProgress = +slider!.getAttribute("aria-valuenow")!;
+      const durationMs = tracks.filter(track => track.id === currentTrack)[0].durationMs;
+      const progressMs = Math.round(durationMs * percentProgress / 100)
+      return progressMs;
+    }
+    return 0;
+  }
+
+  const getPlaybackStatus = (): PlaybackStatus => {
+    const playbackStatus = {
+      currentTrack,
+      isPlaying: play,
+      progressMs: getTrackProgress()
+    }
+    console.log(playbackStatus);
+    return playbackStatus;
+  }
+
   return(
     <div className={classes.root}>
+      <Button onClick={getPlaybackStatus}>LOG</Button>
       <SpotifyPlayer
         token={accessToken}
         uris={`spotify:track:${currentTrack}`}
         showSaveIcon={true}
         name="Spotify Mix"
-        callback={state => setPlay(state.isPlaying)}
+        callback={spotifyCallback}
         play={play}
         styles={{
           height: 80,

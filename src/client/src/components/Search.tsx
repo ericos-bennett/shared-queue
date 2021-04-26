@@ -38,7 +38,8 @@ export default function Search({ searchTracks, setSearchTracks, addTrackHandler,
             artist: track.artists[0].name,
             title: track.name,
             id: track.id,
-            albumUrl: track.album.images[2].url
+            albumUrl: track.album.images[2].url,
+            durationMs: track.duration_ms
           }
         })
       )

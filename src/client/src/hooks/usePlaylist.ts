@@ -86,7 +86,8 @@ export default function usePlaylist() {
               artist: track.track.artists[0].name,
               title: track.track.name,
               id: track.track.id,
-              albumUrl: track.track.album.images[2].url
+              albumUrl: track.track.album.images[2].url,
+              durationMs: track.track.duration_ms
             }
           })
         };
