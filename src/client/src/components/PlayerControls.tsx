@@ -1,5 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 
+import { PlayerControlsProps } from '../../types';
+
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -31,18 +33,11 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-type PlayerControlsProps = {
-  togglePlayHandler: () => void
-  changeTrackHandler: (direction: 'prev' | 'next') => void
-  positionInPlaylist: 'only' | 'start' | 'middle' | 'end' | 'deleted'
-  isPlaying: boolean
-}
-
 export default function PlayerControls({ 
   togglePlayHandler, 
   changeTrackHandler, 
   positionInPlaylist, 
-  isPlaying 
+  play 
 }: PlayerControlsProps) {
 
   const classes = useStyles();
@@ -61,7 +56,7 @@ export default function PlayerControls({
           </svg>
         </button>
       : <div style={{width:'16px'}}></div>}
-      {!isPlaying &&
+      {!play &&
         <button
           type="button"
           aria-label="Play"
@@ -73,7 +68,7 @@ export default function PlayerControls({
           </svg>
         </button>
       }
-      {isPlaying &&
+      {play &&
         <button
           type="button"
           aria-label="Pause"

@@ -19,3 +19,4 @@
 - If the authorized user has more than one session tab open, sends multiple spotify API requests
 - Clicking next/prev while paused doesn't change image or playback progress bar
 - Deleting the playing track should move playback to next track in playlist
+- When joining a playing room on incognito / Lauren's acct, always pauses right away after playing

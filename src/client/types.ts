@@ -6,15 +6,32 @@ export type Track = {
   durationMs: number
 }
 
+export type PlaylistType = {
+  name: string,
+  id: string,
+  owner: string,
+  snapshotId: string,
+  tracks: Track[]
+}
+
 export type PlayerProps = {
   accessToken: string,
   tracks: Track[],
-  webSocket: any,
+  socket: any,
   playlistId: string
 }
 
 export type PlaybackStatus = {
   currentTrack: string | undefined,
-  isPlaying: boolean,
+  play: boolean,
   progressMs: number
 }
+
+export type PlayerControlsProps = {
+  togglePlayHandler: () => void
+  changeTrackHandler: (direction: 'prev' | 'next') => void
+  positionInPlaylist: PlaylistPositions
+  play: boolean
+}
+
+export type PlaylistPositions = 'only' | 'start' | 'middle' | 'end' | 'deleted'

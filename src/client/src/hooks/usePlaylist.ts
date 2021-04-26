@@ -3,17 +3,9 @@ import { useParams, useHistory } from 'react-router';
 import Cookie from 'js-cookie';
 import axios from 'axios';
 
-import { Track } from '../../types'
+import { Track, PlaylistType } from '../../types'
 
 const ENDPOINT = 'http://localhost:3000'
-
-type PlaylistType = {
-  name: string,
-  id: string,
-  owner: string,
-  snapshotId: string,
-  tracks: Track[]
-}
 
 export default function usePlaylist() {
 

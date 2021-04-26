@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -34,7 +34,6 @@ export default function Room() {
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
   const webSocket = useRef<SocketIOClient.Socket | null>(null);
   const { playlist, addTrack, deleteTrack } = usePlaylist();
-  const { id } = useParams<{id: string}>();
   const history = useHistory();
   const classes = useStyles();
   
@@ -42,19 +41,16 @@ export default function Room() {
   useEffect(() => {
 
     const socket = io(ENDPOINT);
-    socket.on('playbackStatus', (playbackStatus: any) => console.log(playbackStatus));
-    socket.emit('join', `${id}`, Cookie.get('userId'));
-    
+
     socket.on('delete', deleteTrack);
     socket.on('add', addTrack);
-
 
     webSocket.current = socket;
 
     return () => {
       webSocket.current!.disconnect()
     };
-  }, [id, addTrack, deleteTrack])
+  }, [addTrack, deleteTrack])
 
   const deleteTrackHandler = (index: number): void => {
     deleteTrack(index);
@@ -103,7 +99,7 @@ export default function Room() {
         <Player
           tracks={playlist.tracks}
           accessToken={Cookie.get('accessToken')!}
-          webSocket={webSocket}
+          socket={webSocket.current}
           playlistId={playlist.id}
         />
       </div>

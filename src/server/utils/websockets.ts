@@ -20,6 +20,7 @@ const initializeWs = (server: httpServer.Server): void => {
 
     // Playback Status Forwarding
     socket.on('playbackStatus', (playlistId: string, playbackStatus) => {
+      console.log(playbackStatus)
       socket.to(playlistId).emit('playbackStatus', playbackStatus);
     })
   
@@ -34,8 +35,8 @@ const initializeWs = (server: httpServer.Server): void => {
     });
 
     // Toggle play hanlder
-    socket.on('togglePlay', (playlistId: string, isPlaying: boolean): void => {
-      socket.to(playlistId).emit('togglePlay', isPlaying);
+    socket.on('togglePlay', (playlistId: string, play: boolean): void => {
+      socket.to(playlistId).emit('togglePlay', play);
     });
 
     // Change track hanlder
