@@ -42,11 +42,12 @@ export default function Room() {
   useEffect(() => {
 
     const socket = io(ENDPOINT);
+    socket.on('playbackStatus', (playbackStatus: any) => console.log(playbackStatus));
     socket.emit('join', `${id}`, Cookie.get('userId'));
-    socket.on('peerJoin', (message: string) => console.log(message))
     
     socket.on('delete', deleteTrack);
     socket.on('add', addTrack);
+
 
     webSocket.current = socket;
 

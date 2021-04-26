@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import SpotifyPlayer from 'react-spotify-web-playback';
 import { makeStyles } from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';
 
 import PlayerControls from './PlayerControls';
-import { Track } from '../../types';
+import { PlayerProps, PlaybackStatus } from '../../types';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -17,19 +17,6 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-type PlayerProps = {
-  accessToken: string,
-  tracks: Track[],
-  webSocket: any,
-  playlistId: string
-}
-
-type PlaybackStatus = {
-  currentTrack: string | undefined,
-  isPlaying: boolean,
-  progressMs: number
-}
-
 export default function Player({accessToken, tracks, webSocket, playlistId}: PlayerProps) {
 
   const [active, setActive] = useState(false);
@@ -39,55 +26,8 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
   
   const togglePlay = (isPlaying: boolean): void => setPlay(isPlaying);
   const changeTrack = (trackId: string): void => setCurrentTrack(trackId);
-  
-  useEffect(() => {
-    if (tracks.length > 0 && !currentTrack) {
-      setCurrentTrack(tracks[0].id)
-    }
-  }, [tracks, currentTrack])
 
-  useEffect(() => {
-    webSocket.current.on('togglePlay', togglePlay);
-    webSocket.current.on('changeTrack', changeTrack);
-  }, [webSocket])
-
-  const getCurrentTrackIndex = (): number => {
-    for (let i = 0; i < tracks.length; i++) {
-      if (tracks[i].id === currentTrack) return i;
-    }
-    return -1;
-  }
-
-  const togglePlayHandler = (): void => {
-    togglePlay(!play);
-    webSocket.current!.emit('togglePlay', playlistId, !play);
-  };
-
-  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
-    let currentTrackIndex = getCurrentTrackIndex();
-    const newTrackIndex = direction === 'prev' ? currentTrackIndex - 1 : currentTrackIndex + 1;
-    if (tracks[newTrackIndex]) {
-      const trackId = tracks[newTrackIndex].id
-      changeTrack(trackId);
-      webSocket.current!.emit('changeTrack', playlistId, trackId)
-    }
-  }
-
-  const getPositionInPlaylist = (): 'only' | 'start' | 'middle' | 'end' | 'deleted' => {
-    if (getCurrentTrackIndex() === -1) return 'deleted';
-    if (getCurrentTrackIndex() === 0 && tracks.length === 1) return 'only';
-    if (getCurrentTrackIndex() === 0) return 'start';
-    if (getCurrentTrackIndex() === tracks.length - 1) return 'end';
-    return 'middle';
-  }
-
-  const spotifyCallback = (state: any) => {
-    setPlay(state.isPlaying);
-    if (!active && state.type === 'player_update') setActive(true);
-    console.log(state);
-  }
-
-  const getTrackProgress = (): number => {
+  const getTrackProgress = useCallback((): number => {
     if (active) {
       const slider = document.querySelector('[aria-label="slider handle"]');
       const percentProgress = +slider!.getAttribute("aria-valuenow")!;
@@ -96,17 +36,73 @@ export default function Player({accessToken, tracks, webSocket, playlistId}: Pla
       return progressMs;
     }
     return 0;
-  }
+  }, [active, currentTrack, tracks]);
 
-  const getPlaybackStatus = (): PlaybackStatus => {
+  const getPlaybackStatus = useCallback((): PlaybackStatus => {
     const playbackStatus = {
       currentTrack,
       isPlaying: play,
       progressMs: getTrackProgress()
-    }
-    console.log(playbackStatus);
+    };
     return playbackStatus;
-  }
+  }, [currentTrack, getTrackProgress, play]);
+  
+  useEffect(() => {
+    if (tracks.length > 0 && !currentTrack) {
+      setCurrentTrack(tracks[0].id);
+    }
+  }, [tracks, currentTrack]);
+
+  useEffect(() => {
+    const socket = webSocket.current;
+    socket.on('togglePlay', togglePlay);
+    socket.on('changeTrack', changeTrack);
+    socket.on('peerJoin', (username: string) => {
+      console.log(`${username} joined the room!`);
+      socket.emit('playbackStatus', playlistId, getPlaybackStatus());
+    });
+
+    return () => {
+      socket.off('togglePlay');
+      socket.off('changeTrack');
+      socket.off('peerJoin');
+    }
+  }, [webSocket, playlistId, getPlaybackStatus]);
+
+  const getCurrentTrackIndex = (): number => {
+    for (let i = 0; i < tracks.length; i++) {
+      if (tracks[i].id === currentTrack) return i;
+    }
+    return -1;
+  };
+
+  const togglePlayHandler = (): void => {
+    togglePlay(!play);
+    webSocket.current.emit('togglePlay', playlistId, !play);
+  };
+
+  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
+    let currentTrackIndex = getCurrentTrackIndex();
+    const newTrackIndex = direction === 'prev' ? currentTrackIndex - 1 : currentTrackIndex + 1;
+    if (tracks[newTrackIndex]) {
+      const trackId = tracks[newTrackIndex].id
+      changeTrack(trackId);
+      webSocket.current.emit('changeTrack', playlistId, trackId)
+    }
+  };
+
+  const getPositionInPlaylist = (): 'only' | 'start' | 'middle' | 'end' | 'deleted' => {
+    if (getCurrentTrackIndex() === -1) return 'deleted';
+    if (getCurrentTrackIndex() === 0 && tracks.length === 1) return 'only';
+    if (getCurrentTrackIndex() === 0) return 'start';
+    if (getCurrentTrackIndex() === tracks.length - 1) return 'end';
+    return 'middle';
+  };
+
+  const spotifyCallback = (state: any) => {
+    setPlay(state.isPlaying);
+    if (!active && state.type === 'player_update') setActive(true);
+  };
 
   return(
     <div className={classes.root}>

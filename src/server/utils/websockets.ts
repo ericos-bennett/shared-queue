@@ -11,12 +11,17 @@ const initializeWs = (server: httpServer.Server): void => {
     console.log('Socket connected:', socket.id);
   
     // Join Room hanlder
-    socket.on('join', (roomId: string, username: string): void => {
-      socket.join(roomId);
-      console.log(`Socket joined room: ${roomId}`);
+    socket.on('join', (playlistId: string, username: string): void => {
+      socket.join(playlistId);
+      console.log(`Socket joined room: ${playlistId}`);
       console.log('Rooms: ', io.sockets.adapter.rooms);
-      socket.to(roomId).emit('peerJoin', `${username} joined the room!`);
+      socket.to(playlistId).emit('peerJoin', username);
     });
+
+    // Playback Status Forwarding
+    socket.on('playbackStatus', (playlistId: string, playbackStatus) => {
+      socket.to(playlistId).emit('playbackStatus', playbackStatus);
+    })
   
     // Delete Track handler
     socket.on('delete', (playlistId: string, index: number): void => {
