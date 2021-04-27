@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import SpotifyPlayer from 'react-spotify-web-playback';
 import { makeStyles } from "@material-ui/core/styles";
+import SpotifyWebApi from 'spotify-web-api-node';
 import Cookie from 'js-cookie';
 
 import PlayerControls from './PlayerControls';
@@ -26,16 +27,37 @@ export default function Player({accessToken, tracks, socket, playlistId}: Player
   
   const togglePlay = (play: boolean): void => setPlay(!play);
   const changeTrack = (trackId: string): void => setCurrentTrack(trackId);
+  
+  const seek = useCallback((progressMs: number, play: boolean): void => {
 
-  const setPlayback = (playbackStatus: PlaybackStatus): void => {
-      console.log('ready!')
-      console.log(playbackStatus)
+    const spotifyApi = new SpotifyWebApi({});
+    spotifyApi.setAccessToken(accessToken);
+
+    spotifyApi.seek(progressMs)
+      .then(function() {
+        if (!play) {
+        }
+        console.log('Seek to ' + progressMs);
+      }, function(err) {
+        console.log(err);
+      });
+
+  }, [accessToken]);
+
+  const setPlayback = useCallback((playbackStatus: PlaybackStatus): void => {
+      console.log('Received peer playback', playbackStatus)
       setCurrentTrack(playbackStatus.currentTrack);
-      if (playbackStatus.play) setPlay(true);
-  };
+      setTimeout(() => {
+        setPlay(playbackStatus.play);
+        if (playbackStatus.progressMs) {
+          seek(playbackStatus.progressMs, playbackStatus.play)
+        }
+      }, 1000)
+  }, [seek]);
+
 
   const getTrackProgress = useCallback((): number => {
-    if (ready) {
+    if (currentTrack && ready) {
       const slider = document.querySelector('[aria-label="slider handle"]');
       const percentProgress = +slider!.getAttribute("aria-valuenow")!;
       const durationMs = tracks.filter(track => track.id === currentTrack)[0].durationMs;
@@ -74,7 +96,7 @@ export default function Player({accessToken, tracks, socket, playlistId}: Player
       socket.off('changeTrack');
       socket.off('peerJoin');
     }
-  }, [socket, playlistId, getPlaybackStatus]);
+  }, [socket, playlistId, getPlaybackStatus, setPlayback]);
 
   useEffect(() => {
     if (ready) socket.emit('join', playlistId, Cookie.get('userId'));
@@ -111,19 +133,18 @@ export default function Player({accessToken, tracks, socket, playlistId}: Player
   };
 
   const spotifyCallback = (state: any) => {
-    // setPlay(state.play);
     if (!ready && state.status === 'READY') setReady(true);
     if (play && state.type === 'track_update') setPlay(true);
-
     console.log(state);
   };
 
   return(
     <div className={classes.root}>
       <SpotifyPlayer
+        autoPlay
         token={accessToken}
-        uris={`spotify:track:${currentTrack}`}
-        showSaveIcon={true}
+        uris={currentTrack && `spotify:track:${currentTrack}`}
+        showSaveIcon
         name="Spotify Mix"
         callback={spotifyCallback}
         play={play}
