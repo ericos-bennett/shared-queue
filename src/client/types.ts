@@ -22,7 +22,7 @@ export type PlayerProps = {
 }
 
 export type PlaybackStatus = {
-  currentTrack: string | undefined,
+  currentTrack: string,
   play: boolean,
   progressMs: number
 }
