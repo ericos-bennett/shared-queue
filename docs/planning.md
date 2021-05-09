@@ -12,6 +12,8 @@
 ### Next Steps
 
 - Connect directly to Spotify SDK for playback control
+- Express server handles Auth, WS connections
+- React app handles all Spotify API requests
 - User can play and pause a track, playing through the browser
 - User can go to next prev/track in playlist
 - Once SDK is ready, user asks peers for playback state
