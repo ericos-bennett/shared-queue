@@ -34,4 +34,4 @@ export type PlayerControlsProps = {
   play: boolean
 }
 
-export type PlaylistPositions = 'only' | 'start' | 'middle' | 'end' | 'deleted'
+export type PlaylistPositions = 'empty' | 'only' | 'start' | 'middle' | 'end' | 'deleted'
