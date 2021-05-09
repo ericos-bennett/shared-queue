@@ -1,45 +1,43 @@
 import { useEffect, useState, useRef } from 'react';
 import { useHistory } from 'react-router';
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Cookie from 'js-cookie';
-import io from "socket.io-client";
+import io from 'socket.io-client';
 
 import Playlist from './Playlist';
 import Search from './Search';
 import Player from './Player';
 import usePlaylist from '../hooks/usePlaylist';
-import { Track } from '../../types'
+import { Track } from '../../types';
 
-const ENDPOINT = 'http://localhost:3000'
+const ENDPOINT = 'http://localhost:3000';
 
 const useStyles = makeStyles(() => ({
   root: {
     width: '100vw',
     height: '100vh',
     overflow: 'auto',
-    backgroundColor: '#CDCDCD'
+    backgroundColor: '#CDCDCD',
   },
   title: {
-    textAlign: 'center'
+    textAlign: 'center',
   },
   invalidId: {
     textAlign: 'center',
-  }
+  },
 }));
 
 export default function Room() {
-
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
   const webSocket = useRef<SocketIOClient.Socket | null>(null);
   const { playlist, addTrack, deleteTrack } = usePlaylist();
   const history = useHistory();
   const classes = useStyles();
-  
+
   // Initiate the websocket and add its listeners
   useEffect(() => {
-
     const socket = io(ENDPOINT);
 
     socket.on('delete', deleteTrack);
@@ -48,9 +46,9 @@ export default function Room() {
     webSocket.current = socket;
 
     return () => {
-      webSocket.current!.disconnect()
+      webSocket.current!.disconnect();
     };
-  }, [addTrack, deleteTrack])
+  }, [addTrack, deleteTrack]);
 
   const deleteTrackHandler = (index: number): void => {
     deleteTrack(index);
@@ -70,14 +68,11 @@ export default function Room() {
       <div className={classes.invalidId}>
         <h1>404</h1>
         <p>Room ID doesn't match any Spotify playlists</p>
-        <Button
-          variant="contained"
-          onClick={() => history.push('/')}
-        >
+        <Button variant="contained" onClick={() => history.push('/')}>
           Take me Home
         </Button>
       </div>
-    )
+    );
   } else if (playlist) {
     content = (
       <div>
@@ -89,12 +84,9 @@ export default function Room() {
             setSearchTracks={setSearchTracks}
             accessToken={Cookie.get('accessToken')!}
           />
-          {searchTracks.length === 0 &&
-          <Playlist
-            tracks={playlist.tracks}
-            deleteTrackHandler={deleteTrackHandler}
-          />
-          }
+          {searchTracks.length === 0 && (
+            <Playlist tracks={playlist.tracks} deleteTrackHandler={deleteTrackHandler} />
+          )}
         </Container>
         <Player
           tracks={playlist.tracks}
@@ -103,9 +95,8 @@ export default function Room() {
           playlistId={playlist.id}
         />
       </div>
-    )
+    );
   }
 
-  return <div className={classes.root}>{content}</div>
-
-};
+  return <div className={classes.root}>{content}</div>;
+}

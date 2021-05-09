@@ -12,8 +12,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function CreateButton() {
   const [open, setOpen] = useState(false);
-  const [textValue, setTextValue] = useState('');  
-  
+  const [textValue, setTextValue] = useState('');
+
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -22,7 +22,7 @@ export default function CreateButton() {
   const createRoom = async (name: string) => {
     const res = await axios.post('/api/room', { name });
     history.push(`/room/${res.data}`);
-  }
+  };
 
   return (
     <div>
@@ -33,7 +33,8 @@ export default function CreateButton() {
         <DialogTitle id="form-dialog-title">Create a Room</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua.
           </DialogContentText>
           <TextField
             autoFocus
@@ -57,5 +58,4 @@ export default function CreateButton() {
       </Dialog>
     </div>
   );
-
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import SpotifyPlayer from 'react-spotify-web-playback';
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
 import PlayerControls from './PlayerControls';
-import { getCurrentTrackIndex, getPositionInPlaylist } from '../helpers'
+import { getCurrentTrackIndex, getPositionInPlaylist } from '../helpers';
 import { PlayerProps } from '../../types';
 
 const useStyles = makeStyles(() => ({
@@ -12,23 +12,22 @@ const useStyles = makeStyles(() => ({
     bottom: '0',
     width: '100%',
     '& button': {
-      outline: 'none'
-    }
-  }
+      outline: 'none',
+    },
+  },
 }));
 
-export default function Player({tracks, accessToken, socket, playlistId}: PlayerProps) {
-
+export default function Player({ tracks, accessToken, socket, playlistId }: PlayerProps) {
   const playlist = useRef<string>(playlistId);
   const webSocket = useRef<any>(socket);
-  
-  const [play, setPlay] = useState<boolean>(false)
+
+  const [play, setPlay] = useState<boolean>(false);
   const [currentTrack, setCurrentTrack] = useState<string>('');
   const classes = useStyles();
-  
+
   const togglePlay = (play: boolean): void => setPlay(!play);
   const changeTrack = (trackId: string): void => setCurrentTrack(trackId);
-  
+
   // If there is no current track, set it to the first in the playlist
   useEffect(() => {
     if (tracks.length > 0 && !currentTrack) {
@@ -52,14 +51,14 @@ export default function Player({tracks, accessToken, socket, playlistId}: Player
       let newTrackIndex = getCurrentTrackIndex(tracks, currentTrack) + 1;
       const trackId = tracks[newTrackIndex].id;
       changeTrack(trackId);
-      setPlay(true)
-      setPlay(false)
-      setPlay(true)
+      setPlay(true);
+      setPlay(false);
+      setPlay(true);
       // setTimeout(() => {
-        
+
       // }, 500);
     }
-  }
+  };
 
   const changeTrackHandler = (direction: 'prev' | 'next'): void => {
     let currentTrackIndex = getCurrentTrackIndex(tracks, currentTrack);
@@ -67,7 +66,7 @@ export default function Player({tracks, accessToken, socket, playlistId}: Player
     const trackId = tracks[newTrackIndex].id;
 
     changeTrack(trackId);
-    webSocket.current.emit('changeTrack', playlist.current, trackId)
+    webSocket.current.emit('changeTrack', playlist.current, trackId);
   };
 
   const spotifyCallback = (state: any) => {
@@ -79,7 +78,7 @@ export default function Player({tracks, accessToken, socket, playlistId}: Player
     console.log(state);
   };
 
-  return(
+  return (
     <div className={classes.root}>
       <SpotifyPlayer
         token={accessToken}
@@ -92,13 +91,12 @@ export default function Player({tracks, accessToken, socket, playlistId}: Player
           height: 80,
         }}
       />
-      <PlayerControls 
+      <PlayerControls
         togglePlayHandler={togglePlayHandler}
         changeTrackHandler={changeTrackHandler}
-        positionInPlaylist = {getPositionInPlaylist(tracks, currentTrack)}
+        positionInPlaylist={getPositionInPlaylist(tracks, currentTrack)}
         play={play}
       />
     </div>
-  )
-
-};
+  );
+}

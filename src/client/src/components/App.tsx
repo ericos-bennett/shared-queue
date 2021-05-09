@@ -3,19 +3,17 @@ import Home from './Home';
 import Room from './Room';
 
 export default function App() {
-  
   return (
     <Router>
       <Switch>
-        <Route path='/' exact>
-          <Home/>
+        <Route path="/" exact>
+          <Home />
         </Route>
-        <Route path='/room/:id'>
-          <Room/>
+        <Route path="/room/:id">
+          <Room />
         </Route>
-        <Redirect from="*" to="/"/>
+        <Redirect from="*" to="/" />
       </Switch>
     </Router>
-  )
-
+  );
 }

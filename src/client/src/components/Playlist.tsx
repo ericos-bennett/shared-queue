@@ -27,10 +27,7 @@ type PlaylistProps = {
   deleteTrackHandler: (index: number) => void;
 };
 
-export default function Playlist({
-  tracks,
-  deleteTrackHandler,
-}: PlaylistProps) {
+export default function Playlist({ tracks, deleteTrackHandler }: PlaylistProps) {
   const classes = useStyles();
 
   const listItems = tracks.map((track: any, i) => {

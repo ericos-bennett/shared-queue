@@ -1,15 +1,14 @@
 import httpServer from 'http';
-import { Server, Socket } from "socket.io";
+import { Server, Socket } from 'socket.io';
 
 const initializeWs = (server: httpServer.Server): void => {
-
   const io = new Server(server, {
     // Options ...
   });
-  
-  io.on("connection", (socket: Socket): void => {
+
+  io.on('connection', (socket: Socket): void => {
     console.log('Socket connected:', socket.id);
-  
+
     // Join Room hanlder
     socket.on('join', (playlistId: string, username: string): void => {
       socket.join(playlistId);
@@ -20,15 +19,15 @@ const initializeWs = (server: httpServer.Server): void => {
 
     // Playback Status Forwarding
     socket.on('playbackStatus', (playlistId: string, playbackStatus) => {
-      console.log(playbackStatus)
+      console.log(playbackStatus);
       socket.to(playlistId).emit('playbackStatus', playbackStatus);
-    })
-  
+    });
+
     // Delete Track handler
     socket.on('delete', (playlistId: string, index: number): void => {
       socket.to(playlistId).emit('delete', index);
     });
-  
+
     // Add Track hanlder
     socket.on('add', (playlistId: string, track: SpotifyApi.TrackObjectFull): void => {
       socket.to(playlistId).emit('add', track);
@@ -43,9 +42,7 @@ const initializeWs = (server: httpServer.Server): void => {
     socket.on('changeTrack', (playlistId: string, trackId: string): void => {
       socket.to(playlistId).emit('changeTrack', trackId);
     });
-  
   });
-
 };
 
 export { initializeWs };
