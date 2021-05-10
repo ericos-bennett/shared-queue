@@ -1,71 +1,64 @@
 import { createSpotifyApi } from '../utils';
 
 const getAuthUrl = (): string => {
-
   const spotifyApi = createSpotifyApi();
 
   const scopes: string[] = [
-    'playlist-modify-public',  // To create + modify playlists
+    'playlist-modify-public', // To create + modify playlists
     'streaming', // For the Web Playback SDK
     'user-read-email', // For the Web Playback SDK
     'user-read-private', // For the Web Playback SDK
     'user-read-playback-state', // to read other devices' statuses
     'user-modify-playback-state', // to update other devices
     'user-library-read', // For the favorite button
-    'user-library-modify' // For the favorite button
+    'user-library-modify', // For the favorite button
   ];
   const state = 'some-state-of-my-choice'; // Implement security here
-  
-  return spotifyApi.createAuthorizeURL(scopes, state);
 
+  return spotifyApi.createAuthorizeURL(scopes, state);
 };
 
 type Credentials = {
-  userId: string,
-  accessToken: string,
-  refreshToken: string,
-  expiration: number
+  userId: string;
+  accessToken: string;
+  refreshToken: string;
+  expiration: number;
 };
 
 const setCredentials = async (code: string): Promise<Credentials | undefined> => {
-
   const spotifyApi = createSpotifyApi();
 
   try {
-
     const response = await spotifyApi.authorizationCodeGrant(code);
     const accessToken: string = response.body['access_token'];
     const refreshToken: string = response.body['refresh_token'];
-    const expiration: number = Date.now() + response.body['expires_in']*1000;
+    const expiration: number = Date.now() + response.body['expires_in'] * 1000;
 
     spotifyApi.setAccessToken(accessToken);
     spotifyApi.setRefreshToken(refreshToken);
-    
+
     const user = await spotifyApi.getMe();
     const userId: string = user.body['id'];
-    
+
     return { userId, accessToken, refreshToken, expiration };
-    
   } catch (error) {
     console.log(error);
   }
-
 };
 
 type refreshedCredentials = {
-  newAccessToken: string,
-  newExpiration: number
-}
+  newAccessToken: string;
+  newExpiration: number;
+};
 
 const refreshSession = async (refreshToken: string): Promise<refreshedCredentials> => {
-  
   const spotifyApi = createSpotifyApi();
   spotifyApi.setRefreshToken(refreshToken);
 
   const response = await spotifyApi.refreshAccessToken();
   const newAccessToken = response.body['access_token'];
-  const newExpiration = Date.now() + response.body['expires_in']*1000;
-  
+  const newExpiration = Date.now() + response.body['expires_in'] * 1000;
+
   return { newAccessToken, newExpiration };
 };
 

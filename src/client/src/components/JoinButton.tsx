@@ -11,8 +11,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function JoinButton() {
   const [open, setOpen] = useState(false);
-  const [textValue, setTextValue] = useState('');  
-  
+  const [textValue, setTextValue] = useState('');
+
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -27,7 +27,8 @@ export default function JoinButton() {
         <DialogTitle id="form-dialog-title">Join a Room</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua.
           </DialogContentText>
           <TextField
             autoFocus
@@ -44,11 +45,7 @@ export default function JoinButton() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button
-            autoFocus
-            onClick={() => history.push(`/room/${textValue}`)}
-            color="primary"
-          >
+          <Button autoFocus onClick={() => history.push(`/room/${textValue}`)} color="primary">
             Join Room
           </Button>
         </DialogActions>

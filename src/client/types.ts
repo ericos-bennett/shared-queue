@@ -1,37 +1,37 @@
 export type Track = {
-  artist: string,
-  title: string,
-  id: string,
-  albumUrl: string,
-  durationMs: number
-}
+  artist: string;
+  title: string;
+  id: string;
+  albumUrl: string;
+  durationMs: number;
+};
 
 export type PlaylistType = {
-  name: string,
-  id: string,
-  owner: string,
-  snapshotId: string,
-  tracks: Track[]
-}
+  name: string;
+  id: string;
+  owner: string;
+  snapshotId: string;
+  tracks: Track[];
+};
 
 export type PlayerProps = {
-  accessToken: string,
-  tracks: Track[],
-  socket: any,
-  playlistId: string
-}
+  accessToken: string;
+  tracks: Track[];
+  socket: any;
+  playlistId: string;
+};
 
 export type PlaybackStatus = {
-  currentTrack: string,
-  play: boolean,
-  progressMs: number
-}
+  currentTrack: string;
+  play: boolean;
+  progressMs: number;
+};
 
 export type PlayerControlsProps = {
-  togglePlayHandler: () => void
-  changeTrackHandler: (direction: 'prev' | 'next') => void
-  positionInPlaylist: PlaylistPositions
-  play: boolean
-}
+  togglePlayHandler: () => void;
+  changeTrackHandler: (direction: 'prev' | 'next') => void;
+  positionInPlaylist: PlaylistPositions;
+  play: boolean;
+};
 
-export type PlaylistPositions = 'only' | 'start' | 'middle' | 'end' | 'deleted'
+export type PlaylistPositions = 'empty' | 'only' | 'start' | 'middle' | 'end' | 'deleted';

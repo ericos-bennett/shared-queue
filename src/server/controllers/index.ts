@@ -1,8 +1,13 @@
 import { Request, Response } from 'express';
-import { 
-  getAuthUrl, setCredentials, refreshSession,
-  addPlaylist, getPlaylist, deleteTrackSpotify, addTrackSpotify,
-  getSpotifyTracks 
+import {
+  getAuthUrl,
+  setCredentials,
+  refreshSession,
+  addPlaylist,
+  getPlaylist,
+  deleteTrackSpotify,
+  addTrackSpotify,
+  getSpotifyTracks,
 } from '../services';
 
 /*--------------------
@@ -11,7 +16,7 @@ import {
 // add these for other cookies for production
 const cookieOptions = {
   httpOnly: true,
-  secure: true
+  secure: true,
 };
 
 const getAuthCode = (req: Request, res: Response): void => {
@@ -20,15 +25,13 @@ const getAuthCode = (req: Request, res: Response): void => {
 };
 
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
-  
   const code = req.query.code as string;
   // TODO: check state against cookie for extra security
   // const state = req.query.state as string;
 
   try {
-
     const credentials = await setCredentials(code);
-    
+
     if (credentials) {
       const { userId, accessToken, refreshToken, expiration } = credentials;
       res.cookie('userId', userId);
@@ -37,20 +40,17 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
       res.cookie('expiration', expiration, cookieOptions);
       res.redirect(process.env.ROOT_URL!);
     }
-    
   } catch (error) {
     console.log(error);
   }
-
 };
 
 /*--------------------
 -- Room Controllers --
 --------------------*/
 const createRoom = async (req: Request, res: Response): Promise<void> => {
-  
   const name: string = req.body.name;
-  
+
   const accessToken: string = req.cookies.accessToken;
   const refreshToken: string = req.cookies.refreshToken;
   const expiration: number = req.cookies.expiration;
@@ -67,11 +67,9 @@ const createRoom = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log(error);
   }
-
 };
 
 const getRoom = async (req: Request, res: Response): Promise<void> => {
-
   const playlistId: string = req.params.id;
 
   const accessToken: string = req.cookies.accessToken;
@@ -90,11 +88,9 @@ const getRoom = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log(error);
   }
-
 };
 
 const deleteTrack = async (req: Request, res: Response): Promise<void> => {
-
   const playlistId: string = req.params.playlistId;
   const index: string = req.params.index;
   const snapshotId: string = req.body.snapshotId;
@@ -115,11 +111,9 @@ const deleteTrack = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log(error);
   }
-
 };
 
 const addTrack = async (req: Request, res: Response): Promise<void> => {
-
   const playlistId: string = req.params.playlistId;
   const trackId: string = req.body.trackId;
 
@@ -139,7 +133,6 @@ const addTrack = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log(error);
   }
-
 };
 
 /*---------------------
@@ -147,7 +140,6 @@ const addTrack = async (req: Request, res: Response): Promise<void> => {
 ---------------------*/
 
 const searchTrack = async (req: Request, res: Response): Promise<void> => {
-
   const query: string = req.params.query;
 
   const accessToken: string = req.cookies.accessToken;
@@ -166,11 +158,6 @@ const searchTrack = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.log(error);
   }
-
 };
 
-export { 
-  getAuthCode, authenticateUser, 
-  createRoom, getRoom, deleteTrack, addTrack,
-  searchTrack 
-};
+export { getAuthCode, authenticateUser, createRoom, getRoom, deleteTrack, addTrack, searchTrack };
