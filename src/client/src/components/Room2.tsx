@@ -7,17 +7,17 @@ import Cookie from 'js-cookie';
 import Search2 from './Search2';
 import Queue from './Queue';
 import Player2 from './Player2';
-import { RoomState } from '../../types';
+import { RoomState, Track } from '../../types';
 
 const ENDPOINT = 'http://localhost:3000';
 
 export default function Room2() {
   const [roomState, setRoomState] = useState<RoomState | null>(null);
+  const [spotifyApi, setSpotifyApi] = useState<SpotifyWebApi | null>(null);
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
   const ws = useRef<SocketIOClient.Socket | null>(null);
   const deviceId = useRef<string>();
-  const spotifyApi = useRef<SpotifyWebApi>();
   const trackHasLoaded = useRef<boolean>(false);
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function Room2() {
           });
 
           sdk.addListener('player_state_changed', (state: any) => {
-            console.log(state);
+            // console.log(state);
           });
 
           // Connect to the player!
@@ -83,10 +83,10 @@ export default function Room2() {
 
   // Transfer and sync playback on component mount
   useEffect(() => {
-    if (!spotifyApi.current && roomState) {
+    if (!spotifyApi && roomState) {
       const api = new SpotifyWebApi({});
       api.setAccessToken(Cookie.get('accessToken')!);
-      spotifyApi.current = api;
+      setSpotifyApi(api);
 
       api
         .transferMyPlayback([deviceId.current!])
@@ -111,12 +111,12 @@ export default function Room2() {
           console.log(err);
         });
     }
-  }, [roomState]);
+  }, [roomState, spotifyApi]);
 
   const togglePlayHandler = () => {
     if (roomState?.isPlaying) {
-      spotifyApi
-        .current!.pause()
+      spotifyApi!
+        .pause()
         .then(() => {
           setRoomState({ ...roomState, isPlaying: false });
           console.log('Playback paused');
@@ -124,8 +124,8 @@ export default function Room2() {
         .catch(err => console.log(err));
     } else {
       if (trackHasLoaded.current) {
-        spotifyApi
-          .current!.play()
+        spotifyApi!
+          .play()
           .then(() => {
             setRoomState({ ...roomState!, isPlaying: true });
             console.log('Playback resumed');
@@ -133,8 +133,8 @@ export default function Room2() {
           .catch(err => console.log(err));
       } else {
         const currentTrackId = roomState!.tracks[roomState!.currentTrackIndex].id;
-        spotifyApi
-          .current!.play({
+        spotifyApi!
+          .play({
             uris: [`spotify:track:${currentTrackId}`],
             position_ms: roomState!.currentTrackPosition,
           })
@@ -153,8 +153,8 @@ export default function Room2() {
       direction === 'prev' ? roomState!.currentTrackIndex - 1 : roomState!.currentTrackIndex + 1;
     const newTrackId = roomState!.tracks[newTrackIndex].id;
 
-    spotifyApi
-      .current!.play({
+    spotifyApi!
+      .play({
         uris: [`spotify:track:${newTrackId}`],
       })
       .then(() => {
@@ -167,16 +167,39 @@ export default function Room2() {
       .catch(err => console.log(err));
   };
 
+  const deleteTrackHandler = (trackIndex: number) => {
+    const tracks = [...roomState!.tracks];
+    tracks.splice(trackIndex, 1);
+
+    // What should this do when you delete the currently playing track?
+    setRoomState({
+      ...roomState!,
+      tracks,
+      currentTrackIndex:
+        trackIndex < roomState!.currentTrackIndex!
+          ? roomState!.currentTrackIndex - 1
+          : roomState!.currentTrackIndex,
+    });
+  };
+
+  const addTrackHandler = (track: Track) => {
+    const tracks = [...roomState!.tracks];
+    tracks.push(track);
+    setRoomState({
+      ...roomState!,
+      tracks,
+    });
+  };
+
   return (
     <div>
-      <Search2 />
-      <Queue />
+      <Search2 spotifyApi={spotifyApi} addTrackHandler={addTrackHandler} />
+      <Queue roomState={roomState} deleteTrackHandler={deleteTrackHandler} />
       <Player2
         roomState={roomState}
         togglePlayHandler={togglePlayHandler}
         changeTrackHandler={changeTrackHandler}
       />
-      {roomState && JSON.stringify(roomState)}
     </div>
   );
 }
