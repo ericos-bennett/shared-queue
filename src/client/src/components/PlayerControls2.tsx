@@ -11,7 +11,6 @@ const useStyles = makeStyles(() => ({
     height: '60px',
     width: '100px',
     left: 'calc(50vw - 50px)',
-    backgroundColor: 'white',
     '& button': {
       padding: '0',
       color: 'rgb(51, 51, 51)',
