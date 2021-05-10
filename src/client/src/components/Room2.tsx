@@ -52,32 +52,30 @@ export default function Room2() {
             if (connected) {
               console.log('SDK connected');
 
-              // Set up WS and send room state request to peers
+              // Set up WS listener and send room state request to peers
               const socket = io(ENDPOINT);
-              // Set State Listener
-              socket.on('roomStateRes', (state: RoomState) => {
-                console.log(state);
+
+              socket.on('roomState', (state: RoomState) => {
+                console.log('Room state received');
+                // If you're the only one in the room, send message: you are the only one in the room add a track to get started!
+
+                // If not response from express server, show error
+
+                // If others in the room, return their state object and sync up with it.
                 setRoomState(state);
               });
+
               socket.on('connect', () => {
                 console.log('WS connected');
-
-                // socket.emit('roomStateReq', roomId, socket.id);
+                socket.emit('joinRoom', roomId.current);
+                ws.current = socket;
               });
             }
           });
         };
       };
     }
-
-    // If you're the only one in the room, send message: you are the only one in the room add a track to get started!
-
-    // If not response from express server, show error
-
-    // If others in the room, return their state object and sync up with it.
-
-    return () => {};
   }, []);
 
-  return <div>Hello</div>;
+  return <div>{roomState && JSON.stringify(roomState)}</div>;
 }
