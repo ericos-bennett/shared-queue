@@ -35,3 +35,10 @@ export type PlayerControlsProps = {
 };
 
 export type PlaylistPositions = 'empty' | 'only' | 'start' | 'middle' | 'end' | 'deleted';
+
+export type RoomState = {
+  tracks: Track[];
+  currentTrackIndex: number;
+  currentTrackPosition: number;
+  isPlaying: boolean;
+};

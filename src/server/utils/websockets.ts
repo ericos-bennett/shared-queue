@@ -32,7 +32,7 @@ const initializeWs = (server: httpServer.Server): void => {
           },
         ],
         currentTrackIndex: 1,
-        currentTrackPosition: 50000,
+        currentTrackPosition: 30000,
         isPlaying: false,
       };
       io.to(socket.id).emit('roomState', dummyState);
