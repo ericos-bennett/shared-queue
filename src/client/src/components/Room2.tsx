@@ -19,46 +19,11 @@ export default function Room2() {
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
   const ws = useRef<SocketIOClient.Socket | null>(null);
-  const isStateLoaded = useRef<boolean>(false);
-
-  const loadPlaybackSdk = (accessToken: string) => {
-    const existingScript = document.getElementById('spotifyPlaybackSdk');
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.src = 'https://sdk.scdn.co/spotify-player.js';
-      script.id = 'spotifyPlaybackSdk';
-      document.body.appendChild(script);
-      script.onload = () => {
-        console.log('SDK loaded!');
-        // @ts-ignore
-        window.onSpotifyWebPlaybackSDKReady = () => {
-          const token = accessToken;
-          // @ts-ignore
-          const sdk = new Spotify.Player({
-            name: 'Spotify Mix',
-            getOAuthToken: (cb: any) => {
-              cb(token);
-            },
-          });
-
-          // Connect to the player!
-          sdk.connect().then((connected: boolean) => {
-            if (connected) {
-              console.log('SDK connected');
-            }
-          });
-        };
-      };
-    }
-  };
 
   useEffect(() => {
     // 1. Get Access Token
-
     // 2. Connect SDK
-
     // 3. Request State from Peers
-
     // 4. Set State from Peers OR initialize as empty room
 
     const accessToken = Cookie.get('accessToken');
@@ -66,19 +31,44 @@ export default function Room2() {
       // Handle this w/ OAuth redirect
       console.log('No access token!');
     } else {
-      loadPlaybackSdk(accessToken);
+      const script = document.createElement('script');
+      script.src = 'https://sdk.scdn.co/spotify-player.js';
+      script.id = 'spotifyPlaybackSdk';
+      document.body.appendChild(script);
+      script.onload = () => {
+        console.log('SDK loaded');
+        // @ts-ignore
+        window.onSpotifyWebPlaybackSDKReady = () => {
+          // @ts-ignore
+          const sdk = new Spotify.Player({
+            name: 'Spotify Mix',
+            getOAuthToken: (cb: any) => {
+              cb(accessToken);
+            },
+          });
+
+          // Connect to the player!
+          sdk.connect().then((connected: boolean) => {
+            if (connected) {
+              console.log('SDK connected');
+
+              // Set up WS and send room state request to peers
+              const socket = io(ENDPOINT);
+              // Set State Listener
+              socket.on('roomStateRes', (state: RoomState) => {
+                console.log(state);
+                setRoomState(state);
+              });
+              socket.on('connect', () => {
+                console.log('WS connected');
+
+                // socket.emit('roomStateReq', roomId, socket.id);
+              });
+            }
+          });
+        };
+      };
     }
-
-    ws.current = io(ENDPOINT);
-    ws.current.on('roomStateRes', (state: RoomState) => {
-      if (!isStateLoaded.current) {
-        isStateLoaded.current = true;
-        setRoomState(state);
-      }
-    });
-
-    // WS request for room state
-    ws.current.emit('roomStateReq', roomId);
 
     // If you're the only one in the room, send message: you are the only one in the room add a track to get started!
 
@@ -86,9 +76,7 @@ export default function Room2() {
 
     // If others in the room, return their state object and sync up with it.
 
-    return () => {
-      ws.current?.disconnect();
-    };
+    return () => {};
   }, []);
 
   return <div>Hello</div>;
