@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import io from 'socket.io-client';
+import SpotifyWebApi from 'spotify-web-api-node';
 import Cookie from 'js-cookie';
 
 import Search2 from './Search2';
@@ -12,10 +13,12 @@ const ENDPOINT = 'http://localhost:3000';
 
 export default function Room2() {
   const [roomState, setRoomState] = useState<RoomState | null>(null);
-  const [deviceId, setDeviceId] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
   const ws = useRef<SocketIOClient.Socket | null>(null);
+  const deviceId = useRef<string>();
+  const spotifyApi = useRef<SpotifyWebApi>();
+  const trackHasLoaded = useRef<boolean>(false);
 
   useEffect(() => {
     // 1. Get Access Token
@@ -47,7 +50,7 @@ export default function Room2() {
 
           sdk.addListener('ready', ({ device_id }: { device_id: string }) => {
             console.log('SDK connected and deviceId set');
-            setDeviceId(device_id);
+            deviceId.current = device_id;
 
             // Set up WS listener and send room state request to peers
             const socket = io(ENDPOINT);
@@ -78,11 +81,101 @@ export default function Room2() {
     }
   }, []);
 
+  // Transfer and sync playback on component mount
+  useEffect(() => {
+    if (!spotifyApi.current && roomState) {
+      const api = new SpotifyWebApi({});
+      api.setAccessToken(Cookie.get('accessToken')!);
+      spotifyApi.current = api;
+
+      api
+        .transferMyPlayback([deviceId.current!])
+        .then(() => {
+          console.log('Playback transferred to Spotify Mix');
+
+          if (roomState.isPlaying) {
+            const currentTrackId = roomState.tracks[roomState.currentTrackIndex].id;
+            api
+              .play({
+                uris: [`spotify:track:${currentTrackId}`],
+                position_ms: roomState.currentTrackPosition,
+              })
+              .then(() => {
+                setRoomState({ ...roomState, isPlaying: true });
+                trackHasLoaded.current = true;
+                console.log('Playback started for the first time');
+              });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }, [roomState]);
+
+  const togglePlayHandler = () => {
+    if (roomState?.isPlaying) {
+      spotifyApi
+        .current!.pause()
+        .then(() => {
+          setRoomState({ ...roomState, isPlaying: false });
+          console.log('Playback paused');
+        })
+        .catch(err => console.log(err));
+    } else {
+      if (trackHasLoaded.current) {
+        spotifyApi
+          .current!.play()
+          .then(() => {
+            setRoomState({ ...roomState!, isPlaying: true });
+            console.log('Playback resumed');
+          })
+          .catch(err => console.log(err));
+      } else {
+        const currentTrackId = roomState!.tracks[roomState!.currentTrackIndex].id;
+        spotifyApi
+          .current!.play({
+            uris: [`spotify:track:${currentTrackId}`],
+            position_ms: roomState!.currentTrackPosition,
+          })
+          .then(() => {
+            setRoomState({ ...roomState!, isPlaying: true });
+            trackHasLoaded.current = true;
+            console.log('Playback started for the first time');
+          })
+          .catch(err => console.log(err));
+      }
+    }
+  };
+
+  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
+    const newTrackIndex =
+      direction === 'prev' ? roomState!.currentTrackIndex - 1 : roomState!.currentTrackIndex + 1;
+    const newTrackId = roomState!.tracks[newTrackIndex].id;
+
+    spotifyApi
+      .current!.play({
+        uris: [`spotify:track:${newTrackId}`],
+      })
+      .then(() => {
+        setRoomState({
+          ...roomState!,
+          isPlaying: true,
+          currentTrackIndex: newTrackIndex,
+        });
+      })
+      .catch(err => console.log(err));
+  };
+
   return (
     <div>
       <Search2 />
       <Queue />
-      <Player2 roomState={roomState} deviceId={deviceId} />
+      <Player2
+        roomState={roomState}
+        togglePlayHandler={togglePlayHandler}
+        changeTrackHandler={changeTrackHandler}
+      />
       {roomState && JSON.stringify(roomState)}
     </div>
   );
