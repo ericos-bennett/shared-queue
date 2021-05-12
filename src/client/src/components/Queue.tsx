@@ -20,6 +20,9 @@ const useStyles = makeStyles(() => ({
   deleteIcon: {
     marginLeft: '1rem',
   },
+  emptyTracks: {
+    textAlign: 'center',
+  },
 }));
 
 type QueueProps = {
@@ -48,5 +51,13 @@ export default function Queue({ roomState, deleteTrackHandler }: QueueProps) {
     );
   });
 
-  return <ul className={classes.root}>{listItems}</ul>;
+  return (
+    <ul className={classes.root}>
+      {roomState?.tracks.length ? (
+        listItems
+      ) : (
+        <p className={classes.emptyTracks}>Add tracks above to get started!</p>
+      )}
+    </ul>
+  );
 }

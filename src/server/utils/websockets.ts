@@ -25,6 +25,13 @@ const initializeWs = (server: httpServer.Server): void => {
       if (room!.size === 1) {
         // User is the first in the room!
         // Send back an empty object and the notice that they are first
+        const emptyState = {
+          tracks: [],
+          currentTrackIndex: 0,
+          currentTrackPosition: 0,
+          isPlaying: false,
+        };
+        io.to(socket.id).emit('roomState', emptyState);
       } else {
         const arrRoom = [...room!];
         const firstSocketInRoom = arrRoom[0];
@@ -32,30 +39,30 @@ const initializeWs = (server: httpServer.Server): void => {
 
         // Send message to firstSocketInRoom, along with requesting socket's ID
         // firstSocketInRoom gets current state, sends back specifically to req socket
+        // Get room state from other room peers (instead of using this dummy state)
+        const dummyState = {
+          tracks: [
+            {
+              artist: 'Pink Floyd',
+              title: 'Dogs',
+              id: '2jvuMDqBK04WvCYYz5qjvG',
+              albumUrl: 'https://i.scdn.co/image/ab67616d000048510671b43480c4cfb4b5667857',
+              durationMs: 1025280,
+            },
+            {
+              artist: 'Iain Howie',
+              title: 'Shift',
+              id: '3nRsZusYfXimeOOxM4pWjA',
+              albumUrl: 'https://i.scdn.co/image/ab67616d0000485147c40f16fcb97061d445a05a',
+              durationMs: 242216,
+            },
+          ],
+          currentTrackIndex: 1,
+          currentTrackPosition: 30000,
+          isPlaying: true,
+        };
+        io.to(socket.id).emit('roomState', dummyState);
       }
-      // Get room state from other room peers (instead of using this dummy state)
-      const dummyState = {
-        tracks: [
-          {
-            artist: 'Pink Floyd',
-            title: 'Dogs',
-            id: '2jvuMDqBK04WvCYYz5qjvG',
-            albumUrl: 'https://i.scdn.co/image/ab67616d000048510671b43480c4cfb4b5667857',
-            durationMs: 1025280,
-          },
-          {
-            artist: 'Iain Howie',
-            title: 'Shift',
-            id: '3nRsZusYfXimeOOxM4pWjA',
-            albumUrl: 'https://i.scdn.co/image/ab67616d0000485147c40f16fcb97061d445a05a',
-            durationMs: 242216,
-          },
-        ],
-        currentTrackIndex: 1,
-        currentTrackPosition: 30000,
-        isPlaying: true,
-      };
-      io.to(socket.id).emit('roomState', dummyState);
     });
 
     socket.on('togglePlay', (roomId: string) => {
