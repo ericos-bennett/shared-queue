@@ -2,6 +2,14 @@ import httpServer from 'http';
 import { stringify } from 'node:querystring';
 import { Server, Socket } from 'socket.io';
 
+type Track = {
+  artist: string;
+  title: string;
+  id: string;
+  albumUrl: string;
+  durationMs: number;
+};
+
 const initializeWs = (server: httpServer.Server): void => {
   const io = new Server(server);
 
@@ -48,6 +56,22 @@ const initializeWs = (server: httpServer.Server): void => {
         isPlaying: true,
       };
       io.to(socket.id).emit('roomState', dummyState);
+    });
+
+    socket.on('togglePlay', (roomId: string) => {
+      console.log(`Room ${roomId}: Toggle play`);
+    });
+
+    socket.on('changeTrack', (roomId: string, direction: 'prev' | 'next') => {
+      console.log(`Room ${roomId}: Go to ${direction} track`);
+    });
+
+    socket.on('deleteTrack', (roomId: string, trackIndex: number) => {
+      console.log(`Room ${roomId}: Delete track at index ${trackIndex}`);
+    });
+
+    socket.on('addTrack', (roomId: string, track: Track) => {
+      console.log(`Room ${roomId}: Add "${track.title}" to queue`);
     });
   });
 };

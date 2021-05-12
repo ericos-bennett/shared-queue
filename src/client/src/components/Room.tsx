@@ -9,7 +9,7 @@ import Search from './Search';
 import Queue from './Queue';
 import Player from './Player';
 import useRoom from '../hooks/useRoom';
-import { RoomState } from '../../types';
+import { Track, RoomState } from '../../types';
 
 const ENDPOINT = 'http://localhost:3000';
 
@@ -34,10 +34,10 @@ export default function Room() {
     setRoomState,
     spotifyApi,
     deviceId,
-    togglePlayHandler,
-    changeTrackHandler,
-    deleteTrackHandler,
-    addTrackHandler,
+    togglePlay,
+    changeTrack,
+    deleteTrack,
+    addTrack,
   } = useRoom();
   const classes = useStyles();
 
@@ -87,6 +87,26 @@ export default function Room() {
       };
     };
   }, [deviceId, setRoomState]);
+
+  const togglePlayHandler = (): void => {
+    ws.current!.emit('togglePlay', roomId.current);
+    togglePlay();
+  };
+
+  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
+    ws.current!.emit('changeTrack', roomId.current, direction);
+    changeTrack(direction);
+  };
+
+  const deleteTrackHandler = (trackIndex: number) => {
+    ws.current!.emit('deleteTrack', roomId.current, trackIndex);
+    deleteTrack(trackIndex);
+  };
+
+  const addTrackHandler = (track: Track) => {
+    ws.current!.emit('addTrack', roomId.current, track);
+    addTrack(track);
+  };
 
   return (
     <div className={classes.root}>

@@ -42,7 +42,7 @@ export default function useRoom() {
     }
   }, [roomState, spotifyApi]);
 
-  const togglePlayHandler = () => {
+  const togglePlay = () => {
     if (roomState?.isPlaying) {
       spotifyApi!
         .pause()
@@ -77,7 +77,7 @@ export default function useRoom() {
     }
   };
 
-  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
+  const changeTrack = (direction: 'prev' | 'next'): void => {
     const newTrackIndex =
       direction === 'prev' ? roomState!.currentTrackIndex - 1 : roomState!.currentTrackIndex + 1;
     const newTrackId = roomState!.tracks[newTrackIndex].id;
@@ -97,7 +97,7 @@ export default function useRoom() {
       .catch(err => console.log(err));
   };
 
-  const deleteTrackHandler = (trackIndex: number) => {
+  const deleteTrack = (trackIndex: number) => {
     const tracks = [...roomState!.tracks];
     tracks.splice(trackIndex, 1);
 
@@ -112,7 +112,7 @@ export default function useRoom() {
     });
   };
 
-  const addTrackHandler = (track: Track) => {
+  const addTrack = (track: Track) => {
     const tracks = [...roomState!.tracks];
     tracks.push(track);
     setRoomState({
@@ -126,9 +126,9 @@ export default function useRoom() {
     setRoomState,
     spotifyApi,
     deviceId,
-    togglePlayHandler,
-    changeTrackHandler,
-    deleteTrackHandler,
-    addTrackHandler,
+    togglePlay,
+    changeTrack,
+    deleteTrack,
+    addTrack,
   };
 }
