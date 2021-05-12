@@ -1,58 +1,43 @@
-import { useEffect, useState } from 'react';
-import SpotifyWebApi from 'spotify-web-api-node';
 import SearchBar from 'material-ui-search-bar';
+import { useState, useEffect } from 'react';
+import SpotifyWebApi from 'spotify-web-api-node';
 
-import TrackSearchResult from './TrackSearchResult';
 import { Track } from '../../types';
+import TrackSearchResult from './TrackSearchResult';
 
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.REACT_APP_CLIENT_ID,
-});
-
-type searchProps = {
-  searchTracks: Track[];
-  setSearchTracks: (tracks: Track[]) => void;
+type SearchProps = {
+  spotifyApi: SpotifyWebApi | null;
   addTrackHandler: (track: Track) => void;
-  accessToken: string;
 };
 
-export default function Search({
-  searchTracks,
-  setSearchTracks,
-  addTrackHandler,
-  accessToken,
-}: searchProps) {
-  const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    if (!accessToken) return;
-    spotifyApi.setAccessToken(accessToken);
-  }, [accessToken]);
+export default function Search({ spotifyApi, addTrackHandler }: SearchProps) {
+  const [search, setSearch] = useState<string>('');
+  const [searchTracks, setSearchTracks] = useState<Track[]>([]);
 
   useEffect(() => {
     if (!search) return setSearchTracks([]);
-    if (!accessToken) return;
 
     let cancel = false;
-    spotifyApi.searchTracks(search, { limit: 5 }).then(res => {
-      if (cancel) return;
-      setSearchTracks(
-        res!.body!.tracks!.items.map(track => {
-          return {
-            artist: track.artists[0].name,
-            title: track.name,
-            id: track.id,
-            albumUrl: track.album.images[2].url,
-            durationMs: track.duration_ms,
-          };
-        })
-      );
-    });
+    spotifyApi &&
+      spotifyApi.searchTracks(search, { limit: 5 }).then(res => {
+        if (cancel) return;
+        setSearchTracks(
+          res!.body!.tracks!.items.map(track => {
+            return {
+              artist: track.artists[0].name,
+              title: track.name,
+              id: track.id,
+              albumUrl: track.album.images[2].url,
+              durationMs: track.duration_ms,
+            };
+          })
+        );
+      });
 
-    return function () {
+    return () => {
       cancel = true;
     };
-  }, [setSearchTracks, search, accessToken]);
+  }, [setSearchTracks, search, spotifyApi]);
 
   const chooseTrack = (track: Track): void => {
     setSearchTracks([]);

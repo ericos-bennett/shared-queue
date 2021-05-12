@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-import { PlayerControlsProps } from '../../types';
+import { RoomState } from '../../types';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -11,7 +11,6 @@ const useStyles = makeStyles(() => ({
     height: '60px',
     width: '100px',
     left: 'calc(50vw - 50px)',
-    backgroundColor: 'white',
     '& button': {
       padding: '0',
       color: 'rgb(51, 51, 51)',
@@ -33,17 +32,22 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+type PlayerControlsProps = {
+  roomState: RoomState | null;
+  togglePlayHandler: () => void;
+  changeTrackHandler: (direction: 'prev' | 'next') => void;
+};
+
 export default function PlayerControls({
+  roomState,
   togglePlayHandler,
   changeTrackHandler,
-  positionInPlaylist,
-  play,
 }: PlayerControlsProps) {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      {positionInPlaylist === 'middle' || positionInPlaylist === 'end' ? (
+      {roomState && roomState.currentTrackIndex > 0 ? (
         <button
           type="button"
           aria-label="Previous Track"
@@ -60,7 +64,7 @@ export default function PlayerControls({
       ) : (
         <div style={{ width: '16px' }}></div>
       )}
-      {!play && (
+      {roomState && !roomState.isPlaying && (
         <button
           type="button"
           aria-label="Play"
@@ -72,7 +76,7 @@ export default function PlayerControls({
           </svg>
         </button>
       )}
-      {play && (
+      {roomState && roomState.isPlaying && (
         <button
           type="button"
           aria-label="Pause"
@@ -87,9 +91,7 @@ export default function PlayerControls({
           </svg>
         </button>
       )}
-      {positionInPlaylist === 'middle' ||
-      positionInPlaylist === 'start' ||
-      positionInPlaylist === 'deleted' ? (
+      {roomState && roomState.tracks.length - 1 > roomState.currentTrackIndex ? (
         <button
           type="button"
           aria-label="Next Track"
