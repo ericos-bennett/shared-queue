@@ -47,7 +47,7 @@ export default function PlayerControls({
 
   return (
     <div className={classes.root}>
-      {roomState && roomState.currentTrackIndex > 0 ? (
+      {roomState && roomState.tracks.length > 0 && roomState.currentTrackIndex > 0 ? (
         <button
           type="button"
           aria-label="Previous Track"
@@ -64,7 +64,7 @@ export default function PlayerControls({
       ) : (
         <div style={{ width: '16px' }}></div>
       )}
-      {roomState && !roomState.isPlaying && (
+      {roomState && roomState.tracks.length > 0 && !roomState.isPlaying && (
         <button
           type="button"
           aria-label="Play"
@@ -76,7 +76,7 @@ export default function PlayerControls({
           </svg>
         </button>
       )}
-      {roomState && roomState.isPlaying && (
+      {roomState && roomState.tracks.length > 0 && roomState.isPlaying && (
         <button
           type="button"
           aria-label="Pause"
