@@ -87,6 +87,7 @@ export default function useRoom() {
         uris: [`spotify:track:${newTrackId}`],
       })
       .then(() => {
+        console.log('Track switched');
         setRoomState({
           ...roomState!,
           isPlaying: true,

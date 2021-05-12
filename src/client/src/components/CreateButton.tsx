@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -10,23 +10,30 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+const useStyles = makeStyles(() => ({
+  button: {
+    color: 'white',
+    borderColor: 'white',
+    backgroundColor: '#159442',
+    height: '3rem',
+    ' &:hover': {
+      backgroundColor: '#1DB954',
+    },
+  },
+}));
+
 export default function CreateButton() {
   const [open, setOpen] = useState(false);
   const [textValue, setTextValue] = useState('');
+  let history = useHistory();
+  const classes = useStyles();
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  let history = useHistory();
-
-  const createRoom = async (name: string) => {
-    const res = await axios.post('/api/room', { name });
-    history.push(`/room/${res.data}`);
-  };
-
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button className={classes.button} variant="contained" onClick={handleClickOpen}>
         Create Room
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -51,7 +58,7 @@ export default function CreateButton() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => createRoom(textValue)} color="primary">
+          <Button onClick={() => history.push(`/room/${textValue}`)} color="primary">
             Create Room
           </Button>
         </DialogActions>

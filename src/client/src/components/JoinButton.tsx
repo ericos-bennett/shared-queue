@@ -12,11 +12,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 export default function JoinButton() {
   const [open, setOpen] = useState(false);
   const [textValue, setTextValue] = useState('');
+  let history = useHistory();
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  let history = useHistory();
 
   return (
     <div>

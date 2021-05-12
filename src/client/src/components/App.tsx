@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import Cookie from 'js-cookie';
 import Home from './Home';
-import Room from './Room';
 import Room2 from './Room2';
 
 export default function App() {
@@ -10,12 +10,10 @@ export default function App() {
         <Route path="/" exact>
           <Home />
         </Route>
-        <Route path="/room/:id">
-          <Room />
-        </Route>
-        <Route path="/room2/:id">
-          <Room2 />
-        </Route>
+        <Route
+          path="/room/:id"
+          render={() => (Cookie.get('accessToken') ? <Room2 /> : <Redirect to="/" />)}
+        />
         <Redirect from="*" to="/" />
       </Switch>
     </Router>

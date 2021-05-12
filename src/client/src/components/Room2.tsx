@@ -42,64 +42,50 @@ export default function Room2() {
   const classes = useStyles();
 
   useEffect(() => {
-    // 1. Get Access Token
-    // Refactor this to use a session cookie on the client side, linking to tokens on server
-    // 2. Connect SDK
-    // 3. Request State from Peers
-    // 4. Set State from Peers OR initialize as empty room
-
-    const accessToken = Cookie.get('accessToken');
-    if (!accessToken) {
-      // Handle this w/ OAuth redirect
-      console.log('No access token!');
-    } else {
-      const script = document.createElement('script');
-      script.src = 'https://sdk.scdn.co/spotify-player.js';
-      script.id = 'spotifyPlaybackSdk';
-      document.body.appendChild(script);
-      script.onload = () => {
-        console.log('SDK loaded');
+    // Load the Spotify Playback SDK script from its CDN
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
+    script.id = 'spotifyPlaybackSdk';
+    document.body.appendChild(script);
+    script.onload = () => {
+      console.log('SDK loaded');
+      // @ts-ignore
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        // Create a new SDK player instance and add listeners to it
         // @ts-ignore
-        window.onSpotifyWebPlaybackSDKReady = () => {
-          // @ts-ignore
-          const sdk = new Spotify.Player({
-            name: 'Spotify Mix',
-            getOAuthToken: (cb: any) => {
-              cb(accessToken);
-            },
+        const sdk = new Spotify.Player({
+          name: 'Spotify Mix',
+          getOAuthToken: (cb: any) => {
+            cb(Cookie.get('accessToken'));
+          },
+        });
+
+        // When the player is ready, set up WS listener and request the current room state
+        sdk.addListener('ready', ({ device_id }: { device_id: string }) => {
+          console.log('SDK connected and deviceId set');
+          deviceId.current = device_id;
+
+          const socket = io(ENDPOINT);
+
+          socket.on('roomState', (state: RoomState) => {
+            console.log('Room state received');
+            // If you're the only one in the room, send message: you are the only one in the room add a track to get started!
+            // If not response from express server, show error
+            // If others in the room, return their state object and sync up with it.
+            setRoomState(state);
           });
 
-          sdk.addListener('ready', ({ device_id }: { device_id: string }) => {
-            console.log('SDK connected and deviceId set');
-            deviceId.current = device_id;
-
-            // Set up WS listener and send room state request to peers
-            const socket = io(ENDPOINT);
-
-            socket.on('roomState', (state: RoomState) => {
-              console.log('Room state received');
-              // If you're the only one in the room, send message: you are the only one in the room add a track to get started!
-              // If not response from express server, show error
-              // If others in the room, return their state object and sync up with it.
-              setRoomState(state);
-            });
-
-            socket.on('connect', () => {
-              console.log('WS connected');
-              socket.emit('joinRoom', roomId.current);
-              ws.current = socket;
-            });
+          socket.on('connect', () => {
+            console.log('WS connected');
+            socket.emit('joinRoom', roomId.current);
+            ws.current = socket;
           });
+        });
 
-          sdk.addListener('player_state_changed', (state: any) => {
-            console.log(state);
-          });
-
-          // Connect to the player!
-          sdk.connect();
-        };
+        // Add the SDK to your Spotify device list
+        sdk.connect();
       };
-    }
+    };
   }, [deviceId, setRoomState]);
 
   return (
@@ -108,12 +94,12 @@ export default function Room2() {
         <h1 className={classes.title}>Room Title</h1>
         <Search2 spotifyApi={spotifyApi} addTrackHandler={addTrackHandler} />
         <Queue roomState={roomState} deleteTrackHandler={deleteTrackHandler} />
+        <Player2
+          roomState={roomState}
+          togglePlayHandler={togglePlayHandler}
+          changeTrackHandler={changeTrackHandler}
+        />
       </Container>
-      <Player2
-        roomState={roomState}
-        togglePlayHandler={togglePlayHandler}
-        changeTrackHandler={changeTrackHandler}
-      />
     </div>
   );
 }

@@ -3,16 +3,28 @@ import { stringify } from 'node:querystring';
 import { Server, Socket } from 'socket.io';
 
 const initializeWs = (server: httpServer.Server): void => {
-  const io = new Server(server, {
-    // Options ...
-  });
+  const io = new Server(server);
 
   io.on('connection', (socket: Socket): void => {
     console.log('Socket connected:', socket.id);
 
     socket.on('joinRoom', (roomId: string) => {
+      socket.join(roomId);
       console.log(`Socket ${socket.id} joined room ${roomId}`);
       console.log('Rooms:', io.sockets.adapter.rooms);
+
+      const room = io.sockets.adapter.rooms.get(roomId);
+      if (room!.size === 1) {
+        // User is the first in the room!
+        // Send back an empty object and the notice that they are first
+      } else {
+        const arrRoom = [...room!];
+        const firstSocketInRoom = arrRoom[0];
+        console.log(firstSocketInRoom);
+
+        // Send message to firstSocketInRoom, along with requesting socket's ID
+        // firstSocketInRoom gets current state, sends back specifically to req socket
+      }
       // Get room state from other room peers (instead of using this dummy state)
       const dummyState = {
         tracks: [
@@ -33,7 +45,7 @@ const initializeWs = (server: httpServer.Server): void => {
         ],
         currentTrackIndex: 1,
         currentTrackPosition: 30000,
-        isPlaying: false,
+        isPlaying: true,
       };
       io.to(socket.id).emit('roomState', dummyState);
     });

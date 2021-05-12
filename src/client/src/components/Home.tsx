@@ -2,7 +2,6 @@ import Cookie from 'js-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
-import JoinButton from './JoinButton';
 import CreateButton from './CreateButton';
 import AuthButton from './AuthButton';
 
@@ -28,16 +27,6 @@ const useStyles = makeStyles(() => ({
     paddingTop: '40px',
     textAlign: 'center',
   },
-  buttons: {
-    width: '40%',
-    display: 'flex',
-    justifyContent: 'space-between',
-    '& > * > *:first-child': {
-      height: '3rem',
-      color: 'white',
-      borderColor: 'white',
-    },
-  },
 }));
 
 export default function Home() {
@@ -53,14 +42,7 @@ export default function Home() {
           ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Typography>
       </div>
-      {Cookie.get('userId') ? (
-        <div className={classes.buttons}>
-          <CreateButton />
-          <JoinButton />
-        </div>
-      ) : (
-        <AuthButton />
-      )}
+      {Cookie.get('accessToken') ? <CreateButton /> : <AuthButton />}
     </div>
   );
 }
