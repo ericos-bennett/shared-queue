@@ -64,10 +64,12 @@ const initializeWs = (server: httpServer.Server): void => {
       }
     });
 
-    socket.on('togglePlay', (roomId: string) => {
+    socket.on('play', (roomId: string) => {
       console.log(`Room ${roomId}: Toggle play`);
     });
-
+    socket.on('pause', (roomId: string) => {
+      console.log(`Room ${roomId}: Toggle play`);
+    });
     socket.on('changeTrack', (roomId: string, direction: 'prev' | 'next') => {
       console.log(`Room ${roomId}: Go to ${direction} track`);
     });
