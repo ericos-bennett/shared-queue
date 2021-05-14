@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { RoomState } from '../../types';
+import { playerActions } from "../actions/playerActions";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -25,12 +25,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type QueueProps = {
-  roomState: RoomState | null;
-  deleteTrackHandler: (trackIndex: number) => void;
-};
-
-export default function Queue({ roomState, deleteTrackHandler }: QueueProps) {
+export default function Queue() {
   const classes = useStyles();
 
   const listItems = roomState?.tracks.map((track: any, i) => {
