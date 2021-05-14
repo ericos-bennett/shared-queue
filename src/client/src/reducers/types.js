@@ -1,0 +1,16 @@
+const types = {
+    // ROOM
+    SET_DEVICE_ID: 'SET_DEVICE_ID',
+    SET_ROOM_STATE: 'SET_ROOM_STATE',
+    SET_SPOTIFY_API: 'SET_SPOTIFY_API',
+
+    // PLAYER
+    PAUSE: 'PAUSE',
+    PLAY: 'PLAY',
+    CHANGE_TRACK: 'CHANGE_TRACK',
+    DELETE_TRACK: 'DELETE_TRACK',
+    ADD_TRACK: 'ADD_TRACK',
+}
+
+export default types
+
