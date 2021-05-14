@@ -10,6 +10,8 @@ import Search from './Search';
 import Queue from './Queue';
 import Player from './Player';
 import { RoomState, sdkErrorMessage } from '../../types';
+import { roomActions } from '../actions/roomActions';
+import SpotifyWebApi from 'spotify-web-api-node';
 
 const ENDPOINT = 'http://localhost:3000';
 
@@ -39,6 +41,11 @@ export default function Room() {
     script.id = 'spotifyPlaybackSdk';
     document.body.appendChild(script);
     console.log('SDK added to body');
+
+    const api = new SpotifyWebApi({});
+    api.setAccessToken(Cookie.get('accessToken')!);
+    roomActions.setSpotifyApi(dispatch, api)
+
     // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = () => {
       // Create a new SDK player instance and add listeners to it
@@ -59,16 +66,16 @@ export default function Room() {
       // When the player is ready, set up WS listener and request the current room state
       sdk.addListener('ready', ({ device_id }: { device_id: string }) => {
         console.log('SDK connected and deviceId set');
-        deviceId.current = device_id;
+        roomActions.setDeviceId(dispatch, device_id)
 
         const socket = io(ENDPOINT);
-
+        roomActions.setWebsocket(dispatch, {ws:socket})
         socket.on('roomState', (state: RoomState) => {
           console.log('Room state received');
           // If you're the only one in the room, send message: you are the only one in the room add a track to get started!
           // If not response from express server, show error
           // If others in the room, return their state object and sync up with it.
-          setRoomState(state);
+          roomActions.setRoomState(dispatch, state);
         });
 
         socket.on('togglePlay', () => {
@@ -79,7 +86,8 @@ export default function Room() {
         socket.on('connect', () => {
           console.log('WS connected');
           socket.emit('joinRoom', roomId.current);
-          ws.current = socket;
+          // roomActions.setWebsocket(dispatch, {ws:socket})
+          // ws.current = socket;
         });
       });
 
