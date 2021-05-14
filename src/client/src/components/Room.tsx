@@ -80,23 +80,10 @@ export default function Room() {
 
       // Add the SDK to your Spotify device list
       sdk.connect();
-    };
-  }, [deviceId, setRoomState]);
 
-  const togglePlayHandler = (): void => {
-    ws.current!.emit('togglePlay', roomId.current);
-    togglePlay();
-  };
 
-  const changeTrackHandler = (direction: 'prev' | 'next'): void => {
-    ws.current!.emit('changeTrack', roomId.current, direction);
-    changeTrack(direction);
   };
-
-  const deleteTrackHandler = (trackIndex: number) => {
-    ws.current!.emit('deleteTrack', roomId.current, trackIndex);
-    deleteTrack(trackIndex);
-  };
+  }, []);
 
     // create object to be passed as value, using memo to encapsulate against unnecessary updates
     const roomContextValue = useMemo(() => {
