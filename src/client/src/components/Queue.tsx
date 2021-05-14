@@ -31,6 +31,10 @@ export default function Queue() {
   const classes = useStyles();
   const {state, dispatch} = useContext(roomContext)
   
+  const handleDeleteTrackClick = (e:any) => {
+    const trackIndex = e.target.value
+    playerActions.deleteTrack(state, dispatch, trackIndex)
+  }
 
   const listItems = state?.tracks.map((track: any, i:number) => {
     return (
@@ -41,8 +45,9 @@ export default function Queue() {
         </h4>
         <IconButton
           aria-label="delete"
-          onClick={() => deleteTrackHandler(i)}
+          onClick={handleDeleteTrackClick}
           className={classes.deleteIcon}
+          value={i}
         >
           <DeleteIcon fontSize="large" />
         </IconButton>
