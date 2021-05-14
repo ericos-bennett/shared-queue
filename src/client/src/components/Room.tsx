@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useReducer, useMemo } from 'react';
 import { useParams } from 'react-router';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-
+import {RoomContext, initialState} from '../reducers/roomContext';
+import playerReducer from '../reducers/roomReducer';
 import Search from './Search';
 import Queue from './Queue';
 import Player from './Player';
@@ -28,6 +29,7 @@ const useStyles = makeStyles(() => ({
 export default function Room() {
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
+  const [state, dispatch] = useReducer(playerReducer, initialState)
 
   const classes = useStyles();
 
@@ -96,12 +98,16 @@ export default function Room() {
     deleteTrack(trackIndex);
   };
 
-  const addTrackHandler = (track: Track) => {
-    ws.current!.emit('addTrack', roomId.current, track);
-    addTrack(track);
-  };
+    // create object to be passed as value, using memo to encapsulate against unnecessary updates
+    const roomContextValue = useMemo(() => {
+      return {
+        state,
+        dispatch
+      }
+  }, [state, dispatch])
 
   return (
+    <RoomContext.Provider value={roomContextValue} >
     <div className={classes.root}>
       <Container>
         <h1 className={classes.title}>Room Title</h1>
@@ -110,5 +116,6 @@ export default function Room() {
         <Player />
       </Container>
     </div>
+    </RoomContext.Provider>
   );
 }
