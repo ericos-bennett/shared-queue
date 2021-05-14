@@ -1,7 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-import { RoomState } from '../../types';
-
+import roomContext from '../reducers/roomContext';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -32,17 +31,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type PlayerControlsProps = {
-  roomState: RoomState | null;
-  togglePlayHandler: () => void;
-  changeTrackHandler: (direction: 'prev' | 'next') => void;
-};
 
-export default function PlayerControls({
-  roomState,
-  togglePlayHandler,
-  changeTrackHandler,
-}: PlayerControlsProps) {
+export default function PlayerControls() {
   const classes = useStyles();
 
   return (
