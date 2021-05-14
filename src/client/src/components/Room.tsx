@@ -28,17 +28,7 @@ const useStyles = makeStyles(() => ({
 export default function Room() {
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
-  const ws = useRef<SocketIOClient.Socket | null>(null);
-  const {
-    roomState,
-    setRoomState,
-    spotifyApi,
-    deviceId,
-    togglePlay,
-    changeTrack,
-    deleteTrack,
-    addTrack,
-  } = useRoom();
+
   const classes = useStyles();
 
   useEffect(() => {
@@ -115,13 +105,9 @@ export default function Room() {
     <div className={classes.root}>
       <Container>
         <h1 className={classes.title}>Room Title</h1>
-        <Search spotifyApi={spotifyApi} addTrackHandler={addTrackHandler} />
-        <Queue roomState={roomState} deleteTrackHandler={deleteTrackHandler} />
-        <Player
-          roomState={roomState}
-          togglePlayHandler={togglePlayHandler}
-          changeTrackHandler={changeTrackHandler}
-        />
+        <Search /> 
+        <Queue />
+        <Player />
       </Container>
     </div>
   );
