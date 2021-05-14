@@ -1,8 +1,10 @@
+import {useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { playerActions } from "../actions/playerActions";
+import roomContext from '../reducers/roomContext';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -27,8 +29,10 @@ const useStyles = makeStyles(() => ({
 
 export default function Queue() {
   const classes = useStyles();
+  const {state, dispatch} = useContext(roomContext)
+  
 
-  const listItems = roomState?.tracks.map((track: any, i) => {
+  const listItems = state?.tracks.map((track: any, i:number) => {
     return (
       <li className={classes.track} key={i}>
         <img src={track.albumUrl} alt={track.artist}></img>
@@ -48,7 +52,7 @@ export default function Queue() {
 
   return (
     <ul className={classes.root}>
-      {roomState?.tracks.length ? (
+      {state?.tracks.length ? (
         listItems
       ) : (
         <p className={classes.emptyTracks}>Add tracks above to get started!</p>
