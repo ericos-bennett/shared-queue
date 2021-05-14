@@ -38,6 +38,16 @@ export default function PlayerControls() {
   const classes = useStyles();
   const {state, dispatch} = useContext(roomContext)
 
+  const handlePrevClick = () => {
+    playerActions.changeTrack(state, dispatch, {direction: 'prev'})
+  }
+  const handleTogglePlay = () => {
+    state.isPlaying ? playerActions.pause(state, dispatch) :  playerActions.play(state, dispatch)
+  }
+  const handleChangeTrack = () => {
+    playerActions.changeTrack(state, dispatch, {direction: 'next'})
+  }
+
   return (
     <div className={classes.root}>
       {state && state.tracks.length > 0 && state.currentTrackIndex > 0 ? (
@@ -45,7 +55,7 @@ export default function PlayerControls() {
           type="button"
           aria-label="Previous Track"
           className={classes.prevNext}
-          onClick={() => changeTrackHandler('prev')}
+          onClick={handlePrevClick}
         >
           <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
             <path
@@ -62,7 +72,7 @@ export default function PlayerControls() {
           type="button"
           aria-label="Play"
           className={classes.playPause}
-          onClick={() => togglePlayHandler()}
+          onClick={handleTogglePlay}
         >
           <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
             <path d="M119.351 64L8.65 0v128z" fill="currentColor"></path>
@@ -74,7 +84,7 @@ export default function PlayerControls() {
           type="button"
           aria-label="Pause"
           className={classes.playPause}
-          onClick={() => togglePlayHandler()}
+          onClick={handleTogglePlay}
         >
           <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
             <path
@@ -89,7 +99,7 @@ export default function PlayerControls() {
           type="button"
           aria-label="Next Track"
           className={classes.prevNext}
-          onClick={() => changeTrackHandler('next')}
+          onClick={handleChangeTrack}
         >
           <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
             <path
