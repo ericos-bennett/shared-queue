@@ -22,11 +22,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type PlayerProps = {
-  roomState: RoomState | null;
-  togglePlayHandler: () => void;
-  changeTrackHandler: (direction: 'prev' | 'next') => void;
-};
 
 export default function Player({ roomState, togglePlayHandler, changeTrackHandler }: PlayerProps) {
   const classes = useStyles();
@@ -44,11 +39,7 @@ export default function Player({ roomState, togglePlayHandler, changeTrackHandle
           </h4>
         </div>
       )}
-      <PlayerControls
-        roomState={roomState}
-        togglePlayHandler={togglePlayHandler}
-        changeTrackHandler={changeTrackHandler}
-      />
+      <PlayerControls />
     </div>
   );
 }
