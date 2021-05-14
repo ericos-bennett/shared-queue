@@ -13,7 +13,7 @@ import { RoomState, sdkErrorMessage } from '../../types';
 import { roomActions } from '../actions/roomActions';
 import SpotifyWebApi from 'spotify-web-api-node';
 
-const ENDPOINT = 'http://localhost:3000';
+const ENDPOINT = 'https://localhost:3000';
 
 const useStyles = makeStyles(() => ({
   root: {
