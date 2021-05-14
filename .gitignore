@@ -29,3 +29,5 @@ pids
 *.pid
 *.seed
 *.pid.lock
+docker-compose.yml
+Dockerfile
