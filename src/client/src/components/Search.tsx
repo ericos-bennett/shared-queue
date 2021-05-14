@@ -1,8 +1,8 @@
+import { useState, useEffect, useContext } from 'react';
 import SearchBar from 'material-ui-search-bar';
-import { useState, useEffect } from 'react';
-import SpotifyWebApi from 'spotify-web-api-node';
 
-import { Track } from '../../types';
+
+import { Track, ServerResponse, ResTrack } from '../../types';
 import TrackSearchResult from './TrackSearchResult';
 
 import { RoomContext } from '../reducers/roomContext'
@@ -11,16 +11,18 @@ import { playerActions } from "../actions/playerActions";
 export default function Search() {
   const [search, setSearch] = useState<string>('');
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
+  const { state, dispatch } = useContext(RoomContext)
+
 
   useEffect(() => {
     if (!search) return setSearchTracks([]);
 
     let cancel = false;
-    spotifyApi &&
-      spotifyApi.searchTracks(search, { limit: 5 }).then(res => {
+    state.spotifyApi &&
+      state.spotifyApi.searchTracks(search, { limit: 5 }).then((res:ServerResponse) => {
         if (cancel) return;
         setSearchTracks(
-          res!.body!.tracks!.items.map(track => {
+          res!.body!.tracks!.items.map((track:ResTrack) => {
             return {
               artist: track.artists[0].name,
               title: track.name,
@@ -35,11 +37,11 @@ export default function Search() {
     return () => {
       cancel = true;
     };
-  }, [setSearchTracks, search, spotifyApi]);
+  }, [setSearchTracks, search, state.spotifyApi]);
 
   const chooseTrack = (track: Track): void => {
     setSearchTracks([]);
-    addTrackHandler(track);
+    playerActions.addTrack(state, dispatch, track)
   };
 
   return (
