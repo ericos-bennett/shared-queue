@@ -9,8 +9,7 @@ import playerReducer from '../reducers/roomReducer';
 import Search from './Search';
 import Queue from './Queue';
 import Player from './Player';
-import useRoom from '../hooks/useRoom';
-import { Track, RoomState } from '../../types';
+import { RoomState, sdkErrorMessage } from '../../types';
 
 const ENDPOINT = 'http://localhost:3000';
 
@@ -50,6 +49,12 @@ export default function Room() {
           cb(Cookie.get('accessToken'));
         },
       });
+
+      // Error handling
+      sdk.addListener('initialization_error', ( message:sdkErrorMessage) => { console.error(message); });
+      sdk.addListener('authentication_error', (message:sdkErrorMessage) => { console.error(message); });
+      sdk.addListener('account_error', (message:sdkErrorMessage) => { console.error(message); });
+      sdk.addListener('playback_error', (message:sdkErrorMessage) => { console.error(message); });
 
       // When the player is ready, set up WS listener and request the current room state
       sdk.addListener('ready', ({ device_id }: { device_id: string }) => {
