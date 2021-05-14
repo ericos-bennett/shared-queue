@@ -1,6 +1,8 @@
+import {useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 
 import roomContext from '../reducers/roomContext';
+import { playerActions } from "../actions/playerActions";
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -34,10 +36,11 @@ const useStyles = makeStyles(() => ({
 
 export default function PlayerControls() {
   const classes = useStyles();
+  const {state, dispatch} = useContext(roomContext)
 
   return (
     <div className={classes.root}>
-      {roomState && roomState.tracks.length > 0 && roomState.currentTrackIndex > 0 ? (
+      {state && state.tracks.length > 0 && state.currentTrackIndex > 0 ? (
         <button
           type="button"
           aria-label="Previous Track"
@@ -54,7 +57,7 @@ export default function PlayerControls() {
       ) : (
         <div style={{ width: '16px' }}></div>
       )}
-      {roomState && roomState.tracks.length > 0 && !roomState.isPlaying && (
+      {state && state.tracks.length > 0 && !state.isPlaying && (
         <button
           type="button"
           aria-label="Play"
@@ -66,7 +69,7 @@ export default function PlayerControls() {
           </svg>
         </button>
       )}
-      {roomState && roomState.tracks.length > 0 && roomState.isPlaying && (
+      {state && state.tracks.length > 0 && state.isPlaying && (
         <button
           type="button"
           aria-label="Pause"
@@ -81,7 +84,7 @@ export default function PlayerControls() {
           </svg>
         </button>
       )}
-      {roomState && roomState.tracks.length - 1 > roomState.currentTrackIndex ? (
+      {state && state.tracks.length - 1 > state.currentTrackIndex ? (
         <button
           type="button"
           aria-label="Next Track"
