@@ -5,12 +5,10 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import { Track } from '../../types';
 import TrackSearchResult from './TrackSearchResult';
 
-type SearchProps = {
-  spotifyApi: SpotifyWebApi | null;
-  addTrackHandler: (track: Track) => void;
-};
+import { RoomContext } from '../reducers/roomContext'
+import { playerActions } from "../actions/playerActions";
 
-export default function Search({ spotifyApi, addTrackHandler }: SearchProps) {
+export default function Search() {
   const [search, setSearch] = useState<string>('');
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
 
