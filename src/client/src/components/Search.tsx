@@ -5,13 +5,13 @@ import SearchBar from 'material-ui-search-bar';
 import { Track, ServerResponse, ResTrack } from '../../types';
 import TrackSearchResult from './TrackSearchResult';
 
-import { RoomContext } from '../reducers/roomContext'
+import { Context } from '../reducers/context'
 import { playerActions } from "../actions/playerActions";
 
 export default function Search() {
   const [search, setSearch] = useState<string>('');
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
-  const { state, dispatch } = useContext(RoomContext)
+  const { state, dispatch } = useContext(Context)
 
 
   useEffect(() => {

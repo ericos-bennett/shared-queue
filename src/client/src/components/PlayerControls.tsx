@@ -1,7 +1,7 @@
 import {useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 
-import roomContext from '../reducers/roomContext';
+import Context from '../reducers/context';
 import { playerActions } from "../actions/playerActions";
 const useStyles = makeStyles(() => ({
   root: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
 
 export default function PlayerControls() {
   const classes = useStyles();
-  const {state, dispatch} = useContext(roomContext)
+  const {state, dispatch} = useContext(Context)
 
   const handlePrevClick = () => {
     playerActions.changeTrack(state, dispatch, {direction: 'prev'})

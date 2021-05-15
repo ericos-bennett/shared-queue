@@ -1,8 +1,14 @@
 const types = {
+    // HOME
+    LOGIN_LOADING: 'LOGIN_LOADING',
+    LOGIN: 'LOGIN',
+    LOGOUT: 'LOGOUT',
+
     // ROOM
-    SET_DEVICE_ID: 'SET_DEVICE_ID',
+    SET_ROOM_ID: 'SET_ROOM_ID',
     SET_ROOM_STATE: 'SET_ROOM_STATE',
     SET_SPOTIFY_API: 'SET_SPOTIFY_API',
+    SET_SPOTIFY_PLAYER: 'SET_SPOTIFY_PLAYER',
 
     // PLAYER
     PAUSE: 'PAUSE',
@@ -13,4 +19,5 @@ const types = {
 }
 
 export default types
+
 
