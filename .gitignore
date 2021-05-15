@@ -31,3 +31,4 @@ pids
 *.pid.lock
 docker-compose.yml
 Dockerfile
+workspace.code-workspace
