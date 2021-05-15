@@ -1,19 +1,20 @@
-import { useEffect, useRef, useReducer, useMemo } from 'react';
+import { useEffect, useRef, useContext, useCallback } from 'react';
 import { useParams } from 'react-router';
 // import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-import {RoomContext, initialState} from '../reducers/roomContext';
-import playerReducer from '../reducers/roomReducer';
+import Context from '../reducers/context';
+
 import Search from './Search';
 import Queue from './Queue';
 import Player from './Player';
-import { RoomState, sdkErrorMessage } from '../../types';
+
 import { roomActions } from '../actions/roomActions';
 import SpotifyWebApi from 'spotify-web-api-node';
 
-const ENDPOINT = 'https://localhost:3000';
+
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -28,9 +29,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function Room() {
+  const { state, dispatch} = useContext(Context)
   const { id } = useParams<{ id: string }>(); 
   const roomId = useRef<string>(id);
-  const [state, dispatch] = useReducer(playerReducer, initialState)
 
   const classes = useStyles();
 
@@ -47,7 +48,7 @@ export default function Room() {
       const api = new SpotifyWebApi({});
       api.setAccessToken(Cookie.get('accessToken')!);
       roomActions.setSpotifyApi(dispatch, api)
-
+      roomActions.setRoomId(dispatch, roomId.current)
           // @ts-ignore
       window.onSpotifyWebPlaybackSDKReady = () => {
         roomActions.setSpotifyPlayer(state, dispatch)
