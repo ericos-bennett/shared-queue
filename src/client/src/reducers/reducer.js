@@ -2,25 +2,40 @@
 // Types
 import types from './types'
 
-export default function playerReducer(state, action) {
+export default function reducer(state, action) {
     switch (action.type) {
+
+        case types.LOGOUT:
+        case types.LOGIN:
+            return {
+                ...state,
+                login_loading: false,
+                logged_in: action.payload
+            }
+
+        case types.SET_ROOM_ID:
+            return {
+                ...state,
+                roomId: action.payload
+            }
 
         case types.SET_SPOTIFY_API:
             return {
                 ...state,
                 spotifyApi: action.payload
             }
-        case types.SET_DEVICE_ID:
-            const { device_id } = action.payload
+        case types.SET_SPOTIFY_PLAYER:
             return {
                 ...state,
-                device_id
+                spotifyPlayer: action.payload
             }
+
+
+
         case types.SET_ROOM_STATE:
-            const { roomState } = action.payload
             return {
                 ...state,
-                roomState
+                roomState: action.payload
             }
         case types.PAUSE:
         case types.PLAY:
@@ -46,6 +61,7 @@ export default function playerReducer(state, action) {
             const { track } = action.payload
             let tracks = state.tracks
             tracks.push(track)
+
             return {
                 ...state,
                 tracks
