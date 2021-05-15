@@ -1,103 +1,124 @@
 import types from '../reducers/types'
+import io from 'socket.io-client';
+
+let ws = null
+const ENDPOINT = 'http://localhost:8080'
+
+const setWS = (state, dispatch) => {
+    if (!ws && state.roomId) {
+
+        ws = io(ENDPOINT, { transports: ["websocket", "polling"] });
+        ws.on('connect', () => {
+            ws.emit('joinRoom', state.roomId);
+        });
+        ws.on('roomState', (roomState) => {
+            dispatch({
+                type: types.SET_ROOM_STATE,
+                payload: roomState
+            })
+        })
+        ws.on('play', (e) => {
+
+        })
+    }
+    return true
+}
 
 
 const pause = (state, dispatch) => {
-    const { spotifyApi, ws } = state
+    const { spotifyPlayer, currentTrackIndex } = state
 
-    spotifyApi
+    spotifyPlayer
         .pause()
         .then(() => {
-            ws.emit('pause', state.roomId);
             dispatch({
                 type: types.PAUSE,
-                payload: null
+                payload: { isPlaying: false, currentTrackIndex }
             })
+            setWS(state, dispatch) && ws.emit('pause', state.roomId);
         })
-        .catch(err => console.log(err));
 }
 
 const play = (state, dispatch) => {
-    const { spotifyApi, tracks, trackHasLoaded, currentTrackIndex, currentTrackPosition, ws } = state
-    if (trackHasLoaded.current) {
-        spotifyApi
-            .play()
-            .then(() => {
-                ws.emit('play', state.roomId);
-                dispatch({
-                    type: types.PLAY,
-                    payload: { isPlaying: false, trackHasLoaded: true }
-                })
-            })
-            .catch(err => console.log(err));
-    } else {
-        const currentTrackId = tracks[currentTrackIndex].id;
-        spotifyApi
-            .play({
-                uris: [`spotify:track:${currentTrackId}`],
-                position_ms: currentTrackPosition,
-            })
-            .then(() => {
-                ws.emit('play', state.roomId);
-                dispatch({
-                    type: types.PLAY,
-                    payload: { isPlaying: true, trackHasLoaded: true }
-                })
-                console.log('Playback started for the first time');
-            })
-            .catch(err => console.log(err));
+    const { spotifyPlayer, tracks, currentTrackIndex, roomId } = state
+    if (state.isPlaying) {
+        return
+    } else if (!tracks) {
+        alert("No tracks to play")
+        return
+    } else if (currentTrackIndex > tracks.length) {
+        throw new Error(`Track ${currentTrackIndex} is not in track array`)
+    } else if (currentTrackIndex === -1) {
+        setWS(state, dispatch) && ws.emit('changeTrack', roomId, 0)
+        changeTrack(state, dispatch, { direction: 0 })
+        return
     }
-}
 
+    const currentTrackId = tracks[currentTrackIndex].id;
+    spotifyPlayer
+        .togglePlay({
+            uris: [`spotify:track:${currentTrackId}`],
+        })
+        .then(() => {
+            dispatch({
+                type: types.PLAY,
+                payload: { isPlaying: true, currentTrackIndex }
+            })
+        })
+}
 
 const changeTrack = (state, dispatch, payload) => {
     const { direction } = payload
-    const { spotifyApi, currentTrackIndex, tracks, ws } = state
-    const newTrackIndex =
-        direction === 'prev' ? currentTrackIndex - 1 : currentTrackIndex + 1;
-    const newTrackId = tracks[newTrackIndex].id;
+    const { currentTrackIndex, tracks, roomId } = state
 
-    spotifyApi
-        .play({
-            uris: [`spotify:track:${newTrackId}`],
+    let newTrackIndex = -1
+    switch (direction) {
+        case 'prev':
+            newTrackIndex = currentTrackIndex > 0 ? currentTrackIndex - 1 : currentTrackIndex
+            break;
+        case 'next':
+            newTrackIndex = currentTrackIndex <= tracks.length - 1 ? currentTrackIndex + 1 : currentTrackIndex
+            break;
+        default:
+            newTrackIndex = typeof direction === 'number' && direction <= tracks.length ? direction : -1
+            break;
+    }
+
+    if (newTrackIndex !== -1 && newTrackIndex !== state.currentTrackIndex) {
+        dispatch({
+            type: types.CHANGE_TRACK,
+            payload: { newTrackIndex, isPlaying: true }
         })
-        .then(() => {
-            console.log('Track switched');
-            ws.emit('changeTrack', state.roomId, direction);
-            dispatch({
-                type: types.CHANGE_TRACK,
-                payload: { currentTrackIndex, isPlaying: true }
-            })
-        })
-        .catch(err => console.log(err));
+        setWS(state, dispatch) && ws.emit('play', roomId);
+    } else {
+        throw new Error(`Unable to change track to ${direction}`)
+    }
 }
 
 const deleteTrack = (state, dispatch, payload) => {
     const { trackIndex } = payload
-    const { tracks, currentTrackIndex, ws } = state;
+    const { tracks, currentTrackIndex } = state;
     tracks.splice(trackIndex, 1);
 
     const cti = trackIndex < currentTrackIndex ? currentTrackIndex - 1 : currentTrackIndex
-    ws.emit('deleteTrack', state.roomId, trackIndex);
+
     dispatch({
         type: types.DELETE_TRACK,
         payload: { tracks, currentTrackIndex: cti }
     })
+    setWS(state, dispatch) && ws.emit('deleteTrack', state.roomId, trackIndex);
 }
 
-const addTrack = (state, dispatch, payload) => {
-    const { track } = payload;
-    const { ws } = state;
-    ws.emit('addTrack', state.roomId, track);
+const addTrack = (state, dispatch, track) => {
+    const { roomId } = state;
     dispatch({
         type: types.ADD_TRACK,
-        payload
+        payload: { track }
     })
+    setWS(state, dispatch) && ws.emit('addTrack', roomId, track);
 }
 
-
-
 export const playerActions = {
-
     pause,
     play,
     changeTrack,
