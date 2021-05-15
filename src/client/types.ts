@@ -47,7 +47,7 @@ export type sdkErrorMessage = {
   message: string;
 };
 
-export type ServerResponse  {
+export type ServerResponse = {
   body: {
   tracks: {
     items: []
