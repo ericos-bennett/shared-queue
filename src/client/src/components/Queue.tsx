@@ -1,10 +1,7 @@
 import {useContext} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-
-import { playerActions } from "../actions/playerActions";
-import roomContext from '../reducers/roomContext';
+import Context from '../reducers/context';
+import DeleteButton from './DeleteButton';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -29,13 +26,8 @@ const useStyles = makeStyles(() => ({
 
 export default function Queue() {
   const classes = useStyles();
-  const {state, dispatch} = useContext(roomContext)
+  const {state} = useContext(Context)
   
-  const handleDeleteTrackClick = (e:any) => {
-    const trackIndex = e.target.value
-    playerActions.deleteTrack(state, dispatch, trackIndex)
-  }
-
   const listItems = state?.tracks.map((track: any, i:number) => {
     return (
       <li className={classes.track} key={i}>
@@ -43,14 +35,7 @@ export default function Queue() {
         <h4 className={classes.trackLabel}>
           {track.artist} - {track.title}
         </h4>
-        <IconButton
-          aria-label="delete"
-          onClick={handleDeleteTrackClick}
-          className={classes.deleteIcon}
-          value={i}
-        >
-          <DeleteIcon fontSize="large" />
-        </IconButton>
+        <DeleteButton queueIndex={i}/>
       </li>
     );
   });
