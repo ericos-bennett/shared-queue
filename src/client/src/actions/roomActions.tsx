@@ -2,12 +2,13 @@ import types from '../reducers/types'
 import { playerActions } from '../actions/playerActions';
 import { sdkErrorMessage } from '../../types';
 import Cookie from 'js-cookie';
+import io from 'socket.io-client';
 
-let socket:any = null
+let socket: any = null
 const ENDPOINT = 'http://localhost:8080'
 
-const setRoomId = (dispatch:any, payload:any) => {
-
+const setRoomId = (dispatch: any, payload: any) => {
+    console.info("setRoomId")
     dispatch({
         type: types.SET_ROOM_ID,
         payload
@@ -15,24 +16,30 @@ const setRoomId = (dispatch:any, payload:any) => {
 }
 
 
-const setSpotifyApi = (dispatch:any, payload:any) => {
-
+const setSpotifyApi = (dispatch: any, payload: any) => {
+    console.info("setSpotifyApi")
     dispatch({
         type: types.SET_SPOTIFY_API,
         payload
     })
 }
 
-const setSpotifyPlayer = (state:any, dispatch:any) => {
+const setSpotifyPlayer = (state: any, dispatch: any) => {
+    console.info("setSpotifyPlayer")
+    // Create a new SDK player instance and add listeners to it
+    // @ts-ignore
+    const spotifyPlayer = new Spotify.Player({
+        name: 'Spotify Mix',
+        getOAuthToken: (cb: any) => {
+            cb(Cookie.get('accessToken'));
+        },
+    });
 
-            // Create a new SDK player instance and add listeners to it
-        // @ts-ignore
-        const spotifyPlayer = new Spotify.Player({
-            name: 'Spotify Mix',
-            getOAuthToken: (cb: any) => {
-              cb(Cookie.get('accessToken'));
-            },
-          });
+    spotifyPlayer.connect().then((success: boolean) => {
+        if (success) {
+            console.log('The Web Playback SDK successfully connected to Spotify!');
+        }
+    })
 
     // Error handling
     spotifyPlayer.addListener('initialization_error', (message: sdkErrorMessage) => { console.error(message); });
@@ -50,19 +57,25 @@ const setSpotifyPlayer = (state:any, dispatch:any) => {
             console.log('togglePlay from peer');
         });
         socket.on('changeTrack', (number: number) => {
-            console.log('changeTrack')
+            console.log('changeTrack Test')
             playerActions.changeTrack(state, dispatch, number)
         });
         socket.on('play', () => {
-            console.log('togglePlay from peer');
+            console.log('play from peer');
         });
         socket.on('pause', () => {
-            console.log('togglePlay from peer');
+            console.log('pause from peer');
         });
         socket.on('connect', () => {
             socket.emit('joinRoom', state.roomId);
         });
     });
+
+    spotifyPlayer.addListener('changeTrack', () => {
+        console.log('togglePlay from peer');
+    });
+
+
 
     dispatch({
         type: types.SET_SPOTIFY_PLAYER,
