@@ -5,13 +5,16 @@ export const Context = React.createContext()
 export const initialState = {
     spotifyApi: null,
     spotifyPlayer: null,
+    spotifyPlayerReady: false,
     isPlaying: false,
-    currentTrackIndex: -1,
+    currentTrackIndex: 0,
     tracks: [],
-    roomState: {},
-    roomId: null,
+    currentTrackPosition: 0,
+    roomId: '',
     login_loading: false,
-    logged_in: false
+    logged_in: false,
+    deviceId: 0,
+    isConnected: false
 }
 
 export default Context

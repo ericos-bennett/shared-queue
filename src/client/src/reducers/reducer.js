@@ -12,13 +12,12 @@ export default function reducer(state, action) {
                 login_loading: false,
                 logged_in: action.payload
             }
-
         case types.SET_ROOM_ID:
+            console.log(`action.payload`, action.payload)
             return {
                 ...state,
                 roomId: action.payload
             }
-
         case types.SET_SPOTIFY_API:
             return {
                 ...state,
@@ -29,25 +28,34 @@ export default function reducer(state, action) {
                 ...state,
                 spotifyPlayer: action.payload
             }
-
-
-
+        case types.SET_SPOTIFY_PLAYER_READY:
+            return {
+                ...state,
+                spotifyPlayerReady: action.payload
+            }
         case types.SET_ROOM_STATE:
             return {
                 ...state,
                 roomState: action.payload
             }
         case types.PAUSE:
-        case types.PLAY:
-        case types.CHANGE_TRACK: {
-            const { currentTrackIndex, isPlaying } = action.payload
             return {
                 ...state,
-                isPlaying,
-                currentTrackIndex
+                isPlaying: false
             }
-        }
-        case types.DELETE_TRACK: {
+        case types.PLAY:
+            return {
+                ...state,
+                isPlaying: true
+            }
+        case types.CHANGE_TRACK:
+
+            return {
+                ...state,
+                currentTrackIndex: action.payload,
+            }
+
+        case types.DELETE_TRACK:
 
             const { currentTrackIndex, tracks } = action.payload
 
@@ -56,7 +64,7 @@ export default function reducer(state, action) {
                 tracks,
                 currentTrackIndex
             }
-        }
+
         case types.ADD_TRACK: {
             const { track } = action.payload
             let tracks = state.tracks
@@ -65,6 +73,14 @@ export default function reducer(state, action) {
             return {
                 ...state,
                 tracks
+            }
+        }
+
+        case types.SET_DEVICE_ID: {
+
+            return {
+                ...state,
+                deviceId: action.payload
             }
         }
 
