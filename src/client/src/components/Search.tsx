@@ -19,10 +19,10 @@ export default function Search() {
 
     let cancel = false;
     state.spotifyApi &&
-      state.spotifyApi.searchTracks(search, { limit: 5 }).then((res:ServerResponse) => {
+      state.spotifyApi.searchTracks(search, { limit: 5 }).then((res: ServerResponse) => {
         if (cancel) return;
         setSearchTracks(
-          res!.body!.tracks!.items.map((track:ResTrack) => {
+          res!.body!.tracks!.items.map((track: ResTrack) => {
             return {
               artist: track.artists[0].name,
               title: track.name,
@@ -41,6 +41,7 @@ export default function Search() {
 
   const chooseTrack = (track: Track): void => {
     setSearchTracks([]);
+    setSearch('')
     playerActions.addTrack(state, dispatch, track)
   };
 
