@@ -11,17 +11,20 @@ const setWS = (state, dispatch) => {
         ws.on('connect', () => {
             ws.emit('joinRoom', state.roomId);
         });
-        ws.on('roomState', (roomState) => {
-            dispatch({
-                type: types.SET_ROOM_STATE,
-                payload: roomState
-            })
-        })
-        ws.on('play', (e) => {
-
-        })
+        ws.on('togglePlay', () => {
+            console.log('togglePlay from peer');
+        });
+        ws.on('changeTrack', (number) => {
+            console.log('changeTrack Test')
+            // playerActions.changeTrack(state, dispatch, number)
+        });
+        ws.on('play', () => {
+            console.log('play from peer');
+        });
+        ws.on('pause', () => {
+            console.log('pause from peer');
+        });
     }
-    return true
 }
 
 
@@ -60,11 +63,11 @@ const play = (state, dispatch) => {
             uris: [`spotify:track:${currentTrackId}`],
         })
         .then(() => {
-            dispatch({
-                type: types.PLAY,
+        dispatch({
+            type: types.PLAY,
                 payload: { isPlaying: true, currentTrackIndex }
-            })
         })
+    })
 }
 
 const changeTrack = (state, dispatch, payload) => {
@@ -119,6 +122,7 @@ const addTrack = (state, dispatch, track) => {
 }
 
 export const playerActions = {
+    setWS,
     pause,
     play,
     changeTrack,
