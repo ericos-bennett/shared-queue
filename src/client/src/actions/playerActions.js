@@ -1,6 +1,6 @@
 import types from '../reducers/types'
 import io from 'socket.io-client';
-
+import Cookie from 'js-cookie';
 let ws = null
 const ENDPOINT = 'http://localhost:8080'
 
@@ -43,7 +43,8 @@ const pause = (state, dispatch) => {
 }
 
 const play = (state, dispatch) => {
-    const { spotifyPlayer, tracks, currentTrackIndex, roomId } = state
+    console.info("Play")
+    const { tracks, currentTrackIndex, roomId, deviceId, } = state
     if (state.isPlaying) {
         return
     } else if (!tracks) {
@@ -52,20 +53,24 @@ const play = (state, dispatch) => {
     } else if (currentTrackIndex > tracks.length) {
         throw new Error(`Track ${currentTrackIndex} is not in track array`)
     } else if (currentTrackIndex === -1) {
-        setWS(state, dispatch) && ws.emit('changeTrack', roomId, 0)
+        // ws.emit('changeTrack', roomId, 0)
         changeTrack(state, dispatch, { direction: 0 })
         return
     }
 
     const currentTrackId = tracks[currentTrackIndex].id;
-    spotifyPlayer
-        .togglePlay({
-            uris: [`spotify:track:${currentTrackId}`],
-        })
-        .then(() => {
+
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ uris: [`spotify:track:${currentTrackId}`] }),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookie.get('accessToken')}`
+        },
+    }).then(() => {
         dispatch({
             type: types.PLAY,
-                payload: { isPlaying: true, currentTrackIndex }
+            payload: { isPlaying: true }
         })
     })
 }
@@ -109,7 +114,7 @@ const deleteTrack = (state, dispatch, payload) => {
         type: types.DELETE_TRACK,
         payload: { tracks, currentTrackIndex: cti }
     })
-    setWS(state, dispatch) && ws.emit('deleteTrack', state.roomId, trackIndex);
+    // ws.emit('deleteTrack', state.roomId, trackIndex);
 }
 
 const addTrack = (state, dispatch, track) => {
@@ -118,7 +123,7 @@ const addTrack = (state, dispatch, track) => {
         type: types.ADD_TRACK,
         payload: { track }
     })
-    setWS(state, dispatch) && ws.emit('addTrack', roomId, track);
+    // ws.emit('addTrack', roomId, track);
 }
 
 export const playerActions = {
