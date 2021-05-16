@@ -12,9 +12,7 @@ import Player from './Player';
 
 import { roomActions } from '../actions/roomActions';
 import SpotifyWebApi from 'spotify-web-api-node';
-
-
-
+import { playerActions } from '../actions/playerActions';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -29,15 +27,16 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function Room() {
-  const { state, dispatch} = useContext(Context)
-  const { id } = useParams<{ id: string }>(); 
+  const { state, dispatch } = useContext(Context)
+  const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
-
+  // const socket = useRef<string>(id);
   const classes = useStyles();
 
   const setSpotify = useCallback(() => {
     if (!document.getElementById('spotifyPlaybackSdk')) {
-    
+
+      roomActions.setRoomId(dispatch, roomId.current)
       // Load the Spotify Playback SDK script from its CDN
       const script = document.createElement('script');
       script.src = 'https://sdk.scdn.co/spotify-player.js';
@@ -48,30 +47,43 @@ export default function Room() {
       const api = new SpotifyWebApi({});
       api.setAccessToken(Cookie.get('accessToken')!);
       roomActions.setSpotifyApi(dispatch, api)
-      roomActions.setRoomId(dispatch, roomId.current)
-          // @ts-ignore
+
+      // @ts-ignore
       window.onSpotifyWebPlaybackSDKReady = () => {
         roomActions.setSpotifyPlayer(state, dispatch)
       };
-    }      
+    }
   },
     [dispatch, state],
   )
 
   useEffect(() => {
+    if (!state.spotifyPlayer) {
+      setSpotify()
+    }
+  }, []);
 
-    setSpotify()
-  
-  }, [setSpotify]);
+  const setSocket = useCallback(
+    () => {
+      playerActions.setWS(state, dispatch)
+    },
+    [dispatch, state],
+  )
 
-
+  useEffect(() => {
+    console.info('useEffect >> state.roomId:', state.roomId)
+    if (state.roomId) {
+      setSocket()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.roomId])
 
   return (
 
     <div className={classes.root}>
       <Container>
         <h1 className={classes.title}>Room Title</h1>
-        <Search /> 
+        <Search />
         <Queue />
         <Player />
       </Container>
