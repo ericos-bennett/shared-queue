@@ -5,8 +5,8 @@ let ws = null
 const ENDPOINT = 'http://localhost:8080'
 
 const setWS = (state, dispatch) => {
+    console.info('setWS')
     if (!ws && state.roomId) {
-
         ws = io(ENDPOINT, { transports: ["websocket", "polling"] });
         ws.on('connect', () => {
             ws.emit('joinRoom', state.roomId);
@@ -29,16 +29,16 @@ const setWS = (state, dispatch) => {
 
 
 const pause = (state, dispatch) => {
-    const { spotifyPlayer, currentTrackIndex } = state
-
-    spotifyPlayer
+    console.info('pause')
+    const { spotifyPlayer } = state
+    state.spotifyPlayerReady && spotifyPlayer
         .pause()
         .then(() => {
             dispatch({
                 type: types.PAUSE,
-                payload: { isPlaying: false, currentTrackIndex }
+                payload: { isPlaying: false }
             })
-            setWS(state, dispatch) && ws.emit('pause', state.roomId);
+            // ws.emit('pause', state.roomId);
         })
 }
 
@@ -75,7 +75,11 @@ const play = (state, dispatch) => {
     })
 }
 
+
+
+
 const changeTrack = (state, dispatch, payload) => {
+    console.info("changeTrack")
     const { direction } = payload
     const { currentTrackIndex, tracks, roomId } = state
 
@@ -92,12 +96,17 @@ const changeTrack = (state, dispatch, payload) => {
             break;
     }
 
-    if (newTrackIndex !== -1 && newTrackIndex !== state.currentTrackIndex) {
+    if (newTrackIndex === state.currentTrackIndex) {
+        return
+    }
+
+    if (newTrackIndex !== -1) {
         dispatch({
             type: types.CHANGE_TRACK,
-            payload: { newTrackIndex, isPlaying: true }
+            payload: newTrackIndex
         })
-        setWS(state, dispatch) && ws.emit('play', roomId);
+        // ws.emit('play', roomId);
+        play(state, dispatch)
     } else {
         throw new Error(`Unable to change track to ${direction}`)
     }
