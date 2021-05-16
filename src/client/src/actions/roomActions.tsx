@@ -1,11 +1,6 @@
 import types from '../reducers/types'
-import { playerActions } from '../actions/playerActions';
 import { sdkErrorMessage } from '../../types';
 import Cookie from 'js-cookie';
-import io from 'socket.io-client';
-
-let socket: any = null
-const ENDPOINT = 'http://localhost:8080'
 
 const setRoomId = (dispatch: any, payload: any) => {
     console.info("setRoomId")
@@ -14,7 +9,6 @@ const setRoomId = (dispatch: any, payload: any) => {
         payload
     })
 }
-
 
 const setSpotifyApi = (dispatch: any, payload: any) => {
     console.info("setSpotifyApi")
@@ -35,52 +29,40 @@ const setSpotifyPlayer = (state: any, dispatch: any) => {
         },
     });
 
+
+    // // Error handling
+    spotifyPlayer.addListener('initialization_error', (message: sdkErrorMessage) => { console.error(message); });
+    spotifyPlayer.addListener('authentication_error', (message: sdkErrorMessage) => { console.error(message); });
+    spotifyPlayer.addListener('account_error', (message: sdkErrorMessage) => { console.error(message); });
+    spotifyPlayer.addListener('playback_error', (message: sdkErrorMessage) => { console.error(message); });
+
+    // Update the current state to indicate the player is ready to accept requests
+    spotifyPlayer.addListener('ready', ({ device_id }: { device_id: string }) => {
+        dispatch({
+            type: types.SET_SPOTIFY_PLAYER_READY,
+            payload: true
+        })
+        dispatch({
+            type: types.SET_SPOTIFY_PLAYER,
+            payload: spotifyPlayer
+        })
+        dispatch({
+            type: types.SET_DEVICE_ID,
+            payload: device_id
+        })
+    });
+
+    spotifyPlayer.addListener('not_ready', ({ device_id }: any) => {
+        console.log('Device ID is not ready for playback', device_id);
+    });
+
     spotifyPlayer.connect().then((success: boolean) => {
         if (success) {
             console.log('The Web Playback SDK successfully connected to Spotify!');
         }
     })
 
-    // Error handling
-    spotifyPlayer.addListener('initialization_error', (message: sdkErrorMessage) => { console.error(message); });
-    spotifyPlayer.addListener('authentication_error', (message: sdkErrorMessage) => { console.error(message); });
-    spotifyPlayer.addListener('account_error', (message: sdkErrorMessage) => { console.error(message); });
-    spotifyPlayer.addListener('playback_error', (message: sdkErrorMessage) => { console.error(message); });
 
-
-    // When the player is ready, set up WS listener and request the current room state
-    spotifyPlayer.addListener('ready', ({ device_id }: { device_id: string }) => {
-        console.log('SDK connected and deviceId set');
-
-        socket = io(ENDPOINT, { transports: ['websocket', "polling"] });
-        socket.on('togglePlay', () => {
-            console.log('togglePlay from peer');
-        });
-        socket.on('changeTrack', (number: number) => {
-            console.log('changeTrack Test')
-            playerActions.changeTrack(state, dispatch, number)
-        });
-        socket.on('play', () => {
-            console.log('play from peer');
-        });
-        socket.on('pause', () => {
-            console.log('pause from peer');
-        });
-        socket.on('connect', () => {
-            socket.emit('joinRoom', state.roomId);
-        });
-    });
-
-    spotifyPlayer.addListener('changeTrack', () => {
-        console.log('togglePlay from peer');
-    });
-
-
-
-    dispatch({
-        type: types.SET_SPOTIFY_PLAYER,
-        payload: spotifyPlayer
-    })
 }
 
 
