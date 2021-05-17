@@ -49,17 +49,17 @@ export type sdkErrorMessage = {
 
 export type ServerResponse = {
   body: {
-  tracks: {
-    items: []
-  }
-}
-}
+    tracks: {
+      items: [];
+    };
+  };
+};
 export type ResTrack = {
-  artists: Array<{name:string}>,
-  name: string,
-  id: string,
-  album: {images:Array<{url:string}>},
-  duration_ms: number,
+  artists: Array<{ name: string }>;
+  name: string;
+  id: string;
+  album: { images: Array<{ url: string }> };
+  duration_ms: number;
 };
 
 // export type searchResData = {
@@ -93,4 +93,3 @@ export type ResTrack = {
 //       "total": number
 //   }
 // };
-

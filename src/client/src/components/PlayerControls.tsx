@@ -1,8 +1,8 @@
-import {useContext} from 'react'
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Context from '../reducers/context';
-import { playerActions } from "../actions/playerActions";
+import { playerActions } from '../actions/playerActions';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -33,20 +33,19 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-
 export default function PlayerControls() {
   const classes = useStyles();
-  const {state, dispatch} = useContext(Context)
+  const { state, dispatch } = useContext(Context);
 
   const handlePrevClick = () => {
-    playerActions.changeTrack(state, dispatch, {direction: 'prev'})
-  }
+    playerActions.changeTrack(state, dispatch, { direction: 'prev' });
+  };
   const handleTogglePlay = () => {
-    state.isPlaying ? playerActions.pause(state, dispatch) :  playerActions.play(state, dispatch)
-  }
+    state.isPlaying ? playerActions.pause(state, dispatch) : playerActions.play(state, dispatch);
+  };
   const handleChangeTrack = () => {
-    playerActions.changeTrack(state, dispatch, {direction: 'next'})
-  }
+    playerActions.changeTrack(state, dispatch, { direction: 'next' });
+  };
 
   return (
     <div className={classes.root}>

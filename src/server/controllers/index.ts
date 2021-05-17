@@ -1,8 +1,5 @@
 import { Request, Response } from 'express';
-import {
-  getAuthUrl,
-  setCredentials,
-} from '../services';
+import { getAuthUrl, setCredentials } from '../services';
 
 /*--------------------
 -- Auth Controllers --
@@ -14,13 +11,13 @@ const cookieOptions = {
 };
 
 const getAuthCode = (req: Request, res: Response): void => {
-  console.info('getAuthCode')
+  console.info('getAuthCode');
   const authUrl: string = getAuthUrl();
   res.send(authUrl);
 };
 
 const authenticateUser = async (req: Request, res: Response): Promise<void> => {
-  console.info('authenticateUser')
+  console.info('authenticateUser');
   const code = req.query.code as string;
   // TODO: check state against cookie for extra security
   try {
@@ -39,6 +36,4 @@ const authenticateUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export {
-  getAuthCode, authenticateUser,
-};
+export { getAuthCode, authenticateUser };

@@ -1,9 +1,9 @@
-import {useContext} from 'react'
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
 import Context from '../reducers/context';
-import { appActions } from "../actions/appActions";
+import { appActions } from '../actions/appActions';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -18,11 +18,11 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function AuthButton() {
-  const {dispatch} = useContext(Context)
+  const { dispatch } = useContext(Context);
   const classes = useStyles();
 
   const userAuthRedirect = () => {
-    appActions.requestLogin(dispatch, {href:  window.location.href})
+    appActions.requestLogin(dispatch, { href: window.location.href });
   };
 
   return (

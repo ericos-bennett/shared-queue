@@ -1,91 +1,86 @@
 /* eslint-disable no-redeclare */
 // Types
-import types from './types'
+import types from './types';
 
 export default function reducer(state, action) {
-    switch (action.type) {
+  switch (action.type) {
+    case types.LOGOUT:
+    case types.LOGIN:
+      return {
+        ...state,
+        login_loading: false,
+        logged_in: action.payload,
+      };
+    case types.SET_ROOM_ID:
+      console.log(`action.payload`, action.payload);
+      return {
+        ...state,
+        roomId: action.payload,
+      };
+    case types.SET_SPOTIFY_API:
+      return {
+        ...state,
+        spotifyApi: action.payload,
+      };
+    case types.SET_SPOTIFY_PLAYER:
+      return {
+        ...state,
+        spotifyPlayer: action.payload,
+      };
+    case types.SET_SPOTIFY_PLAYER_READY:
+      return {
+        ...state,
+        spotifyPlayerReady: action.payload,
+      };
+    case types.SET_ROOM_STATE:
+      return {
+        ...state,
+        roomState: action.payload,
+      };
+    case types.PAUSE:
+      return {
+        ...state,
+        isPlaying: false,
+      };
+    case types.PLAY:
+      return {
+        ...state,
+        isPlaying: true,
+      };
+    case types.CHANGE_TRACK:
+      return {
+        ...state,
+        currentTrackIndex: action.payload,
+      };
 
-        case types.LOGOUT:
-        case types.LOGIN:
-            return {
-                ...state,
-                login_loading: false,
-                logged_in: action.payload
-            }
-        case types.SET_ROOM_ID:
-            console.log(`action.payload`, action.payload)
-            return {
-                ...state,
-                roomId: action.payload
-            }
-        case types.SET_SPOTIFY_API:
-            return {
-                ...state,
-                spotifyApi: action.payload
-            }
-        case types.SET_SPOTIFY_PLAYER:
-            return {
-                ...state,
-                spotifyPlayer: action.payload
-            }
-        case types.SET_SPOTIFY_PLAYER_READY:
-            return {
-                ...state,
-                spotifyPlayerReady: action.payload
-            }
-        case types.SET_ROOM_STATE:
-            return {
-                ...state,
-                roomState: action.payload
-            }
-        case types.PAUSE:
-            return {
-                ...state,
-                isPlaying: false
-            }
-        case types.PLAY:
-            return {
-                ...state,
-                isPlaying: true
-            }
-        case types.CHANGE_TRACK:
+    case types.DELETE_TRACK:
+      const { currentTrackIndex, tracks } = action.payload;
 
-            return {
-                ...state,
-                currentTrackIndex: action.payload,
-            }
+      return {
+        ...state,
+        tracks,
+        currentTrackIndex,
+      };
 
-        case types.DELETE_TRACK:
+    case types.ADD_TRACK: {
+      const { track } = action.payload;
+      let tracks = state.tracks;
+      tracks.push(track);
 
-            const { currentTrackIndex, tracks } = action.payload
-
-            return {
-                ...state,
-                tracks,
-                currentTrackIndex
-            }
-
-        case types.ADD_TRACK: {
-            const { track } = action.payload
-            let tracks = state.tracks
-            tracks.push(track)
-
-            return {
-                ...state,
-                tracks
-            }
-        }
-
-        case types.SET_DEVICE_ID: {
-
-            return {
-                ...state,
-                deviceId: action.payload
-            }
-        }
-
-        default:
-            return state
+      return {
+        ...state,
+        tracks,
+      };
     }
 
+    case types.SET_DEVICE_ID: {
+      return {
+        ...state,
+        deviceId: action.payload,
+      };
+    }
+
+    default:
+      return state;
+  }
 }

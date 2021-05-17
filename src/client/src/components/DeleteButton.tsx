@@ -1,9 +1,9 @@
-import {useContext} from 'react'
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { playerActions } from "../actions/playerActions";
+import { playerActions } from '../actions/playerActions';
 import Context from '../reducers/context';
 
 const useStyles = makeStyles(() => ({
@@ -28,26 +28,22 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface props {
-    queueIndex: number;
+  queueIndex: number;
 }
 
 export default function DeleteButton(props: props) {
   const classes = useStyles();
-  const {state, dispatch} = useContext(Context)
-  
-  const {queueIndex} = props
+  const { state, dispatch } = useContext(Context);
+
+  const { queueIndex } = props;
 
   const handleDeleteTrackClick = () => {
-    playerActions.deleteTrack(state, dispatch, queueIndex)
-  }
+    playerActions.deleteTrack(state, dispatch, queueIndex);
+  };
 
-    return (
-        <IconButton
-          aria-label="delete"
-          onClick={handleDeleteTrackClick}
-          className={classes.deleteIcon}
-        >
-          <DeleteIcon fontSize="large" />
-        </IconButton>
-    );
+  return (
+    <IconButton aria-label="delete" onClick={handleDeleteTrackClick} className={classes.deleteIcon}>
+      <DeleteIcon fontSize="large" />
+    </IconButton>
+  );
 }

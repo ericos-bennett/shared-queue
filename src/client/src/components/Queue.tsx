@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Context from '../reducers/context';
 import DeleteButton from './DeleteButton';
@@ -26,16 +26,16 @@ const useStyles = makeStyles(() => ({
 
 export default function Queue() {
   const classes = useStyles();
-  const {state} = useContext(Context)
-  
-  const listItems = state?.tracks.map((track: any, i:number) => {
+  const { state } = useContext(Context);
+
+  const listItems = state?.tracks.map((track: any, i: number) => {
     return (
       <li className={classes.track} key={i}>
         <img src={track.albumUrl} alt={track.artist}></img>
         <h4 className={classes.trackLabel}>
           {track.artist} - {track.title}
         </h4>
-        <DeleteButton queueIndex={i}/>
+        <DeleteButton queueIndex={i} />
       </li>
     );
   });

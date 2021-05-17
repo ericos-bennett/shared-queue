@@ -30,7 +30,6 @@ const initializeWs = (server: httpServer.Server): void => {
       // If there is a peer, get initial state from the first user in the room.
       // If not, take empty state
       // socket.to(socket.id).emit('roomState', roomState);
-
     });
 
     socket.on('play', (roomId: string) => {
@@ -60,6 +59,6 @@ const initializeWs = (server: httpServer.Server): void => {
 
 // 0. Click button to pause
 // 1. WS message sent to room peers
-// 2. State is updated locally 
+// 2. State is updated locally
 
 export { initializeWs };

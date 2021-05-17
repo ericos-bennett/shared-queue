@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function Room() {
-  const { state, dispatch } = useContext(Context)
+  const { state, dispatch } = useContext(Context);
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
   // const socket = useRef<string>(id);
@@ -35,8 +35,7 @@ export default function Room() {
 
   const setSpotify = useCallback(() => {
     if (!document.getElementById('spotifyPlaybackSdk')) {
-
-      roomActions.setRoomId(dispatch, roomId.current)
+      roomActions.setRoomId(dispatch, roomId.current);
       // Load the Spotify Playback SDK script from its CDN
       const script = document.createElement('script');
       script.src = 'https://sdk.scdn.co/spotify-player.js';
@@ -46,40 +45,34 @@ export default function Room() {
 
       const api = new SpotifyWebApi({});
       api.setAccessToken(Cookie.get('accessToken')!);
-      roomActions.setSpotifyApi(dispatch, api)
+      roomActions.setSpotifyApi(dispatch, api);
 
       // @ts-ignore
       window.onSpotifyWebPlaybackSDKReady = () => {
-        roomActions.setSpotifyPlayer(state, dispatch)
+        roomActions.setSpotifyPlayer(state, dispatch);
       };
     }
-  },
-    [dispatch, state],
-  )
+  }, [dispatch, state]);
 
   useEffect(() => {
     if (!state.spotifyPlayer) {
-      setSpotify()
+      setSpotify();
     }
   }, []);
 
-  const setSocket = useCallback(
-    () => {
-      playerActions.setWS(state, dispatch)
-    },
-    [dispatch, state],
-  )
+  const setSocket = useCallback(() => {
+    playerActions.setWS(state, dispatch);
+  }, [dispatch, state]);
 
   useEffect(() => {
-    console.info('useEffect >> state.roomId:', state.roomId)
+    console.info('useEffect >> state.roomId:', state.roomId);
     if (state.roomId) {
-      setSocket()
+      setSocket();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.roomId])
+  }, [state.roomId]);
 
   return (
-
     <div className={classes.root}>
       <Container>
         <h1 className={classes.title}>Room Title</h1>
@@ -88,6 +81,5 @@ export default function Room() {
         <Player />
       </Container>
     </div>
-
   );
 }

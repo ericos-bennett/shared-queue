@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import PlayerControls from './PlayerControls';
@@ -23,9 +23,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-
 export default function Player() {
-  const {state} = useContext(Context)
+  const { state } = useContext(Context);
   const classes = useStyles();
 
   const track = state?.tracks[state!.currentTrackIndex];

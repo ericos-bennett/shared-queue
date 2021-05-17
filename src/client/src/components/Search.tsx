@@ -1,18 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import SearchBar from 'material-ui-search-bar';
 
-
 import { Track, ServerResponse, ResTrack } from '../../types';
 import TrackSearchResult from './TrackSearchResult';
 
-import { Context } from '../reducers/context'
-import { playerActions } from "../actions/playerActions";
+import { Context } from '../reducers/context';
+import { playerActions } from '../actions/playerActions';
 
 export default function Search() {
   const [search, setSearch] = useState<string>('');
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
-  const { state, dispatch } = useContext(Context)
-
+  const { state, dispatch } = useContext(Context);
 
   useEffect(() => {
     if (!search) return setSearchTracks([]);
@@ -41,8 +39,8 @@ export default function Search() {
 
   const chooseTrack = (track: Track): void => {
     setSearchTracks([]);
-    setSearch('')
-    playerActions.addTrack(state, dispatch, track)
+    setSearch('');
+    playerActions.addTrack(state, dispatch, track);
   };
 
   return (
