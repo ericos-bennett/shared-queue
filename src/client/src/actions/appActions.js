@@ -36,6 +36,7 @@ const requestLogin = (dispatch, href) => {
     window.location.href = res.data;
   });
 
+  // DO you need a LOGIN_LOADING action here? Could the above function exit in the AuthButton file?
   dispatch({
     type: types.LOGIN_LOADING,
     payload: true,
@@ -50,6 +51,7 @@ const logout = (dispatch, payload) => {
   });
 };
 
+// IMO we should stick to one type of export (named or default)
 export const appActions = {
   setLoginStatus,
   updateLoginStatus,

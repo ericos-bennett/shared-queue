@@ -21,6 +21,7 @@ export default function AuthButton() {
   const { dispatch } = useContext(Context);
   const classes = useStyles();
 
+  // Does the URL need to be sent to the action here?
   const userAuthRedirect = () => {
     appActions.requestLogin(dispatch, { href: window.location.href });
   };

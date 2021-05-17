@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-// Types
+// I think we should rename this actionTypes so it's not confusing with the TS types file
 import types from './types';
 
 export default function reducer(state, action) {
@@ -64,6 +64,7 @@ export default function reducer(state, action) {
 
     case types.ADD_TRACK: {
       const { track } = action.payload;
+      // I think you need to spread state.tracks here, or else it overwrites the state in place
       let tracks = state.tracks;
       tracks.push(track);
 

@@ -17,10 +17,12 @@ export default function App() {
       // TODO: surely there is a better way
       const location = e.location;
 
+      // I think we should use camelCase for JS variable names, it's the convention
       const login_result = location.search.substring(0, 6) === '?code=';
 
       const code = login_result && location.search.substring(6, location.search.length);
 
+      // You only get the code if login_result is true, so could we just skip sending login_result in the payload?
       appActions.updateLoginStatus(state, dispatch, { login_result, code });
       return <Redirect to="/" />;
     },

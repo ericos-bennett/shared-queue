@@ -42,6 +42,7 @@ const pause = (state, dispatch) => {
 
 const play = (state, dispatch) => {
   console.info('Play');
+  // Remove roomId where it is assigned a value but not used (3 times in this file)
   const { tracks, currentTrackIndex, roomId, deviceId } = state;
   if (state.isPlaying) {
     return;
@@ -58,6 +59,7 @@ const play = (state, dispatch) => {
 
   const currentTrackId = tracks[currentTrackIndex].id;
 
+  // There should be a shorthand function in spotify-web-api-node so you don't need to bother with headers, etc.
   fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
     method: 'PUT',
     body: JSON.stringify({ uris: [`spotify:track:${currentTrackId}`] }),
@@ -73,6 +75,7 @@ const play = (state, dispatch) => {
   });
 };
 
+// I don't think this works correctly yet, for me it changes the track in local state but not the audio playback
 const changeTrack = (state, dispatch, payload) => {
   console.info('changeTrack');
   const { direction } = payload;
@@ -108,8 +111,10 @@ const changeTrack = (state, dispatch, payload) => {
   }
 };
 
+// For me this is always deleting the first track, not the one with the icon beside it
 const deleteTrack = (state, dispatch, payload) => {
   const { trackIndex } = payload;
+  // I think you have to spread here as well, to avoid mutating state in place
   const { tracks, currentTrackIndex } = state;
   tracks.splice(trackIndex, 1);
 

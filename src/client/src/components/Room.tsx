@@ -54,6 +54,7 @@ export default function Room() {
     }
   }, [dispatch, state]);
 
+  // I think we can fill out the dependency array for this useEffect, the callback should only be called once regardless due to the conditional
   useEffect(() => {
     if (!state.spotifyPlayer) {
       setSpotify();
@@ -70,6 +71,7 @@ export default function Room() {
       setSocket();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Again, we could fill out the dependencies but add a conditional so setSocket is only fired once
   }, [state.roomId]);
 
   return (
