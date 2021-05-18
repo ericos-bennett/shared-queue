@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -9,6 +9,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { roomActions } from '../actions/roomActions';
+import { Context } from '../reducers/context';
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -24,16 +26,22 @@ const useStyles = makeStyles(() => ({
 
 export default function CreateButton() {
   const [open, setOpen] = useState(false);
-  const [textValue, setTextValue] = useState('');
+  const [textValue, setTextValue] = useState('Test');
+  const { state, dispatch } = useContext(Context);
   let history = useHistory();
   const classes = useStyles();
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handleCreateRoom = () => {
+    roomActions.createPlaylist(state, dispatch, textValue)
+    history.push(`/room/${textValue}`)
+  }
+
   return (
     <div>
-      <Button className={classes.button} variant="contained" onClick={handleClickOpen}>
+      <Button className={classes.button} variant="contained" onClick={handleClickOpen} disabled={!state.spotifyApi}>
         Create Room
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -58,7 +66,7 @@ export default function CreateButton() {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => history.push(`/room/${textValue}`)} color="primary">
+          <Button onClick={handleCreateRoom} color="primary">
             Create Room
           </Button>
         </DialogActions>
