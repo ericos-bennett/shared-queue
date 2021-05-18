@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useEffect, useContext, useCallback } from 'react';
 import Cookie from 'js-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
