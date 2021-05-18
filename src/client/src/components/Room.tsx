@@ -56,6 +56,7 @@ export default function Room() {
     <div className={classes.root}>
       <Container>
         <h1 className={classes.title}>Room Title</h1>
+        <ExitRoomButton />
         <Search />
         <Queue />
         <Player />
