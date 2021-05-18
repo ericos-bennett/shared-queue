@@ -14,4 +14,5 @@ export const initialState = {
   logged_in: false,
   deviceId: 0,
   isConnected: false,
+  playlistId: '',
 };
