@@ -50,8 +50,7 @@ export default function Room() {
       setSocket();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // Again, we could fill out the dependencies but add a conditional so setSocket is only fired once
-  }, [state.roomId]);
+  }, [setSocket, state.roomId]);
 
   return (
     <div className={classes.root}>
