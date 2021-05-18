@@ -31,15 +31,9 @@ const updateLoginStatus = (state, dispatch, payload) => {
       });
   }
 };
-const requestLogin = (dispatch, href) => {
+const requestLogin = (dispatch) => {
   axios.get('/api/auth/code').then(res => {
     window.location.href = res.data;
-  });
-
-  // DO you need a LOGIN_LOADING action here? Could the above function exit in the AuthButton file?
-  dispatch({
-    type: types.LOGIN_LOADING,
-    payload: true,
   });
 };
 

@@ -1,6 +1,5 @@
 export const types = {
   // HOME
-  LOGIN_LOADING: 'LOGIN_LOADING',
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT',
 
