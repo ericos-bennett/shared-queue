@@ -1,6 +1,7 @@
 import { types } from '../reducers/actionTypes';
 import io from 'socket.io-client';
-import Cookie from 'js-cookie';
+
+// var  = require();
 let ws = null;
 const ENDPOINT = 'http://localhost:8080';
 
@@ -29,14 +30,14 @@ const setWS = (state, dispatch) => {
 
 const pause = (state, dispatch) => {
   console.info('pause');
-  const { spotifyPlayer } = state;
+  const { spotifyPlayer, roomId } = state;
   state.spotifyPlayerReady &&
     spotifyPlayer.pause().then(() => {
       dispatch({
         type: types.PAUSE,
         payload: { isPlaying: false },
       });
-      // ws.emit('pause', state.roomId);
+      // ws.emit('pause', roomId);
     });
 };
 
