@@ -8,7 +8,7 @@ import { roomActions } from '../actions/roomActions';
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'fixed',
-    right: '0',
+    left: '0',
     top: '0',
     margin: theme.spacing(2),
   },
