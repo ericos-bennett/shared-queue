@@ -1,6 +1,6 @@
 import { useReducer, useMemo, useEffect, useCallback } from 'react';
 import { Context, initialState } from '../reducers/context';
-import appActions from '../actions/appActions';
+import { appActions } from '../actions/appActions';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import Home from './Home';

@@ -4,7 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { playerActions } from '../actions/playerActions';
-import Context from '../reducers/context';
+import { Context } from '../reducers/context';
 
 const useStyles = makeStyles(() => ({
   root: {

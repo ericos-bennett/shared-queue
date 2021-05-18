@@ -58,5 +58,3 @@ export const appActions = {
   requestLogin,
   logout,
 };
-
-export default appActions;

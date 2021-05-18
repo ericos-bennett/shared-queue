@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Context from '../reducers/context';
+import { Context } from '../reducers/context';
 import { playerActions } from '../actions/playerActions';
 const useStyles = makeStyles(() => ({
   root: {

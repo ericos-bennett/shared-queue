@@ -16,6 +16,3 @@ export const initialState = {
   deviceId: 0,
   isConnected: false,
 };
-
-// Keep it simple with only one type of export
-export default Context;

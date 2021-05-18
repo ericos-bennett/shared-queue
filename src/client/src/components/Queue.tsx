@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Context from '../reducers/context';
+import { Context } from '../reducers/context';
 import DeleteButton from './DeleteButton';
 
 const useStyles = makeStyles(() => ({

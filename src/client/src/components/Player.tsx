@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import PlayerControls from './PlayerControls';
-import Context from '../reducers/context';
+import { Context } from '../reducers/context';
 
 const useStyles = makeStyles(() => ({
   track: {

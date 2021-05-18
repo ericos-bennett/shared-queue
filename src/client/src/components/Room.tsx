@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import Cookie from 'js-cookie';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-import Context from '../reducers/context';
+import { Context } from '../reducers/context';
 
 import Search from './Search';
 import Queue from './Queue';

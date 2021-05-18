@@ -2,8 +2,8 @@ import { useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import { Redirect } from 'react-router-dom';
-import appActions from '../actions/appActions';
-import Context from '../reducers/context';
+import { appActions } from '../actions/appActions';
+import { Context } from '../reducers/context';
 
 const useStyles = makeStyles(theme => ({
   root: {
