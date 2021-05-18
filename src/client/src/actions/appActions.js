@@ -45,8 +45,83 @@ const logout = (dispatch, payload) => {
   });
 };
 
-// IMO we should stick to one type of export (named or default)
+
+const setSpotifyApi = (dispatch, payload) => {
+  console.info('setSpotifyApi');
+  dispatch({
+    type: types.SET_SPOTIFY_API,
+    payload,
+  });
+};
+
+const setSpotifyPlayer = (state, dispatch) => {
+  console.info('setSpotifyPlayer');
+  // Create a new SDK player instance and add listeners to it
+  // @ts-ignore
+  // eslint-disable-next-line no-undef
+  const spotifyPlayer = new Spotify.Player({
+    name: 'Spotify Mix',
+    getOAuthToken: (cb) => {
+      cb(Cookie.get('accessToken'));
+    },
+  });
+
+  // // Error handling
+  spotifyPlayer.addListener('initialization_error', (message) => {
+    console.error(message);
+  });
+  spotifyPlayer.addListener('authentication_error', (message) => {
+    console.error(message);
+  });
+  spotifyPlayer.addListener('account_error', (message) => {
+    console.error(message);
+  });
+  spotifyPlayer.addListener('playback_error', (message) => {
+    console.error(message);
+  });
+
+  // Update the current state to indicate the player is ready to accept requests
+  spotifyPlayer.addListener('ready', ({ device_id }) => {
+    dispatch({
+      type: types.SET_SPOTIFY_PLAYER_READY,
+      payload: true,
+    });
+    dispatch({
+      type: types.SET_SPOTIFY_PLAYER,
+      payload: spotifyPlayer,
+    });
+    dispatch({
+      type: types.SET_DEVICE_ID,
+      payload: device_id,
+    });
+  });
+
+  spotifyPlayer.addListener('not_ready', ({ device_id }) => {
+    console.log('Device ID is not ready for playback', device_id);
+  });
+
+
+  spotifyPlayer.addListener('player_state_changed', ({
+    position,
+    duration,
+    track_window: { current_track }
+  }) => {
+    console.log('Currently Playing', current_track);
+    console.log('Position in Song', position);
+    console.log('Duration of Song', duration);
+  });
+
+  spotifyPlayer.connect().then((success) => {
+    if (success) {
+      console.log('The Web Playback SDK successfully connected to Spotify!');
+    }
+  });
+};
+
+
 export const appActions = {
+  setSpotifyApi,
+  setSpotifyPlayer,
   setLoginStatus,
   updateLoginStatus,
   requestLogin,

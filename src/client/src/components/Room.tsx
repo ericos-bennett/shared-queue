@@ -1,7 +1,6 @@
 import { useEffect, useRef, useContext, useCallback } from 'react';
 import { useParams } from 'react-router';
-// import io from 'socket.io-client';
-import Cookie from 'js-cookie';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
 import { Context } from '../reducers/context';
@@ -11,8 +10,11 @@ import Queue from './Queue';
 import Player from './Player';
 
 import { roomActions } from '../actions/roomActions';
-import SpotifyWebApi from 'spotify-web-api-node';
+
 import { playerActions } from '../actions/playerActions';
+import ExitRoomButton from './ExitRoomButton';
+
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -30,36 +32,13 @@ export default function Room() {
   const { state, dispatch } = useContext(Context);
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
-  // const socket = useRef<string>(id);
   const classes = useStyles();
 
-  const setSpotify = useCallback(() => {
-    if (!document.getElementById('spotifyPlaybackSdk')) {
-      roomActions.setRoomId(dispatch, roomId.current);
-      // Load the Spotify Playback SDK script from its CDN
-      const script = document.createElement('script');
-      script.src = 'https://sdk.scdn.co/spotify-player.js';
-      script.id = 'spotifyPlaybackSdk';
-      document.body.appendChild(script);
-      console.log('SDK added to body');
-
-      const api = new SpotifyWebApi({});
-      api.setAccessToken(Cookie.get('accessToken')!);
-      roomActions.setSpotifyApi(dispatch, api);
-
-      // @ts-ignore
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        roomActions.setSpotifyPlayer(state, dispatch);
-      };
-    }
-  }, [dispatch, state]);
-
-  // I think we can fill out the dependency array for this useEffect, the callback should only be called once regardless due to the conditional
   useEffect(() => {
-    if (!state.spotifyPlayer) {
-      setSpotify();
-    }
-  }, []);
+    roomActions.setRoomId(dispatch, roomId.current);
+  }, [dispatch])
+
+
 
   const setSocket = useCallback(() => {
     playerActions.setWS(state, dispatch);

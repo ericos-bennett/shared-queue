@@ -6,6 +6,9 @@ import { Context } from '../reducers/context';
 import CreateButton from './CreateButton';
 import AuthButton from './AuthButton';
 import LogoutButton from './LogoutButton';
+import SpotifyWebApi from 'spotify-web-api-node';
+import { appActions } from '../actions/appActions';
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -32,8 +35,38 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function Home() {
-  const { state } = useContext(Context);
+  const { state, dispatch } = useContext(Context);
   const classes = useStyles();
+
+
+  const setSpotify = useCallback(() => {
+    if (!document.getElementById('spotifyPlaybackSdk')) {
+      // Load the Spotify Playback SDK script from its CDN
+      const script = document.createElement('script');
+      script.src = 'https://sdk.scdn.co/spotify-player.js';
+      script.id = 'spotifyPlaybackSdk';
+      document.body.appendChild(script);
+      console.log('SDK added to body');
+
+      const api = new SpotifyWebApi({});
+      api.setAccessToken(Cookie.get('accessToken')!);
+      api.setRefreshToken(Cookie.get('refreshToken')!);
+
+      appActions.setSpotifyApi(dispatch, api);
+
+      // @ts-ignore
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        appActions.setSpotifyPlayer(state, dispatch);
+      };
+    }
+  }, [dispatch, state]);
+
+  useEffect(() => {
+    if (!state.spotifyPlayer) {
+      setSpotify();
+    }
+  }, [setSpotify, state.spotifyPlayer]);
+
 
   return (
     <div className={classes.root}>
