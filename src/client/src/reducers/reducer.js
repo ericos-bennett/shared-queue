@@ -53,23 +53,25 @@ export default function reducer(state, action) {
       };
 
     case types.DELETE_TRACK:
-      const { currentTrackIndex, tracks } = action.payload;
-
+      const { currentTrackIndex, trackIndex } = action.payload;
+      const { tracks } = state
+      const newTracks = tracks.splice(trackIndex)
       return {
         ...state,
-        tracks,
+        tracks: newTracks,
         currentTrackIndex,
       };
 
     case types.ADD_TRACK: {
-      const { track } = action.payload;
       // I think you need to spread state.tracks here, or else it overwrites the state in place
-      let tracks = state.tracks;
-      tracks.push(track);
-
+      const { tracks } = state;
+      let newTracks = []
+      console.log(`tracks pre`, tracks)
+      newTracks.push(action.payload);
+      console.log(`tracks`, tracks)
       return {
         ...state,
-        tracks,
+        tracks: newTracks
       };
     }
 
@@ -79,7 +81,18 @@ export default function reducer(state, action) {
         deviceId: action.payload,
       };
     }
-
+    case types.CREATE_PLAYLIST: {
+      return {
+        ...state,
+        playlistId: action.payload,
+      };
+    }
+    case types.UNFOLLOW_PLAYLIST: {
+      return {
+        ...state,
+        playlistId: '',
+      };
+    }
     default:
       return state;
   }
