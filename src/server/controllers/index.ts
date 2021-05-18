@@ -6,7 +6,7 @@ import { getAuthUrl, setCredentials } from '../services';
 --------------------*/
 // add these for other cookies for production
 const cookieOptions = {
-  httpOnly: true,
+  // httpOnly: true,
   secure: true,
 };
 

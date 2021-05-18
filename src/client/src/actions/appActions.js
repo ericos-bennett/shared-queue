@@ -39,6 +39,9 @@ const requestLogin = (dispatch) => {
 
 const logout = (dispatch, payload) => {
   Cookie.remove('accessToken');
+  Cookie.remove('refreshToken');
+  Cookie.remove('userId');
+  Cookie.remove('expiration');
   dispatch({
     type: types.LOGOUT,
     payload: false,
