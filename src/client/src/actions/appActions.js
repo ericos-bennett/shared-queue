@@ -1,4 +1,4 @@
-import types from '../reducers/types';
+import { types } from '../reducers/actionTypes';
 import Cookie from 'js-cookie';
 import axios from 'axios';
 

@@ -1,4 +1,4 @@
-import types from '../reducers/types';
+import { types } from '../reducers/actionTypes';
 import io from 'socket.io-client';
 import Cookie from 'js-cookie';
 let ws = null;

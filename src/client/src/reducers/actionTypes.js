@@ -1,4 +1,4 @@
-const types = {
+export const types = {
   // HOME
   LOGIN_LOADING: 'LOGIN_LOADING',
   LOGIN: 'LOGIN',
@@ -11,6 +11,9 @@ const types = {
   SET_SPOTIFY_PLAYER: 'SET_SPOTIFY_PLAYER',
   SET_SPOTIFY_PLAYER_READY: 'SET_SPOTIFY_PLAYER_READY',
   SET_DEVICE_ID: 'SET_DEVICE_ID',
+  CREATE_PLAYLIST: 'CREATE_PLAYLIST',
+  UNFOLLOW_PLAYLIST: 'UNFOLLOW_PLAYLIST',
+
 
   // PLAYER
   PAUSE: 'PAUSE',
@@ -19,5 +22,3 @@ const types = {
   DELETE_TRACK: 'DELETE_TRACK',
   ADD_TRACK: 'ADD_TRACK',
 };
-
-export default types;

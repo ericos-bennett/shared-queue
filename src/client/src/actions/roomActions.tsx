@@ -1,6 +1,4 @@
-import types from '../reducers/types';
-import { sdkErrorMessage } from '../../types';
-import Cookie from 'js-cookie';
+import { types } from '../reducers/actionTypes';
 
 const setRoomId = (dispatch: any, payload: any) => {
   console.info('setRoomId');

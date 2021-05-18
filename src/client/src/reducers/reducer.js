@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 // I think we should rename this actionTypes so it's not confusing with the TS types file
-import types from './types';
+import { types } from './actionTypes';
 
 export default function reducer(state, action) {
   switch (action.type) {
