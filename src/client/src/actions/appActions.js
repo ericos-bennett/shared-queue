@@ -12,9 +12,9 @@ const setLoginStatus = (state, dispatch, payload) => {
 };
 
 const updateLoginStatus = (state, dispatch, payload) => {
-  const { login_result, code } = payload;
-  if (login_result) {
-    login_result && Cookie.set('accessToken', code);
+  const { loginResult, code } = payload;
+  if (loginResult) {
+    loginResult && Cookie.set('accessToken', code);
     const url = `${SERVER_URL}/api/auth/token/?code=${code}`;
     // ${code}
     axios
@@ -26,7 +26,7 @@ const updateLoginStatus = (state, dispatch, payload) => {
       .then(res => {
         dispatch({
           type: types.LOGIN,
-          payload: login_result,
+          payload: loginResult,
         });
       });
   }
