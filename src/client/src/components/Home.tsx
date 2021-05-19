@@ -48,11 +48,10 @@ export default function Home() {
       document.body.appendChild(script);
       console.log('SDK added to body');
 
-      const api = new SpotifyWebApi({});
-      api.setAccessToken(Cookie.get('accessToken')!);
-      api.setRefreshToken(Cookie.get('refreshToken')!);
-
-      appActions.setSpotifyApi(dispatch, api);
+      const spotifyApi = new SpotifyWebApi({});
+      spotifyApi.setAccessToken(Cookie.get('accessToken')!);
+      spotifyApi.setRefreshToken(Cookie.get('refreshToken')!);
+      appActions.setSpotifyApi(dispatch, spotifyApi);
 
       // @ts-ignore
       window.onSpotifyWebPlaybackSDKReady = () => {

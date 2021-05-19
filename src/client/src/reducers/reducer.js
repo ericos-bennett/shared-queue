@@ -53,13 +53,13 @@ export default function reducer(state, action) {
       };
 
     case types.DELETE_TRACK:
-      const { currentTrackIndex, trackIndex } = action.payload;
+      const { trackIndex } = action.payload;
+
       let newTracks = state.tracks
-      newTracks.splice(trackIndex)
+      newTracks.splice(trackIndex, 1)
       return {
         ...state,
         tracks: newTracks,
-        currentTrackIndex,
       };
 
     case types.ADD_TRACK: {

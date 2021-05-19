@@ -11,7 +11,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import { websockets } from '../helpers/websockets';
-import { changeTrack } from '../helpers/utils';
+import { changeTrack } from '../helpers/playerHelper';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -77,12 +77,13 @@ export default function PlayerControls() {
       >
         <SkipPreviousIcon />
       </Button>
-      {state && state.tracks.length > 0 && !state.isPlaying && (
+      {!state.isPlaying && (
         <Button
           type="button"
           aria-label="Play"
           className={classes.playPause}
           onClick={handleTogglePlay}
+          disabled={!(state && state.tracks.length > 0)}
         >
           <PlayArrowIcon />
 
