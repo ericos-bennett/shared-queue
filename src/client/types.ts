@@ -61,35 +61,3 @@ export type ResTrack = {
   album: { images: Array<{ url: string }> };
   duration_ms: number;
 };
-
-// export type searchResData = {
-//   "artists": {
-//       "href": string,
-//       "items": [
-//           {
-//               "external_urls": {
-//                   "spotify": string
-//               },
-//               "genres": [],
-//               "href": string,
-//               "id": string,
-//               "images": [
-//                   {
-//                       "height": number,
-//                       "url": string,
-//                       "width": number
-//                   },
-//               ],
-//               "name": string,
-//               "popularity": number,
-//               "type":string,
-//               "uri": string
-//           }
-//       ],
-//       "limit": number,
-//       "next": null,
-//       "offset": number,
-//       "previous": null,
-//       "total": number
-//   }
-// };
