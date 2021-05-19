@@ -3,7 +3,6 @@ export function changeTrack(state, direction) {
     if (!tracks) {
         return -1;
     }
-
     switch (direction) {
         case 'prev':
             return currentTrackIndex > 0 ? currentTrackIndex - 1 : currentTrackIndex;
