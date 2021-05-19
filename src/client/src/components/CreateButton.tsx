@@ -9,7 +9,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { roomActions } from '../actions/roomActions';
 import { Context } from '../reducers/context';
 
 const useStyles = makeStyles(() => ({
@@ -27,7 +26,7 @@ const useStyles = makeStyles(() => ({
 export default function CreateButton() {
   const [open, setOpen] = useState(false);
   const [textValue, setTextValue] = useState('Test');
-  const { state, dispatch } = useContext(Context);
+  const { state } = useContext(Context);
   let history = useHistory();
   const classes = useStyles();
 
@@ -35,7 +34,6 @@ export default function CreateButton() {
   const handleClose = () => setOpen(false);
 
   const handleCreateRoom = () => {
-    roomActions.createPlaylist(state, dispatch, textValue)
     history.push(`/room/${textValue}`)
   }
 

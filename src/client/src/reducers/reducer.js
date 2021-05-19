@@ -78,20 +78,17 @@ export default function reducer(state, action) {
         deviceId: action.payload,
       };
     }
-    case types.CREATE_PLAYLIST: {
+    case types.EXIT_ROOM: {
       return {
         ...state,
-        playlistId: action.payload.id,
-        playlist: action.payload,
-      };
-    }
-    case types.UNFOLLOW_PLAYLIST: {
-      return {
-        ...state,
-        playlistId: '',
+        isPlaying: false,
+        currentTrackIndex: 0,
         tracks: [],
+        currentTrackPosition: 0,
+        roomId: '',
       };
     }
+
     default:
       return state;
   }

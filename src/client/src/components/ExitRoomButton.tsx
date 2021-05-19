@@ -22,7 +22,7 @@ export default function ExitRoomButton() {
   const { state, dispatch } = useContext(Context);
   const [exit, setExit] = useState(false);
   const handleExit = () => {
-    roomActions.unfollowPlaylist(state, dispatch)
+    roomActions.exitRoom(state, dispatch)
     setExit(true);
   };
 
