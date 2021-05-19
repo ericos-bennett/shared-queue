@@ -1,7 +1,5 @@
 import { types } from '../reducers/actionTypes';
 import io from 'socket.io-client';
-
-// var  = require();
 let ws = null;
 const ENDPOINT = 'http://localhost:8080';
 
@@ -131,31 +129,23 @@ const changeTrack = (state, dispatch, payload) => {
 };
 
 // For me this is always deleting the first track, not the one with the icon beside it
-const deleteTrack = (state, dispatch, payload) => {
-  const { trackIndex } = payload;
+const deleteTrack = (state, dispatch, trackIndex) => {
+
   // I think you have to spread here as well, to avoid mutating state in place
   const { currentTrackIndex, spotifyApi, playlistId } = state;
 
   const cti = trackIndex < currentTrackIndex ? currentTrackIndex - 1 : currentTrackIndex;
-
-
-  /**
-   * Remove tracks from a playlist by position instead of specifying the tracks' URIs.
-   * @param {string} playlistId The playlist's ID
-   * @param {int[]} positions The positions of the tracks in the playlist that should be removed
-   * @param {string} snapshot_id The snapshot ID, or version, of the playlist. Required
-   * @param {requestCallback} [callback] Optional callback method to be called instead of the promise.
-   * @returns {Promise|undefined} A promise that if successful returns an object containing a snapshot_id. If rejected,
-   * it contains an error object. Not returned if a callback is given.
-   */
 
   // Get a playlist - Need playlist snapshot
   spotifyApi.getPlaylist(playlistId)
     .then(function (data) {
       console.log('Some information about this playlist', data.body);
 
+      const tracks = [{ uri: `spotify:track:${state.tracks[trackIndex].id}`, positions: [trackIndex] }]
+
+      console.log(`tracks`, tracks)
       // Remove tracks from a playlist at a specific position
-      spotifyApi.removeTracksFromPlaylistByPosition(playlistId, trackIndex, data.body.snapshot_id)
+      spotifyApi.removeTracksFromPlaylist(playlistId, tracks)
         .then(function (data) {
           console.log('Tracks removed from playlist!');
           dispatch({
@@ -171,22 +161,30 @@ const deleteTrack = (state, dispatch, payload) => {
     });
 };
 
+
+
+// "{tracks:[{uri:spotify:track:6f3Slt0GbA2bPZlz0aIFXN,positions:[0]}]}"
+
+
+
+
 const addTrack = (state, dispatch, track) => {
 
   const { spotifyApi, playlistId } = state;
+  dispatch({
+    type: types.ADD_TRACK,
+    payload: track,
+  });
+
   // Add tracks to a playlist
   spotifyApi.addTracksToPlaylist(playlistId, [`spotify:track:${track.id}`])
     .then(function (data) {
-      console.log("data", data)
-      console.log("track", track)
       // ws.emit('addTrack', roomId, track);
-      dispatch({
-        type: types.ADD_TRACK,
-        payload: track,
-      });
+
 
       console.log('Added tracks to playlist!');
     }, function (err) {
+      // Remove track
       console.log('Something went wrong!', err);
     });
 
