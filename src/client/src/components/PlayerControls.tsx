@@ -40,7 +40,8 @@ export default function PlayerControls() {
   const { state, dispatch } = useContext(Context);
 
   const handlePrevClick = () => {
-    playerActions.changeTrack(state, dispatch, changeTrack('prev'));
+    const trackNumber = changeTrack(state, 'prev')
+    playerActions.changeTrack(state, dispatch, trackNumber);
     websockets.changeTrack(state.roomId, changeTrack('prev'));
   };
   const handleTogglePlay = () => {
@@ -53,7 +54,8 @@ export default function PlayerControls() {
     }
   };
   const handleChangeTrack = () => {
-    playerActions.changeTrack(state, dispatch, changeTrack('next'));
+    const trackNumber = changeTrack(state, 'next')
+    playerActions.changeTrack(state, dispatch, trackNumber);
     websockets.changeTrack(state.roomId, changeTrack('next'));
   };
 

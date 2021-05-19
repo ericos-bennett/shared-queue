@@ -69,35 +69,19 @@ const play = (state, dispatch) => {
 // I don't think this works correctly yet, for me it changes the track in local state but not the audio playback
 const changeTrack = (state, dispatch, payload) => {
   console.info('changeTrack');
-  const { direction } = payload;
-  const { currentTrackIndex, tracks, roomId } = state;
 
-  let newTrackIndex = -1;
-  switch (direction) {
-    case 'prev':
-      newTrackIndex = currentTrackIndex > 0 ? currentTrackIndex - 1 : currentTrackIndex;
-      break;
-    case 'next':
-      newTrackIndex =
-        currentTrackIndex <= tracks.length - 1 ? currentTrackIndex + 1 : currentTrackIndex;
-      break;
-    default:
-      newTrackIndex = typeof direction === 'number' && direction <= tracks.length ? direction : -1;
-      break;
-  }
-
-  if (newTrackIndex === state.currentTrackIndex) {
+  if (payload === state.currentTrackIndex) {
     return;
   }
 
-  if (newTrackIndex !== -1) {
+  if (payload !== -1) {
     dispatch({
       type: types.CHANGE_TRACK,
-      payload: newTrackIndex,
+      payload: payload,
     });
     play(state, dispatch);
   } else {
-    throw new Error(`Unable to change track to ${direction}`);
+    throw new Error(`Unable to change track to ${payload}`);
   }
 };
 

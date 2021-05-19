@@ -1,4 +1,4 @@
-export const changeTrack = (state, direction) => {
+export function changeTrack(state, direction) {
     const { tracks, currentTrackIndex } = state;
     if (!tracks) {
         return -1;
@@ -12,6 +12,4 @@ export const changeTrack = (state, direction) => {
         default:
             return typeof direction === 'number' && direction <= tracks.length ? direction : -1;
     }
-
 }
-
