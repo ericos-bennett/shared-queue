@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { appActions } from '../actions/appActions';
 import { Context } from '../reducers/context';
 
-const HALF_HOUR_MS = 1800000;
+// const HALF_HOUR_MS = 1800000;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,27 +29,15 @@ export default function LogoutButton() {
   };
 
 
-  useEffect(() => {
-    const interval = setInterval(() => {
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log('state :>> ', state.spotifyApi.getRefreshToken());
 
-      // clientId, clientSecret and refreshToken has been set on the api object previous to this call.
-      state.spotifyApi.refreshAccessToken().then(
-        function (data: any) {
-          console.log('The access token has been refreshed!');
+  //     console.log('Logs every 30 minutes');
+  //   }, HALF_HOUR_MS);
 
-          // Save the access token so that it's used in future calls
-          state.spotifyApi.setAccessToken(data.body['access_token']);
-        },
-        function (err: any) {
-          console.log('Could not refresh access token', err);
-        }
-      );
-
-      console.log('Logs every 30 minutes');
-    }, HALF_HOUR_MS);
-
-    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }, [state.spotifyApi])
+  //   return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  // }, [state])
 
 
   return (
