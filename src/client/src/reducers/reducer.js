@@ -81,13 +81,15 @@ export default function reducer(state, action) {
     case types.CREATE_PLAYLIST: {
       return {
         ...state,
-        playlistId: action.payload,
+        playlistId: action.payload.id,
+        playlist: action.payload,
       };
     }
     case types.UNFOLLOW_PLAYLIST: {
       return {
         ...state,
         playlistId: '',
+        tracks: [],
       };
     }
     default:
