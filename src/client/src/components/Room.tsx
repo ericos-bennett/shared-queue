@@ -13,6 +13,7 @@ import { roomActions } from '../actions/roomActions';
 
 import { playerActions } from '../actions/playerActions';
 import ExitRoomButton from './ExitRoomButton';
+import LogoutButton from './LogoutButton';
 
 
 
