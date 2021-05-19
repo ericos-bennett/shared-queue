@@ -54,8 +54,8 @@ export default function reducer(state, action) {
 
     case types.DELETE_TRACK:
       const { currentTrackIndex, trackIndex } = action.payload;
-      const { tracks } = state
-      const newTracks = tracks.splice(trackIndex)
+      let newTracks = state.tracks
+      newTracks.splice(trackIndex)
       return {
         ...state,
         tracks: newTracks,
@@ -63,12 +63,9 @@ export default function reducer(state, action) {
       };
 
     case types.ADD_TRACK: {
-      // I think you need to spread state.tracks here, or else it overwrites the state in place
       const { tracks } = state;
-      let newTracks = []
-      console.log(`tracks pre`, tracks)
+      let newTracks = [...tracks]
       newTracks.push(action.payload);
-      console.log(`tracks`, tracks)
       return {
         ...state,
         tracks: newTracks
