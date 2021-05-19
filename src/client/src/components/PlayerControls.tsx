@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Context } from '../reducers/context';
 import { playerActions } from '../actions/playerActions';
+import { websockets } from '../helpers/websockets';
+import { changeTrack } from '../helpers/utils';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -38,13 +40,21 @@ export default function PlayerControls() {
   const { state, dispatch } = useContext(Context);
 
   const handlePrevClick = () => {
-    playerActions.changeTrack(state, dispatch, { direction: 'prev' });
+    playerActions.changeTrack(state, dispatch, changeTrack('prev'));
+    websockets.changeTrack(state.roomId, changeTrack('prev'));
   };
   const handleTogglePlay = () => {
-    state.isPlaying ? playerActions.pause(state, dispatch) : playerActions.play(state, dispatch);
+    if (state.isPlaying) {
+      playerActions.pause(state, dispatch)
+      websockets.pause(state.roomId);
+    } else {
+      playerActions.play(state, dispatch)
+      websockets.play(state.roomId);
+    }
   };
   const handleChangeTrack = () => {
-    playerActions.changeTrack(state, dispatch, { direction: 'next' });
+    playerActions.changeTrack(state, dispatch, changeTrack('next'));
+    websockets.changeTrack(state.roomId, changeTrack('next'));
   };
 
   return (

@@ -1,30 +1,5 @@
 import { types } from '../reducers/actionTypes';
-import io from 'socket.io-client';
-let ws = null;
-const ENDPOINT = 'http://localhost:8080';
 
-const setWS = (state, dispatch) => {
-  console.info('setWS');
-  if (!ws && state.roomId) {
-    ws = io(ENDPOINT, { transports: ['websocket', 'polling'] });
-    ws.on('connect', () => {
-      ws.emit('joinRoom', state.roomId);
-    });
-    ws.on('togglePlay', () => {
-      console.log('togglePlay from peer');
-    });
-    ws.on('changeTrack', number => {
-      console.log('changeTrack Test');
-      // playerActions.changeTrack(state, dispatch, number)
-    });
-    ws.on('play', () => {
-      console.log('play from peer');
-    });
-    ws.on('pause', () => {
-      console.log('pause from peer');
-    });
-  }
-};
 
 const pause = (state, dispatch) => {
   console.info('pause');
@@ -35,9 +10,9 @@ const pause = (state, dispatch) => {
         type: types.PAUSE,
         payload: { isPlaying: false },
       });
-      // ws.emit('pause', roomId);
     });
 };
+
 
 const play = (state, dispatch) => {
   console.info('Play');
@@ -51,7 +26,6 @@ const play = (state, dispatch) => {
   } else if (currentTrackIndex > tracks.length) {
     throw new Error(`Track ${currentTrackIndex} is not in track array`);
   } else if (currentTrackIndex === -1) {
-    // ws.emit('changeTrack', roomId, 0)
     changeTrack(state, dispatch, { direction: 0 });
     return;
   }
@@ -121,7 +95,6 @@ const changeTrack = (state, dispatch, payload) => {
       type: types.CHANGE_TRACK,
       payload: newTrackIndex,
     });
-    // ws.emit('play', roomId);
     play(state, dispatch);
   } else {
     throw new Error(`Unable to change track to ${direction}`);
@@ -152,7 +125,6 @@ const deleteTrack = (state, dispatch, trackIndex) => {
             type: types.DELETE_TRACK,
             payload: { trackIndex, currentTrackIndex: cti },
           });
-          // ws.emit('deleteTrack', state.roomId, trackIndex);
         }, function (err) {
           console.log('Something went wrong!', err);
         });
@@ -160,13 +132,6 @@ const deleteTrack = (state, dispatch, trackIndex) => {
       console.log('Something went wrong!', err);
     });
 };
-
-
-
-// "{tracks:[{uri:spotify:track:6f3Slt0GbA2bPZlz0aIFXN,positions:[0]}]}"
-
-
-
 
 const addTrack = (state, dispatch, track) => {
 
@@ -179,9 +144,6 @@ const addTrack = (state, dispatch, track) => {
   // Add tracks to a playlist
   spotifyApi.addTracksToPlaylist(playlistId, [`spotify:track:${track.id}`])
     .then(function (data) {
-      // ws.emit('addTrack', roomId, track);
-
-
       console.log('Added tracks to playlist!');
     }, function (err) {
       // Remove track
@@ -191,7 +153,6 @@ const addTrack = (state, dispatch, track) => {
 };
 
 export const playerActions = {
-  setWS,
   pause,
   play,
   changeTrack,

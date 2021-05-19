@@ -11,10 +11,10 @@ import Player from './Player';
 
 import { roomActions } from '../actions/roomActions';
 
-import { playerActions } from '../actions/playerActions';
 import ExitRoomButton from './ExitRoomButton';
 import LogoutButton from './LogoutButton';
 
+import { websockets } from '../helpers/websockets'
 
 
 const useStyles = makeStyles(() => ({
@@ -42,7 +42,7 @@ export default function Room() {
 
 
   const setSocket = useCallback(() => {
-    playerActions.setWS(state, dispatch);
+    websockets.setWS(state, dispatch);
   }, [dispatch, state]);
 
   useEffect(() => {
