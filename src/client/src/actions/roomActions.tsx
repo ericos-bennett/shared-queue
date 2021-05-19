@@ -17,7 +17,7 @@ const createPlaylist = ((state: any, dispatch: any, roomName: string) => {
     .then(function (data: any) {
       dispatch({
         type: types.CREATE_PLAYLIST,
-        payload: data.body.id
+        payload: data.body
       })
 
     }, function (err: any) {
