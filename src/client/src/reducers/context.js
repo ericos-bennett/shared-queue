@@ -11,7 +11,7 @@ export const initialState = {
   tracks: [],
   currentTrackPosition: 0,
   roomId: '',
-  logged_in: false,
+  LoggedIn: false,
   deviceId: 0,
   isConnected: false,
   playlistId: '',

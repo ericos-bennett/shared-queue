@@ -8,7 +8,7 @@ export default function reducer(state, action) {
     case types.LOGIN:
       return {
         ...state,
-        logged_in: action.payload,
+        LoggedIn: action.payload,
       };
     case types.SET_ROOM_ID:
       console.log(`action.payload`, action.payload);

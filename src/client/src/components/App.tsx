@@ -31,7 +31,7 @@ export default function App() {
   const setIsAuthenticated = useCallback(() => {
     console.info('setIsAuthenticated');
     Cookie.get('accessToken') &&
-      !state.logged_in &&
+      !state.LoggedIn &&
       appActions.setLoginStatus(state, dispatch, true);
   }, [state, dispatch]);
 
