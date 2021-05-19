@@ -71,7 +71,7 @@ export default function Home() {
   return (
     <div className={classes.root}>
       <div className={classes.banner}>
-        {state.logged_in && <LogoutButton />}
+        {state.LoggedIn && <LogoutButton />}
         <Typography variant="h2">Welcome to Spotify Mix!</Typography>
         <Typography variant="h4" className={classes.description}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
