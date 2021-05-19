@@ -2,7 +2,6 @@ import { useContext, useState, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Context } from '../reducers/context';
 import DeleteButton from './DeleteButton';
-
 const useStyles = makeStyles(() => ({
   root: {
     padding: '0',
@@ -12,6 +11,12 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     margin: '1rem',
+    '&:hover': {
+      background: "#f5f5f5",
+    },
+  },
+  trackPlaying: {
+    background: "##a8a8a8fc",
   },
   trackLabel: {
     marginLeft: '1rem',
@@ -27,36 +32,19 @@ const useStyles = makeStyles(() => ({
 export default function Queue() {
   const classes = useStyles();
   const { state } = useContext(Context);
-  const { spotifyApi } = state
   const [playlist, setPlaylist] = useState([])
+
 
   const updateQueue = useCallback(
     () => {
-      // Get a playlist
-      spotifyApi && spotifyApi.getPlaylist(state.playlistId)
-        .then(function (data: any) {
-          console.log('data :>> ', data);
-          setPlaylist(data.body.tracks.items.map((track: any) => {
-            return {
-              artist: track.track.artists[0].name,
-              title: track.track.name,
-              id: track.track.id,
-              albumUrl: track.track.album.images[2].url,
-              durationMs: track.track.duration_ms,
-            };
-          }
-          ))
-          // setTracks()
-          console.log('Some information about this playlist', data.body);
-        }, function (err: any) {
-          console.log('Something went wrong!', err);
-        });
+      setPlaylist(state.tracks)
     },
-    [spotifyApi, state.playlistId],
+    [state.tracks],
   )
 
+
   useEffect(() => {
-    console.log('updateQueue [useEffect]');
+    console.info('updateQueue [useEffect]');
     updateQueue()
   }, [state.tracks, updateQueue])
 
