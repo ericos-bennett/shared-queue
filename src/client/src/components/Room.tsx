@@ -15,7 +15,7 @@ import ExitRoomButton from './ExitRoomButton';
 import LogoutButton from './LogoutButton';
 
 import { websockets } from '../helpers/websockets'
-
+import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -35,6 +35,11 @@ export default function Room() {
   const roomId = useRef<string>(id);
   const classes = useStyles();
 
+
+  useEffect(() => {
+    !state.spotifyApi && <Redirect to="/" />
+  }, [state.spotifyApi])
+
   useEffect(() => {
     roomActions.setRoomId(dispatch, roomId.current);
   }, [dispatch])
@@ -50,7 +55,6 @@ export default function Room() {
     if (state.roomId) {
       setSocket();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setSocket, state.roomId]);
 
   return (
