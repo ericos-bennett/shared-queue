@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { appActions } from '../actions/appActions';
 import { Context } from '../reducers/context';
 
-// const HALF_HOUR_MS = 1800000;
+const HALF_HOUR_MS = 1800000;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,20 +24,19 @@ export default function LogoutButton() {
   const classes = useStyles();
   const [logout, setLogout] = useState(false);
   const handleLogout = () => {
-    appActions.logout(dispatch);
+    appActions.logout(state, dispatch);
     setLogout(true);
   };
 
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     console.log('state :>> ', state.spotifyApi.getRefreshToken());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      appActions.refreshAccessToken(state, dispatch)
+      console.log('Logs every 30 minutes');
+    }, HALF_HOUR_MS);
 
-  //     console.log('Logs every 30 minutes');
-  //   }, HALF_HOUR_MS);
-
-  //   return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  // }, [state])
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  }, [state, dispatch])
 
 
   return (
