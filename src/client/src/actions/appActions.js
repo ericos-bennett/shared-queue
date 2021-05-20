@@ -48,13 +48,20 @@ const logout = (dispatch, payload) => {
   });
 };
 
-
-const setSpotifyApi = (dispatch, payload) => {
+const setSpotifyApi = (state, dispatch) => {
   console.info('setSpotifyApi');
+
+  if (state.spotifyApi !== null) {
+    return;
+  }
+
+  const spotifyApi = createSpotifyApi()
+
   dispatch({
     type: types.SET_SPOTIFY_API,
-    payload,
+    payload: spotifyApi,
   });
+
 };
 
 const setSpotifyPlayer = (state, dispatch) => {
