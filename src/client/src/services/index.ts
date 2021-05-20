@@ -1,7 +1,6 @@
-import { getAuthUrl, refreshSession } from './auth';
+import { getAuthUrl } from './auth';
 
 
 export {
   getAuthUrl,
-  refreshSession,
 };

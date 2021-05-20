@@ -7,27 +7,44 @@ import Home from './Home';
 import Room from './Room';
 import playerReducer from '../reducers/reducer';
 
+const CHECK_AUTH_INTERVAL_MS = 300000; // 5 MIN
+
 export default function App() {
 
   const [state, dispatch] = useReducer(playerReducer, initialState);
 
-  const login_res = useCallback(
-    (e: any) => {
-      console.info('login_res');
-      // TODO: surely there is a better way
-      const location = e.location;
+  appActions.setSpotifyApi(state, dispatch);
 
-      const loginResult = location.search.substring(0, 6) === '?code=';
+  const login_res = useCallback((res: any) => {
+    console.info('login_res');
 
-      const code = loginResult && location.search.substring(6, location.search.length);
+    appActions.setAccessCode(state, dispatch, res)
 
-      // You only get the code if loginResult is true, so could we just skip sending loginResult in the payload?
-      appActions.updateLoginStatus(state, dispatch, { loginResult, code });
-      return <Redirect to="/" />;
-    },
+    return <Redirect to="/" />;
+  },
     [state]
   );
 
+
+  useEffect(() => {
+    if (state.spotifyApi.getCredentials().expiration) {
+
+      const interval = setInterval(() => {
+        const expiration = state.spotifyApi.getCredentials().expiration
+
+        if (expiration < Date.now() && state.isLoggedIn) {
+          appActions.logout(state, dispatch)
+        } else if (expiration - Date.now() < CHECK_AUTH_INTERVAL_MS) {
+          console.info('Refresh Access Token')
+          appActions.refreshAccessToken(state, dispatch)
+        }
+
+
+      }, CHECK_AUTH_INTERVAL_MS);
+
+      return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }
+  }, [state, dispatch])
 
   const setSpotify = useCallback(() => {
     if (!document.getElementById('spotifyPlaybackSdk')) {

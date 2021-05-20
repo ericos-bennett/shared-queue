@@ -12,20 +12,4 @@ const getAuthUrl = (spotifyApi: any): string => {
 };
 
 
-
-type refreshedCredentials = {
-  newAccessToken: string;
-  newExpiration: number;
-};
-
-const refreshSession = async (spotifyApi: any): Promise<refreshedCredentials> => {
-  spotifyApi.setRefreshToken();
-
-  const response = await spotifyApi.refreshAccessToken();
-  const newAccessToken = response.body['access_token'];
-  const newExpiration = Date.now() + response.body['expires_in'] * 1000;
-
-  return { newAccessToken, newExpiration };
-};
-
-export { getAuthUrl, refreshSession };
+export { getAuthUrl };

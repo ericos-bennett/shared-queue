@@ -1,8 +1,32 @@
 import { types } from '../reducers/actionTypes';
 import Cookie from 'js-cookie';
 import axios from 'axios';
-
+import { createSpotifyApi } from '../helpers'
+import { getAuthUrl } from "../services";
+const queryString = require('query-string');
 const SERVER_URL = 'http://localhost:8080';
+
+
+const setCredentials = (state, dispatch, response) => {
+  const { spotifyApi } = state
+  const accessToken = response.body['access_token'];
+  const refreshToken = response.body['refresh_token'];
+  const expiration = Date.now() + response.body['expires_in'] * 1000;
+
+  spotifyApi.setCredentials({ expiration })
+  spotifyApi.setAccessToken(accessToken);
+  spotifyApi.setRefreshToken(refreshToken);
+  !state.isLoggedIn && setLoginStatus(state, dispatch, true)
+}
+
+
+const refreshAccessToken = (state, dispatch) => {
+  const { spotifyApi } = state
+  spotifyApi.refreshAccessToken().then((response) => {
+    setCredentials(state, dispatch, response)
+  })
+};
+
 
 const setLoginStatus = (state, dispatch, payload) => {
   dispatch({
@@ -30,10 +54,40 @@ const updateLoginStatus = (state, dispatch, payload) => {
       });
   }
 };
-const requestLogin = (dispatch) => {
-  axios.get('/api/auth/code').then(res => {
-    window.location.href = res.data;
+
+const requestLogin = (state, dispatch) => {
+
+
+  const { spotifyApi } = state
+
+  const url = getAuthUrl(spotifyApi)
+  // Set verifier cookie as it is reset when redirected
+  Cookie.set('verifier', spotifyApi._credentials.verifier)
+  localStorage.setItem('state', JSON.stringify(state));
+  dispatch({
+    type: types.SET_AUTH_URL,
+    payload: url,
   });
+
+  window.location.href = url
+
+};
+
+const setAccessCode = (state, dispatch, res) => {
+  const { spotifyApi } = state
+  spotifyApi === null && setSpotifyApi(state, dispatch)
+  spotifyApi.setClientVerifier(Cookie.get('verifier'))
+  Cookie.remove('verifier')
+
+  var parsed = queryString.parse(res.location.search);
+  try {
+
+    spotifyApi.authorizationCodeGrant(parsed.code).then((response) => {
+      setCredentials(state, dispatch, response)
+    })
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 
@@ -132,7 +186,10 @@ const setSpotifyPlayer = (state, dispatch) => {
 };
 
 
+
 export const appActions = {
+  setAccessCode,
+  refreshAccessToken,
   setSpotifyApi,
   setSpotifyPlayer,
   setLoginStatus,
