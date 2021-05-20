@@ -18,15 +18,15 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function AuthButton() {
-  const { dispatch } = useContext(Context);
+  const { state, dispatch } = useContext(Context);
   const classes = useStyles();
 
-  const userAuthRedirect = () => {
-    appActions.requestLogin(dispatch);
+  const handleLogin = () => {
+    appActions.requestLogin(state, dispatch);
   };
 
   return (
-    <Button variant="contained" onClick={userAuthRedirect} className={classes.root}>
+    <Button variant="contained" onClick={handleLogin} className={classes.root}>
       Login With Spotify
     </Button>
   );

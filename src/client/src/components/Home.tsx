@@ -1,13 +1,10 @@
-import { useEffect, useContext, useCallback } from 'react';
-import Cookie from 'js-cookie';
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Context } from '../reducers/context';
 import CreateButton from './CreateButton';
 import AuthButton from './AuthButton';
 import LogoutButton from './LogoutButton';
-import SpotifyWebApi from 'spotify-web-api-node';
-import { appActions } from '../actions/appActions';
 
 
 const useStyles = makeStyles(() => ({
@@ -70,7 +67,7 @@ export default function Home() {
   return (
     <div className={classes.root}>
       <div className={classes.banner}>
-        {state.LoggedIn && <LogoutButton />}
+        {state.isLoggedIn && <LogoutButton />}
         <Typography variant="h2">Welcome to Spotify Mix!</Typography>
         <Typography variant="h4" className={classes.description}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
@@ -78,7 +75,7 @@ export default function Home() {
           ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Typography>
       </div>
-      {Cookie.get('accessToken') ? <CreateButton /> : <AuthButton />}
+      {state.isLoggedIn ? <CreateButton /> : <AuthButton />}
     </div>
   );
 }

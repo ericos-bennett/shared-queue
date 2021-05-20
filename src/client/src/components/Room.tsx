@@ -44,8 +44,6 @@ export default function Room() {
     roomActions.setRoomId(dispatch, roomId.current);
   }, [dispatch])
 
-
-
   const setSocket = useCallback(() => {
     websockets.setWS(state, dispatch);
   }, [dispatch, state]);

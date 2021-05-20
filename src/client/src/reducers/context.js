@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 export const Context = React.createContext();
 
 export const initialState = {
@@ -11,7 +12,7 @@ export const initialState = {
   tracks: [],
   currentTrackPosition: 0,
   roomId: '',
-  LoggedIn: false,
+  isLoggedIn: false,
   deviceId: 0,
   isConnected: false,
   authUrl: '',
