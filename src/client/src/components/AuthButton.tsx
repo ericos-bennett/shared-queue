@@ -1,7 +1,9 @@
-import axios from 'axios';
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
+import { Context } from '../reducers/context';
+import { appActions } from '../actions/appActions';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -16,11 +18,11 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function AuthButton() {
+  const { dispatch } = useContext(Context);
   const classes = useStyles();
 
-  const userAuthRedirect = async () => {
-    const res = await axios.get('/api/auth/code');
-    window.location.href = res.data;
+  const userAuthRedirect = () => {
+    appActions.requestLogin(dispatch);
   };
 
   return (
