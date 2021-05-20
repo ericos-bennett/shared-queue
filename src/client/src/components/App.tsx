@@ -28,16 +28,26 @@ export default function App() {
     [state]
   );
 
-  const setIsAuthenticated = useCallback(() => {
-    console.info('setIsAuthenticated');
-    Cookie.get('accessToken') &&
-      !state.LoggedIn &&
-      appActions.setLoginStatus(state, dispatch, true);
-  }, [state, dispatch]);
+
+  const setSpotify = useCallback(() => {
+    if (!document.getElementById('spotifyPlaybackSdk')) {
+      // Load the Spotify Playback SDK script from its CDN
+      const script = document.createElement('script');
+      script.src = 'https://sdk.scdn.co/spotify-player.js';
+      script.id = 'spotifyPlaybackSdk';
+      document.body.appendChild(script);
+      console.log('SDK added to body');
+      // @ts-ignore
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        appActions.setSpotifyPlayer(state, dispatch);
+      };
+    }
+  }, [dispatch, state]);
 
   useEffect(() => {
-    setIsAuthenticated();
-  }, [setIsAuthenticated]);
+    state.isLoggedIn && setSpotify()
+  }, [setSpotify, state.isLoggedIn]);
+
 
   // create object to be passed as value, using memo to encapsulate against unnecessary updates
   const ContextValue = useMemo(() => {

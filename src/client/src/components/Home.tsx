@@ -32,36 +32,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function Home() {
-  const { state, dispatch } = useContext(Context);
+  const { state } = useContext(Context);
   const classes = useStyles();
-
-
-  const setSpotify = useCallback(() => {
-    if (!document.getElementById('spotifyPlaybackSdk')) {
-      // Load the Spotify Playback SDK script from its CDN
-      const script = document.createElement('script');
-      script.src = 'https://sdk.scdn.co/spotify-player.js';
-      script.id = 'spotifyPlaybackSdk';
-      document.body.appendChild(script);
-      console.log('SDK added to body');
-
-      const spotifyApi = new SpotifyWebApi({});
-      spotifyApi.setAccessToken(Cookie.get('accessToken')!);
-      spotifyApi.setRefreshToken(Cookie.get('refreshToken')!);
-      appActions.setSpotifyApi(dispatch, spotifyApi);
-
-      // @ts-ignore
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        appActions.setSpotifyPlayer(state, dispatch);
-      };
-    }
-  }, [dispatch, state]);
-
-  useEffect(() => {
-    if (!state.spotifyPlayer) {
-      setSpotify();
-    }
-  }, [setSpotify, state.spotifyPlayer]);
 
 
   return (
