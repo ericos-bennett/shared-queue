@@ -4,6 +4,13 @@ import { types } from './actionTypes';
 
 export default function reducer(state, action) {
   switch (action.type) {
+
+    case types.SET_AUTH_URL:
+      return {
+        ...state,
+        authUrl: action.payload,
+      };
+
     case types.LOGOUT:
     case types.LOGIN:
       return {

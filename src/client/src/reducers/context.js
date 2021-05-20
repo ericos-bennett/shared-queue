@@ -14,4 +14,5 @@ export const initialState = {
   LoggedIn: false,
   deviceId: 0,
   isConnected: false,
+  authUrl: '',
 };
