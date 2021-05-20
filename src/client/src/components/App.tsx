@@ -6,9 +6,9 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import Home from './Home';
 import Room from './Room';
 import playerReducer from '../reducers/reducer';
-import Cookie from 'js-cookie';
 
 export default function App() {
+
   const [state, dispatch] = useReducer(playerReducer, initialState);
 
   const login_res = useCallback(
@@ -68,7 +68,7 @@ export default function App() {
             path="/room/:id"
             render={() => (state.isLoggedIn ? <Room /> : <Redirect to="/" />)}
           />
-          <Route path="/login_res" render={login_res} />
+          <Route path="/api/auth/token" render={login_res} />
           <Redirect from="*" to="/" />
         </Switch>
       </Router>

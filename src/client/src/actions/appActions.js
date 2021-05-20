@@ -16,7 +16,6 @@ const updateLoginStatus = (state, dispatch, payload) => {
   if (loginResult) {
     loginResult && Cookie.set('accessToken', code);
     const url = `${SERVER_URL}/api/auth/token/?code=${code}`;
-    // ${code}
     axios
       .get(url, {
         headers: {
