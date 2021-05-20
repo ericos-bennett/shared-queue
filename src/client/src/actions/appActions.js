@@ -37,14 +37,17 @@ const requestLogin = (dispatch) => {
   });
 };
 
-const logout = (dispatch, payload) => {
-  Cookie.remove('accessToken');
-  Cookie.remove('refreshToken');
-  Cookie.remove('userId');
-  Cookie.remove('expiration');
+
+
+const logout = (state, dispatch) => {
+  const { spotifyApi } = state
+  spotifyApi.resetAccessToken()
+  spotifyApi.resetRefreshToken()
+  spotifyApi.setClientVerifier(null)
+
   dispatch({
     type: types.LOGOUT,
-    payload: false,
+    payload: false
   });
 };
 
@@ -66,13 +69,14 @@ const setSpotifyApi = (state, dispatch) => {
 
 const setSpotifyPlayer = (state, dispatch) => {
   console.info('setSpotifyPlayer');
+  const { spotifyApi } = state
   // Create a new SDK player instance and add listeners to it
   // @ts-ignore
   // eslint-disable-next-line no-undef
   const spotifyPlayer = new Spotify.Player({
     name: 'Spotify Mix',
     getOAuthToken: (cb) => {
-      cb(Cookie.get('accessToken'));
+      cb(spotifyApi.getAccessToken());
     },
   });
 

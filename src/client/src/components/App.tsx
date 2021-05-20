@@ -66,7 +66,7 @@ export default function App() {
           </Route>
           <Route
             path="/room/:id"
-            render={() => (Cookie.get('accessToken') ? <Room /> : <Redirect to="/" />)}
+            render={() => (state.isLoggedIn ? <Room /> : <Redirect to="/" />)}
           />
           <Route path="/login_res" render={login_res} />
           <Redirect from="*" to="/" />
