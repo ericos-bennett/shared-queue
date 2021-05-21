@@ -42,3 +42,22 @@ export type RoomState = {
   currentTrackPosition: number;
   isPlaying: boolean;
 };
+
+export type sdkErrorMessage = {
+  message: string;
+};
+
+export type ServerResponse = {
+  body: {
+    tracks: {
+      items: [];
+    };
+  };
+};
+export type ResTrack = {
+  artists: Array<{ name: string }>;
+  name: string;
+  id: string;
+  album: { images: Array<{ url: string }> };
+  duration_ms: number;
+};

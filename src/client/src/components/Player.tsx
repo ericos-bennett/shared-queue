@@ -1,7 +1,8 @@
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import PlayerControls from './PlayerControls';
-import { RoomState } from '../../types';
+import { Context } from '../reducers/context';
 
 const useStyles = makeStyles(() => ({
   track: {
@@ -22,16 +23,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type PlayerProps = {
-  roomState: RoomState | null;
-  togglePlayHandler: () => void;
-  changeTrackHandler: (direction: 'prev' | 'next') => void;
-};
-
-export default function Player({ roomState, togglePlayHandler, changeTrackHandler }: PlayerProps) {
+export default function Player() {
+  const { state } = useContext(Context);
   const classes = useStyles();
 
-  const track = roomState?.tracks[roomState!.currentTrackIndex];
+  const track = state?.tracks[state!.currentTrackIndex];
 
   return (
     <div>
@@ -44,11 +40,7 @@ export default function Player({ roomState, togglePlayHandler, changeTrackHandle
           </h4>
         </div>
       )}
-      <PlayerControls
-        roomState={roomState}
-        togglePlayHandler={togglePlayHandler}
-        changeTrackHandler={changeTrackHandler}
-      />
+      <PlayerControls />
     </div>
   );
 }

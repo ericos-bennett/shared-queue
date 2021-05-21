@@ -1,7 +1,17 @@
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { RoomState } from '../../types';
+import { Context } from '../reducers/context';
+import { playerActions } from '../actions/playerActions';
 
+import Button from '@material-ui/core/Button';
+
+import PauseIcon from '@material-ui/icons/Pause';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import SkipNextIcon from '@material-ui/icons/SkipNext';
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
+import { websockets } from '../helpers/websockets';
+import { changeTrack } from '../helpers/playerHelper';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -32,82 +42,74 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type PlayerControlsProps = {
-  roomState: RoomState | null;
-  togglePlayHandler: () => void;
-  changeTrackHandler: (direction: 'prev' | 'next') => void;
-};
-
-export default function PlayerControls({
-  roomState,
-  togglePlayHandler,
-  changeTrackHandler,
-}: PlayerControlsProps) {
+export default function PlayerControls() {
   const classes = useStyles();
+  const { state, dispatch } = useContext(Context);
+
+  const handlePrevClick = () => {
+    const trackNumber = changeTrack(state, 'prev')
+    playerActions.changeTrack(state, dispatch, trackNumber);
+    websockets.changeTrack(state.roomId, changeTrack('prev'));
+  };
+  const handleTogglePlay = () => {
+    if (state.isPlaying) {
+      playerActions.pause(state, dispatch)
+      websockets.pause(state.roomId);
+    } else {
+      playerActions.play(state, dispatch)
+      websockets.play(state.roomId);
+    }
+  };
+  const handleChangeTrack = () => {
+    const trackNumber = changeTrack(state, 'next')
+    playerActions.changeTrack(state, dispatch, trackNumber);
+    websockets.changeTrack(state.roomId, changeTrack('next'));
+  };
 
   return (
     <div className={classes.root}>
-      {roomState && roomState.tracks.length > 0 && roomState.currentTrackIndex > 0 ? (
-        <button
-          type="button"
-          aria-label="Previous Track"
-          className={classes.prevNext}
-          onClick={() => changeTrackHandler('prev')}
-        >
-          <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
-            <path
-              d="M29.09 53.749V5.819H5.819v116.363h23.273v-47.93L122.18 128V0z"
-              fill="currentColor"
-            ></path>
-          </svg>
-        </button>
-      ) : (
-        <div style={{ width: '16px' }}></div>
-      )}
-      {roomState && roomState.tracks.length > 0 && !roomState.isPlaying && (
-        <button
+      <Button
+        type="button"
+        aria-label="Previous Track"
+        className={classes.prevNext}
+        disabled={!(state && state.tracks.length > 0 && state.currentTrackIndex > 0)}
+        onClick={handlePrevClick}
+      >
+        <SkipPreviousIcon />
+      </Button>
+      {!state.isPlaying && (
+        <Button
           type="button"
           aria-label="Play"
           className={classes.playPause}
-          onClick={() => togglePlayHandler()}
+          onClick={handleTogglePlay}
+          disabled={!(state && state.tracks.length > 0)}
         >
-          <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
-            <path d="M119.351 64L8.65 0v128z" fill="currentColor"></path>
-          </svg>
-        </button>
+          <PlayArrowIcon />
+
+        </Button>
       )}
-      {roomState && roomState.tracks.length > 0 && roomState.isPlaying && (
-        <button
+      {state && state.tracks.length > 0 && state.isPlaying && (
+        <Button
           type="button"
           aria-label="Pause"
           className={classes.playPause}
-          onClick={() => togglePlayHandler()}
+          onClick={handleTogglePlay}
         >
-          <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
-            <path
-              d="M41.86 128V0H8.648v128h33.21zm77.491 0V0h-33.21v128h33.21z"
-              fill="currentColor"
-            ></path>
-          </svg>
-        </button>
+          <PauseIcon />
+
+        </Button>
       )}
-      {roomState && roomState.tracks.length - 1 > roomState.currentTrackIndex ? (
-        <button
-          type="button"
-          aria-label="Next Track"
-          className={classes.prevNext}
-          onClick={() => changeTrackHandler('next')}
-        >
-          <svg className={classes.svg} viewBox="0 0 128 128" preserveAspectRatio="xMidYMid">
-            <path
-              d="M98.91 53.749L5.817 0v128L98.91 74.251v47.93h23.273V5.819H98.909z"
-              fill="currentColor"
-            ></path>
-          </svg>
-        </button>
-      ) : (
-        <div style={{ width: '16px' }}></div>
-      )}
+      <Button
+        type="button"
+        aria-label="Next Track"
+        className={classes.prevNext}
+        onClick={handleChangeTrack}
+        disabled={!(state && state.tracks.length - 1 > state.currentTrackIndex)}
+      >
+        <SkipNextIcon />
+      </Button>
+
     </div>
   );
 }

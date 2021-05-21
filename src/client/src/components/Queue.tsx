@@ -1,9 +1,7 @@
+import { useContext, useState, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-
-import { RoomState } from '../../types';
-
+import { Context } from '../reducers/context';
+import DeleteButton from './DeleteButton';
 const useStyles = makeStyles(() => ({
   root: {
     padding: '0',
@@ -13,6 +11,12 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     margin: '1rem',
+    '&:hover': {
+      background: "#f5f5f5",
+    },
+  },
+  trackPlaying: {
+    background: "##a8a8a8fc",
   },
   trackLabel: {
     marginLeft: '1rem',
@@ -25,35 +29,40 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type QueueProps = {
-  roomState: RoomState | null;
-  deleteTrackHandler: (trackIndex: number) => void;
-};
-
-export default function Queue({ roomState, deleteTrackHandler }: QueueProps) {
+export default function Queue() {
   const classes = useStyles();
+  const { state } = useContext(Context);
+  const [playlist, setPlaylist] = useState([])
 
-  const listItems = roomState?.tracks.map((track: any, i) => {
+
+  const updateQueue = useCallback(
+    () => {
+      setPlaylist(state.tracks)
+    },
+    [state.tracks],
+  )
+
+
+  useEffect(() => {
+    console.info('updateQueue [useEffect]');
+    updateQueue()
+  }, [state.tracks, updateQueue])
+
+  const listItems = playlist!.map((track: any, i: number) => {
     return (
       <li className={classes.track} key={i}>
         <img src={track.albumUrl} alt={track.artist}></img>
         <h4 className={classes.trackLabel}>
           {track.artist} - {track.title}
         </h4>
-        <IconButton
-          aria-label="delete"
-          onClick={() => deleteTrackHandler(i)}
-          className={classes.deleteIcon}
-        >
-          <DeleteIcon fontSize="large" />
-        </IconButton>
+        <DeleteButton queueIndex={i} />
       </li>
     );
   });
 
   return (
     <ul className={classes.root}>
-      {roomState?.tracks.length ? (
+      {playlist.length ? (
         listItems
       ) : (
         <p className={classes.emptyTracks}>Add tracks above to get started!</p>
