@@ -1,5 +1,29 @@
 import { types } from '../reducers/actionTypes';
 
+const updateRoomState = (state, dispatch, roomState) => {
+  console.info('updateRoomState');
+  const { tracks, currentTrackPosition, isPlaying, currentTrackIndex } = state;
+  tracks !== roomState.tracks &&
+    dispatch({
+      type: types.SET_TRACKS,
+      payload: roomState.tracks
+    });
+
+  currentTrackPosition === 0 &&
+    dispatch({
+      type: types.SET_TRACK_POSITION,
+      payload: roomState.currentTrackPosition
+    });
+
+  isPlaying !== roomState.isPlaying &&
+    dispatch({
+      type: types.PLAY,
+      payload: { isPlaying: roomState.isPlaying },
+    });
+
+  currentTrackIndex !== roomState.currentTrackIndex &&
+    changeTrack(state, dispatch, roomState.currentTrackIndex)
+};
 
 const pause = (state, dispatch) => {
   console.info('pause');
@@ -34,7 +58,6 @@ const startPlayback = (state, dispatch, trackIndex, pos) => {
 
 const play = (state, dispatch) => {
   console.info('Play');
-  // Remove roomId where it is assigned a value but not used (3 times in this file)
   const { tracks, currentTrackIndex, spotifyPlayer, deviceId, spotifyApi } = state;
   if (!tracks) {
     alert('No tracks to play');
@@ -119,6 +142,7 @@ const addTrack = (state, dispatch, track) => {
 
 
 export const playerActions = {
+  updateRoomState,
   pause,
   play,
   changeTrack,
