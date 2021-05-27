@@ -6,11 +6,12 @@ import TrackSearchResult from './TrackSearchResult';
 
 import { Context } from '../reducers/context';
 import { playerActions } from '../actions/playerActions';
-
+import { SocketContext } from '../reducers/socketContext';
 export default function Search() {
   const [search, setSearch] = useState<string>('');
   const [searchTracks, setSearchTracks] = useState<Track[]>([]);
   const { state, dispatch } = useContext(Context);
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     if (!search) return setSearchTracks([]);
@@ -41,6 +42,7 @@ export default function Search() {
     setSearchTracks([]);
     setSearch('');
     playerActions.addTrack(state, dispatch, track);
+    socket.emit('addTrack', state.roomId, track)
   };
 
   return (

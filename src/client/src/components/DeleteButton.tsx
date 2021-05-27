@@ -5,7 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import { playerActions } from '../actions/playerActions';
 import { Context } from '../reducers/context';
-
+import { SocketContext } from '../reducers/socketContext';
 const useStyles = makeStyles(() => ({
   root: {
     padding: '0',
@@ -34,11 +34,12 @@ interface props {
 export default function DeleteButton(props: props) {
   const classes = useStyles();
   const { state, dispatch } = useContext(Context);
-
+  const socket = useContext(SocketContext);
   const { queueIndex } = props;
 
   const handleDeleteTrackClick = () => {
     playerActions.deleteTrack(state, dispatch, queueIndex);
+    socket.emit('deleteTrack', state.roomId, queueIndex);
   };
 
   return (

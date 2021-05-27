@@ -10,8 +10,8 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import { websockets } from '../helpers/websockets';
 import { changeTrack } from '../helpers/playerHelper';
+import { SocketContext } from '../reducers/socketContext';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -45,25 +45,34 @@ const useStyles = makeStyles(() => ({
 export default function PlayerControls() {
   const classes = useStyles();
   const { state, dispatch } = useContext(Context);
+  const socket = useContext(SocketContext);
+
+
+
+
 
   const handlePrevClick = () => {
     const trackNumber = changeTrack(state, 'prev')
     playerActions.changeTrack(state, dispatch, trackNumber);
-    websockets.changeTrack(state.roomId, changeTrack('prev'));
+    socket.emit('changeTrack', state.roomId, trackNumber);
+    // websockets.changeTrack(state.roomId, changeTrack('prev'));
   };
   const handleTogglePlay = () => {
     if (state.isPlaying) {
       playerActions.pause(state, dispatch)
-      websockets.pause(state.roomId);
+      socket.emit('pause', state.roomId);
+      // websockets.pause(state.roomId);
     } else {
       playerActions.play(state, dispatch)
-      websockets.play(state.roomId);
+      socket.emit('play', state.roomId);
+      // websockets.play(state.roomId);
     }
   };
   const handleChangeTrack = () => {
     const trackNumber = changeTrack(state, 'next')
     playerActions.changeTrack(state, dispatch, trackNumber);
-    websockets.changeTrack(state.roomId, changeTrack('next'));
+    socket.emit('changeTrack', state.roomId, trackNumber);
+    // websockets.changeTrack(state.roomId, changeTrack('next'));
   };
 
   return (
