@@ -8,7 +8,7 @@ export const initialState = {
   spotifyPlayer: null,
   spotifyPlayerReady: false,
   isPlaying: false,
-  currentTrackIndex: 0,
+  currentTrackIndex: -1,
   tracks: [],
   currentTrackPosition: 0,
   roomId: '',
