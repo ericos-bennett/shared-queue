@@ -66,7 +66,9 @@ const play = (state, dispatch) => {
     throw new Error(`Track ${currentTrackIndex} is not in track array`);
   } else if (currentTrackIndex === -1) {
     changeTrack(state, dispatch, 0);
-    return;
+    if (state.isPlaying) {
+      return;
+    }
   }
 
   // Check if player is the current device
