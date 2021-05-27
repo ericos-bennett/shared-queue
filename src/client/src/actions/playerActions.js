@@ -85,7 +85,7 @@ const play = (state, dispatch) => {
         });
     } else {
       // Return the current play position
-      startPlayback(state, dispatch, currentTrackIndex, 0)
+      startPlayback(state, dispatch, currentTrackIndex, state.currentTrackPosition)
     }
   })
 
