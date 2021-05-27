@@ -104,11 +104,21 @@ export default function RoomWrapper() {
 
   }, [response, state, dispatch])
 
+  const closeSession = useCallback(
+    () => {
+      socket.current && socket.current.disconnect()
+    },
+    [socket],
+  )
 
   useEffect(() => {
-    console.log(`isConnected`, isConnected)
-    if (!isConnected) {
+    console.log('state.isLoggedIn :>> ', state.isLoggedIn);
+    !state.isLoggedIn && socket.current && closeSession()
 
+  }, [state.isLoggedIn, closeSession])
+
+  useEffect(() => {
+    if (!isConnected) {
       socket.current = socketio.connect(ENDPOINT, { transports: ['websocket', 'polling'] });
 
       socket.current.emit('joinRoom', roomId.current);

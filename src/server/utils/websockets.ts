@@ -79,6 +79,15 @@ const initializeWs = (server: httpServer.Server): void => {
       console.log(`Room ${roomId}: Change track to ${trackIndex}`);
       socket.to(roomId).emit('changeTrack', trackIndex);
     });
+    socket.on('disconnect', () => {
+      console.log('Got disconnect!');
+
+      // var i = allClients.indexOf(socket);
+      // allClients.splice(i, 1);
+    });
+
+
+
   });
 };
 

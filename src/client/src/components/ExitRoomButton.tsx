@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import { Redirect } from 'react-router-dom';
 import { Context } from '../reducers/context';
 import { roomActions } from '../actions/roomActions';
-
+import { SocketContext } from '../reducers/socketContext';
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'fixed',
@@ -21,8 +21,11 @@ export default function ExitRoomButton() {
   const classes = useStyles();
   const { state, dispatch } = useContext(Context);
   const [exit, setExit] = useState(false);
+  const socket = useContext(SocketContext);
+
   const handleExit = () => {
     roomActions.exitRoom(state, dispatch)
+    socket.disconnect()
     setExit(true);
   };
 
