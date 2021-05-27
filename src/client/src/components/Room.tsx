@@ -1,28 +1,24 @@
-import { useEffect, useRef, useContext, useState } from 'react';
-import { SocketContext } from '../reducers/socketContext';
-// import Room from './Room';
+import { useEffect, useRef, useContext, useState, useCallback } from 'react';
 import socketio from "socket.io-client";
-import { Context } from '../reducers/context';
 import { useParams } from 'react-router';
-import { roomActions } from '../actions/roomActions';
-import { playerActions } from '../actions/playerActions';
-
-
-// import { useEffect, useContext } from 'react';
-
+import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-// import { Context } from '../reducers/context';
+
+// Components 
+import ExitRoomButton from './ExitRoomButton';
+import LogoutButton from './LogoutButton';
 import Search from './Search';
 import Queue from './Queue';
 import Player from './Player';
 
-import ExitRoomButton from './ExitRoomButton';
-import LogoutButton from './LogoutButton';
+// Actions
+import { roomActions } from '../actions/roomActions';
+import { playerActions } from '../actions/playerActions';
 
-import { Redirect } from 'react-router-dom';
-import { RoomState, Track } from '../../types';
-
+// Context
+import { Context } from '../reducers/context';
+import { SocketContext } from '../reducers/socketContext';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -157,23 +153,24 @@ export default function RoomWrapper() {
       setConnected(true)
     }
     // CLEAN UP THE EFFECT
-    // return () => socket.current.disconnect();
-  }, [isConnected])
+    // return () => closeSession;
+  }, [isConnected, closeSession])
 
 
   const renderRoom = () => {
 
     return (
       <SocketContext.Provider value={socket.current}>
-        <Container>
-          <h1 className={classes.title}>Room: {state.roomId}</h1>
-          <LogoutButton />
-          <ExitRoomButton />
-          <Search />
-          <Queue />
-          <Player />
-        </Container>
-        {/* <Room /> */}
+        <div className={classes.root}>
+          <Container>
+            <h1 className={classes.title}>Room: {state.roomId}</h1>
+            <LogoutButton />
+            <ExitRoomButton />
+            <Search />
+            <Queue />
+            <Player />
+          </Container>
+        </div>
       </SocketContext.Provider>
     );
   }

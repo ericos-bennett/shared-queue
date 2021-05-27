@@ -32,3 +32,4 @@ pids
 docker-compose.yml
 Dockerfile
 workspace.code-workspace
+docker.env
