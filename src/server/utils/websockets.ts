@@ -33,26 +33,26 @@ const initializeWs = (server: httpServer.Server): void => {
     });
 
     socket.on('play', (roomId: string) => {
-      // socket.to(roomId).emit('play');
       console.log(`Room ${roomId}: play`);
+      socket.to(roomId).emit('play');
     });
     socket.on('pause', (roomId: string) => {
-      // socket.to(roomId).emit('pause');
       console.log(`Room ${roomId}: pause`);
+      socket.to(roomId).emit('pause');
     });
 
     socket.on('deleteTrack', (roomId: string, trackIndex: number) => {
-      // socket.to(roomId).emit('deleteTrack', trackIndex);
       console.log(`Room ${roomId}: Delete track at index ${trackIndex}`);
+      socket.to(roomId).emit('deleteTrack', trackIndex);
     });
 
     socket.on('addTrack', (roomId: string, track: Track) => {
-      // socket.to(roomId).emit('addTrack', track);
       console.log(`Room ${roomId}: Add "${track.title}" to queue`);
+      socket.to(roomId).emit('addTrack', track);
     });
-    socket.on('changeTrack', (roomId: string, track: number) => {
-      // socket.to(roomId).emit('changeTrack', track);
-      console.log(`Room ${roomId}: Change track to ${track}`);
+    socket.on('changeTrack', (roomId: string, trackIndex: number) => {
+      console.log(`Room ${roomId}: Change track to ${trackIndex}`);
+      socket.to(roomId).emit('changeTrack', trackIndex);
     });
   });
 };
