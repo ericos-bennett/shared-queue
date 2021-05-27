@@ -4,7 +4,7 @@ import { appActions } from '../actions/appActions';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import Home from './Home';
-import RoomWrapper from './RoomWrapper'
+import Room from './Room'
 import playerReducer from '../reducers/reducer';
 
 const CHECK_AUTH_INTERVAL_MS = 300000; // 5 MIN
@@ -83,7 +83,7 @@ export default function App() {
           </Route>
           <Route
             path="/room/:id"
-            render={() => (state.isLoggedIn ? <RoomWrapper /> : <Redirect to="/" />)}
+            render={() => (state.isLoggedIn ? <Room /> : <Redirect to="/" />)}
           />
           <Route path="/api/auth/token" render={login_res} />
           <Redirect from="*" to="/" />
