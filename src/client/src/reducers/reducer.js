@@ -84,6 +84,21 @@ export default function reducer(state, action) {
         deviceId: action.payload,
       };
     }
+
+    case types.SET_TRACKS: {
+      return {
+        ...state,
+        tracks: action.payload,
+      };
+    }
+
+    case types.SET_TRACK_POSITION: {
+      return {
+        ...state,
+        currentTrackPosition: action.payload,
+      };
+    }
+
     case types.EXIT_ROOM: {
       return {
         ...state,
