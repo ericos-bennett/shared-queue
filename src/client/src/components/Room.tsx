@@ -108,12 +108,6 @@ export default function RoomWrapper() {
   )
 
   useEffect(() => {
-    console.log('state.isLoggedIn :>> ', state.isLoggedIn);
-    !state.isLoggedIn && socket.current && closeSession()
-
-  }, [state.isLoggedIn, closeSession])
-
-  useEffect(() => {
     if (!isConnected) {
       socket.current = socketio.connect(ENDPOINT, { transports: ['websocket', 'polling'] });
 
@@ -152,9 +146,12 @@ export default function RoomWrapper() {
 
       setConnected(true)
     }
-    // CLEAN UP THE EFFECT
-    // return () => closeSession;
+
   }, [isConnected, closeSession])
+
+  useEffect(() => {
+    return () => closeSession();
+  }, [closeSession])
 
 
   const renderRoom = () => {

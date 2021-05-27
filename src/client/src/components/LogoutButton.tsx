@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import { Redirect } from 'react-router-dom';
 import { appActions } from '../actions/appActions';
 import { Context } from '../reducers/context';
-
+import { SocketContext } from '../reducers/socketContext';
 
 
 const useStyles = makeStyles(theme => ({
@@ -23,7 +23,9 @@ export default function LogoutButton() {
   const { state, dispatch } = useContext(Context);
   const classes = useStyles();
   const [logout, setLogout] = useState(false);
+  const socket = useContext(SocketContext);
   const handleLogout = () => {
+    socket && socket.disconnect()
     appActions.logout(state, dispatch);
     setLogout(true);
   };
