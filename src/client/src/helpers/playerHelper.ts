@@ -1,4 +1,6 @@
-export function changeTrack(state, direction) {
+import { State } from "../../types";
+
+export function changeTrack(state: State, direction: any) {
     const { tracks, currentTrackIndex } = state;
     if (!tracks) {
         return -1;
