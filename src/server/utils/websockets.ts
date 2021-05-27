@@ -1,6 +1,6 @@
 import httpServer from 'http';
 import { Server, Socket } from 'socket.io';
-
+import { RoomState } from '../../client/types'
 type Track = {
   artist: string;
   title: string;
@@ -24,12 +24,37 @@ const initializeWs = (server: httpServer.Server): void => {
 
     socket.on('joinRoom', (roomId: string) => {
       socket.join(roomId);
+
       console.log(`Socket ${socket.id} joined room ${roomId}`);
       console.log('Rooms:', io.sockets.adapter.rooms);
-
+      const room = io.sockets.adapter.rooms.get(roomId);
       // If there is a peer, get initial state from the first user in the room.
       // If not, take empty state
       // socket.to(socket.id).emit('roomState', roomState);
+
+
+      if (room!.size === 1) {
+        // User is the first in the room!
+        // Send back an empty object and the notice that they are first
+        const emptyState = {
+          tracks: [],
+          currentTrackIndex: -1,
+          currentTrackPosition: 0,
+          isPlaying: false,
+        };
+        io.to(socket.id).emit('roomState', emptyState);
+      } else {
+        const arrRoom = [...room!];
+        const firstSocketInRoom = arrRoom[0];
+        io.to(firstSocketInRoom).emit('requestRoomState');
+      }
+    });
+    socket.on('roomState', (roomId: string, roomState: RoomState) => {
+      // When roomState is received, broadcast it to the whole room
+      // check the broadcast comes from the first position in roomArray
+      const room = io.sockets.adapter.rooms.get(roomId);
+      const arrRoom = [...room!];
+      arrRoom[0] === socket.id && socket.to(roomId).emit('roomState', roomState);
     });
 
     socket.on('play', (roomId: string) => {
