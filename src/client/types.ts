@@ -61,3 +61,24 @@ export type ResTrack = {
   album: { images: Array<{ url: string }> };
   duration_ms: number;
 };
+
+interface SpotifyApi {
+  pause: object
+}
+interface SpotifyPlayer {
+  pause: object
+}
+
+export type State = {
+  spotifyApi: SpotifyApi,
+  spotifyPlayer: SpotifyPlayer,
+  spotifyPlayerReady: boolean,
+  isPlaying: boolean,
+  currentTrackIndex: number,
+  tracks: Track[],
+  currentTrackPosition: number,
+  roomId: string,
+  isLoggedIn: boolean,
+  deviceId: string,
+  isConnected: boolean,
+}
