@@ -17,6 +17,13 @@ const setCredentials = (state, dispatch, response) => {
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
   !state.isLoggedIn && setLoginStatus(state, dispatch, true)
+
+  Cookie.set('accessToken', accessToken)
+  Cookie.set('refreshToken', refreshToken)
+  Cookie.set('accessTokenExpiration', expiration)
+  // Cookie.set('user', spotifyApi.getUser())
+
+}
 const clearCookies = () => {
   console.log(`clearCookies`)
   try {
