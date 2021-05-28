@@ -14,6 +14,5 @@ export const initialState = {
   roomId: '',
   isLoggedIn: false,
   deviceId: 0,
-  isConnected: false,
   authUrl: '',
 };

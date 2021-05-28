@@ -63,14 +63,11 @@ const requestLogin = (state, dispatch) => {
   const url = getAuthUrl(spotifyApi)
   // Set verifier cookie as it is reset when redirected
   Cookie.set('verifier', spotifyApi._credentials.verifier)
-  localStorage.setItem('state', JSON.stringify(state));
   dispatch({
     type: types.SET_AUTH_URL,
     payload: url,
   });
-
   window.location.href = url
-
 };
 
 const setAccessCode = (state, dispatch, res) => {

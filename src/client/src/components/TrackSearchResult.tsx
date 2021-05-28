@@ -4,17 +4,17 @@ import AddIcon from '@material-ui/icons/Add';
 
 import { Track } from '../../types';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   track: {
     display: 'flex',
     alignItems: 'center',
-    margin: '1rem',
+    margin: theme.spacing(1),
   },
   trackLabel: {
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(1),
   },
   addIcon: {
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(1),
   },
 }));
 

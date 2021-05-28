@@ -4,7 +4,8 @@ import { useParams } from 'react-router';
 import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-
+import Typography from '@material-ui/core/Typography';
+import { useAlert } from 'react-alert'
 // Components 
 import ExitRoomButton from './ExitRoomButton';
 import LogoutButton from './LogoutButton';
@@ -20,7 +21,7 @@ import { playerActions } from '../actions/playerActions';
 import { Context } from '../reducers/context';
 import { SocketContext } from '../reducers/socketContext';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: '100vw',
     height: '100vh',
@@ -29,18 +30,26 @@ const useStyles = makeStyles(() => ({
   },
   title: {
     textAlign: 'center',
+    margin: theme.spacing(2)
   },
 }));
 
 const ENDPOINT = 'http://localhost:8080';
 
-export default function RoomWrapper() {
+export interface Response {
+  command: string;
+  data: any;
+}
+
+export default function Room() {
   const { state, dispatch } = useContext(Context);
   const { id } = useParams<{ id: string }>();
   const roomId = useRef<string>(id);
   const socket = useRef<SocketIOClient.Socket | null>(null);
   const [isConnected, setConnected] = useState(false)
-  const [response, setResponse] = useState({ command: '', data: '' })
+  const initialReponse: Response = { command: '', data: '' }
+  const [response, setResponse] = useState(initialReponse)
+  const alert = useAlert()
 
   const classes = useStyles();
 
@@ -76,20 +85,26 @@ export default function RoomWrapper() {
 
           break;
         case 'changeTrack':
+          alert.info('Track changed by peer')
           playerActions.changeTrack(state, dispatch, data)
 
           break;
         case 'play':
+          alert.info('Track play started by peer')
           playerActions.play(state, dispatch)
 
           break;
         case 'pause':
+          alert.info('Track paused by peer')
           playerActions.pause(state, dispatch)
           break;
         case 'addTrack':
+          alert.info(`${data.title} by ${data.artist} added by peer`)
           playerActions.addTrack(state, dispatch, data)
           break;
         case 'deleteTrack':
+          console.log('data :>> ', data);
+          alert.info(`${state.tracks[data].title} by ${state.tracks[data].artist} removed by peer`)
           playerActions.deleteTrack(state, dispatch, data)
           break;
         default:
@@ -115,6 +130,7 @@ export default function RoomWrapper() {
 
       socket.current.on('requestRoomState', () => {
         console.log('request for roomState');
+        // socket doesn't have access to state in scope. updating a local state moves it into the required scope
         setResponse({ command: 'requestRoomState', data: 'requestRoomState' })
       });
 
@@ -160,13 +176,16 @@ export default function RoomWrapper() {
       <SocketContext.Provider value={socket.current}>
         <div className={classes.root}>
           <Container>
-            <h1 className={classes.title}>Room: {state.roomId}</h1>
+            <Typography variant="h4" className={classes.title}>
+              Room: {state.roomId}
+            </Typography>
             <LogoutButton />
             <ExitRoomButton />
             <Search />
             <Queue />
-            <Player />
+
           </Container>
+          <Player />
         </div>
       </SocketContext.Provider>
     );

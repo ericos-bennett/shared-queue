@@ -80,5 +80,4 @@ export type State = {
   roomId: string,
   isLoggedIn: boolean,
   deviceId: string,
-  isConnected: boolean,
 }
