@@ -24,6 +24,26 @@ const setCredentials = (state, dispatch, response) => {
   // Cookie.set('user', spotifyApi.getUser())
 
 }
+
+const checkLogin = (state, dispatch) => {
+  const accessTokenExpiration = Cookie.get('accessTokenExpiration')
+  const accessToken = Cookie.get('accessToken')
+  const refreshToken = Cookie.get('refreshToken')
+
+  if (accessTokenExpiration && accessToken && refreshToken && accessTokenExpiration < Date.now() * 1000) {
+    const { spotifyApi } = state
+
+    spotifyApi.setCredentials({ expiration: accessTokenExpiration })
+    spotifyApi.setAccessToken(accessToken);
+    spotifyApi.setRefreshToken(refreshToken);
+    !state.isLoggedIn && setLoginStatus(state, dispatch, true)
+    refreshAccessToken(state, dispatch)
+  } else {
+    state.isLoggedIn && setLoginStatus(state, dispatch, false)
+    clearCookies()
+  }
+};
+
 const clearCookies = () => {
   console.log(`clearCookies`)
   try {
@@ -212,6 +232,7 @@ const setSpotifyPlayer = (state, dispatch) => {
 
 
 export const appActions = {
+  checkLogin,
   setAccessCode,
   refreshAccessToken,
   setSpotifyApi,
