@@ -76,7 +76,7 @@ export default function PlayerControls() {
   };
 
   return (
-    <div className={classes.root}>
+    <Fragment>
       <Button
         type="button"
         aria-label="Previous Track"
@@ -118,7 +118,6 @@ export default function PlayerControls() {
       >
         <SkipNextIcon />
       </Button>
-
-    </div>
+    </Fragment>
   );
 }

@@ -214,12 +214,12 @@ const setSpotifyPlayer = (state, dispatch) => {
 
   spotifyPlayer.addListener('player_state_changed', ({
     position,
-    duration,
-    track_window: { current_track }
   }) => {
-    console.log('Currently Playing', current_track);
-    console.log('Position in Song', position);
-    console.log('Duration of Song', duration);
+    dispatch({
+      type: types.SET_TRACK_POSITION,
+      payload: position,
+    });
+
   });
 
   spotifyPlayer.connect().then((success) => {
