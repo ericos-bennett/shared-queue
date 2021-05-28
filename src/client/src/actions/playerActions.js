@@ -1,7 +1,8 @@
 import { types } from '../reducers/actionTypes';
+import { appActions } from './appActions';
 
 const updateRoomState = (state, dispatch, roomState) => {
-  console.info('updateRoomState');
+  // console.info('updateRoomState');
   const { tracks, currentTrackPosition, isPlaying, currentTrackIndex } = state;
   tracks !== roomState.tracks &&
     dispatch({
@@ -25,21 +26,54 @@ const updateRoomState = (state, dispatch, roomState) => {
     changeTrack(state, dispatch, roomState.currentTrackIndex)
 };
 
+const updateCurrentTrackPostion = (state, dispatch, pos) => {
+  // console.info('updateCurrentTrackPostion');
+
+  dispatch({
+    type: types.SET_TRACK_POSITION,
+    payload: pos
+  });
+};
+
+const setCurrentTrackPostion = (state, dispatch, pos) => {
+  // console.info('updateCurrentTrackPostion');
+  if (state.spotifyPlayer) {
+    console.log(`pos`, pos)
+    state.spotifyPlayer.seek(pos).then(() => {
+      dispatch({
+        type: types.SET_TRACK_POSITION,
+        payload: pos
+      });
+    })
+  } else {
+    appActions.setSpotifyPlayer(state, dispatch).then(() => {
+      state.spotifyPlayer.seek(pos).then(() => {
+        dispatch({
+          type: types.SET_TRACK_POSITION,
+          payload: pos
+        });
+      })
+    })
+  }
+};
+
+
 const pause = (state, dispatch) => {
-  console.info('pause');
-  const { spotifyPlayer } = state;
-  state.spotifyPlayerReady &&
+  // console.info('pause');
+  const { spotifyPlayer, spotifyPlayerReady, isPlaying } = state;
+  spotifyPlayerReady && isPlaying &&
     spotifyPlayer.pause().then(() => {
       dispatch({
         type: types.PAUSE,
         payload: { isPlaying: false },
       });
+      updateCurrentTrackPostion(state, dispatch, spotifyPlayer.getCurrentState().position)
     });
 };
 
 
 const startPlayback = (state, dispatch, trackIndex, pos) => {
-  console.info('startPlayback');
+  // console.info('startPlayback');
   const { tracks, deviceId, spotifyApi } = state;
   // Start/Resume a User's Playback 
   spotifyApi.play({ device_id: deviceId, uris: [`spotify:track:${tracks[trackIndex].id}`], position_ms: pos })
@@ -57,7 +91,7 @@ const startPlayback = (state, dispatch, trackIndex, pos) => {
 }
 
 const play = (state, dispatch) => {
-  console.info('Play');
+  // console.info('Play');
   const { tracks, currentTrackIndex, spotifyPlayer, deviceId, spotifyApi } = state;
   if (!tracks) {
     alert('No tracks to play');
@@ -65,14 +99,16 @@ const play = (state, dispatch) => {
   } else if (currentTrackIndex > tracks.length) {
     throw new Error(`Track ${currentTrackIndex} is not in track array`);
   } else if (currentTrackIndex === -1) {
-    changeTrack(state, dispatch, 0);
-    if (state.isPlaying) {
-      return;
+    if (tracks.length > 0) {
+      changeTrack(state, dispatch, 0);
+      playerActions.pause(state, dispatch)
+    } else {
+      return
     }
   }
 
   // Check if player is the current device
-  spotifyPlayer.getCurrentState().then(s => {
+  spotifyPlayer && spotifyPlayer.getCurrentState().then(s => {
     if (!s) {
       // Transfer a User's Playback
       spotifyApi.transferMyPlayback([deviceId])
@@ -92,7 +128,7 @@ const play = (state, dispatch) => {
 };
 
 const changeTrack = (state, dispatch, trackIndex) => {
-  console.info('changeTrack:', trackIndex);
+  // console.info('changeTrack:', trackIndex);
   const { isPlaying } = state
   if (trackIndex !== -1) {
 
@@ -111,7 +147,7 @@ const changeTrack = (state, dispatch, trackIndex) => {
 };
 
 const deleteTrack = (state, dispatch, trackIndex) => {
-  console.info('deleteTrack:', trackIndex);
+  // console.info('deleteTrack:', trackIndex);
   const { currentTrackIndex, tracks } = state;
 
   // If the currently playing track was deleted
@@ -140,8 +176,44 @@ const addTrack = (state, dispatch, track) => {
     type: types.ADD_TRACK,
     payload: track,
   });
+  if (state.currentTrackIndex === -1) {
+    playerActions.changeTrack(state, dispatch, 0)
+  }
 };
 
+const checkSpotifyPlayerExists = async (state, dispatch) => {
+  try {
+    state.spotifyPlayer.getCurrentState().then((s) => {
+      return true
+    })
+  } catch (error) {
+    appActions.setSpotifyPlayer(state, dispatch)
+    return true
+  }
+};
+
+const setVolume = async (state, dispatch, vol) => {
+  try {
+    state.spotifyPlayer.setVolume(vol).then(() => {
+      return true
+    })
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+};
+
+const getVolume = async (state, dispatch, vol) => {
+  try {
+    state.spotifyPlayer.getVolume().then((vol) => {
+      return !vol ? 1 : vol
+      // return vol || 0
+    })
+  } catch (error) {
+    console.log(error)
+    return 0
+  }
+};
 
 export const playerActions = {
   updateRoomState,
@@ -150,4 +222,9 @@ export const playerActions = {
   changeTrack,
   deleteTrack,
   addTrack,
+  setCurrentTrackPostion,
+  updateCurrentTrackPostion,
+  checkSpotifyPlayerExists,
+  setVolume,
+  getVolume,
 };

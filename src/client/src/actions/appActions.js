@@ -17,13 +17,54 @@ const setCredentials = (state, dispatch, response) => {
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.setRefreshToken(refreshToken);
   !state.isLoggedIn && setLoginStatus(state, dispatch, true)
+
+  Cookie.set('accessToken', accessToken)
+  Cookie.set('refreshToken', refreshToken)
+  Cookie.set('accessTokenExpiration', expiration)
+  // Cookie.set('user', spotifyApi.getUser())
+
+}
+
+const checkLogin = (state, dispatch) => {
+  const accessTokenExpiration = Cookie.get('accessTokenExpiration')
+  const accessToken = Cookie.get('accessToken')
+  const refreshToken = Cookie.get('refreshToken')
+
+  if (accessTokenExpiration && accessToken && refreshToken && accessTokenExpiration < Date.now() * 1000) {
+    const { spotifyApi } = state
+
+    spotifyApi.setCredentials({ expiration: accessTokenExpiration })
+    spotifyApi.setAccessToken(accessToken);
+    spotifyApi.setRefreshToken(refreshToken);
+    !state.isLoggedIn && setLoginStatus(state, dispatch, true)
+    refreshAccessToken(state, dispatch)
+  } else {
+    state.isLoggedIn && setLoginStatus(state, dispatch, false)
+    clearCookies()
+  }
+};
+
+const clearCookies = () => {
+  console.log(`clearCookies`)
+  try {
+    Cookie.remove('accessTokenExpiration')
+    Cookie.remove('accessToken')
+    Cookie.remove('refreshToken')
+  } catch (error) {
+
+  }
 }
 
 
 const refreshAccessToken = (state, dispatch) => {
   const { spotifyApi } = state
   spotifyApi.refreshAccessToken().then((response) => {
-    setCredentials(state, dispatch, response)
+    if (response.statusCode === 200) {
+      setCredentials(state, dispatch, response)
+    } else {
+      clearCookies()
+    }
+
   })
 };
 
@@ -78,9 +119,13 @@ const setAccessCode = (state, dispatch, res) => {
 
   var parsed = queryString.parse(res.location.search);
   try {
-
     spotifyApi.authorizationCodeGrant(parsed.code).then((response) => {
-      setCredentials(state, dispatch, response)
+      if (response.statusCode === 200) {
+        setCredentials(state, dispatch, response)
+      } else {
+        logout(state, dispatch)
+      }
+
     })
   } catch (error) {
     console.log(error);
@@ -94,7 +139,7 @@ const logout = (state, dispatch) => {
   spotifyApi.resetAccessToken()
   spotifyApi.resetRefreshToken()
   spotifyApi.setClientVerifier(null)
-
+  clearCookies()
   dispatch({
     type: types.LOGOUT,
     payload: false
@@ -136,6 +181,8 @@ const setSpotifyPlayer = (state, dispatch) => {
   });
   spotifyPlayer.addListener('authentication_error', (message) => {
     console.error(message);
+    // If there is an authentication error, force the user to loggin again
+    logout(state, dispatch)
   });
   spotifyPlayer.addListener('account_error', (message) => {
     console.error(message);
@@ -167,12 +214,12 @@ const setSpotifyPlayer = (state, dispatch) => {
 
   spotifyPlayer.addListener('player_state_changed', ({
     position,
-    duration,
-    track_window: { current_track }
   }) => {
-    console.log('Currently Playing', current_track);
-    console.log('Position in Song', position);
-    console.log('Duration of Song', duration);
+    dispatch({
+      type: types.SET_TRACK_POSITION,
+      payload: position,
+    });
+
   });
 
   spotifyPlayer.connect().then((success) => {
@@ -185,6 +232,7 @@ const setSpotifyPlayer = (state, dispatch) => {
 
 
 export const appActions = {
+  checkLogin,
   setAccessCode,
   refreshAccessToken,
   setSpotifyApi,
