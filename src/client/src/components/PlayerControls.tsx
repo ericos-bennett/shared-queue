@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useAlert } from 'react-alert'
 
 import { Context } from '../reducers/context';
 import { playerActions } from '../actions/playerActions';
@@ -46,33 +47,30 @@ export default function PlayerControls() {
   const classes = useStyles();
   const { state, dispatch } = useContext(Context);
   const socket = useContext(SocketContext);
-
-
-
-
+  const alert = useAlert()
 
   const handlePrevClick = () => {
     const trackNumber = changeTrack(state, 'prev')
     playerActions.changeTrack(state, dispatch, trackNumber);
     socket.emit('changeTrack', state.roomId, trackNumber);
-    // websockets.changeTrack(state.roomId, changeTrack('prev'));
+    alert.success(`Track changed to ${state.tracks[trackNumber].title} by ${state.tracks[trackNumber].artist} `)
   };
   const handleTogglePlay = () => {
     if (state.isPlaying) {
       playerActions.pause(state, dispatch)
       socket.emit('pause', state.roomId);
-      // websockets.pause(state.roomId);
+      alert.success('Track paused')
     } else {
       playerActions.play(state, dispatch)
       socket.emit('play', state.roomId);
-      // websockets.play(state.roomId);
+      alert.success('Track playing')
     }
   };
   const handleChangeTrack = () => {
     const trackNumber = changeTrack(state, 'next')
     playerActions.changeTrack(state, dispatch, trackNumber);
     socket.emit('changeTrack', state.roomId, trackNumber);
-    // websockets.changeTrack(state.roomId, changeTrack('next'));
+    alert.success(`Track changed to ${state.tracks[trackNumber].title} by ${state.tracks[trackNumber].artist} `)
   };
 
   return (
