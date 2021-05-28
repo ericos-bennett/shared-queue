@@ -78,6 +78,10 @@ export default function App() {
     state.isLoggedIn && setSpotify()
   }, [setSpotify, state.isLoggedIn]);
 
+  useEffect(() => {
+    appActions.checkLogin(state, dispatch)
+    // eslint-disable-next-line 
+  }, [])
 
   // create object to be passed as value, using memo to encapsulate against unnecessary updates
   const ContextValue = useMemo(() => {
