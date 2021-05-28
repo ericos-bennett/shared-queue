@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAlert } from 'react-alert'
 
@@ -6,29 +6,18 @@ import { Context } from '../reducers/context';
 import { playerActions } from '../actions/playerActions';
 
 import Button from '@material-ui/core/Button';
-
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import { changeTrack as phChangeTrack } from '../helpers/playerHelper';
 import { SocketContext } from '../reducers/socketContext';
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    position: 'absolute',
-    justifyContent: 'space-between',
-    bottom: '10px',
+    alignItems: 'center',
+    justifyContent: "center",
     height: '60px',
-    width: '100px',
-    left: 'calc(50vw - 50px)',
-    '& button': {
-      padding: '0',
-      color: 'rgb(51, 51, 51)',
-      backgroundColor: 'transparent',
-      border: 'none',
-      cursor: 'pointer',
-    },
   },
   playPause: {
     fontSize: '28px',
@@ -36,11 +25,7 @@ const useStyles = makeStyles(() => ({
   prevNext: {
     fontSize: '16px',
   },
-  svg: {
-    display: 'block',
-    height: '1em',
-    width: '1em',
-  },
+
 }));
 
 export default function PlayerControls() {
