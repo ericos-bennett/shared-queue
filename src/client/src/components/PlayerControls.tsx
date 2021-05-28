@@ -11,7 +11,7 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import { changeTrack } from '../helpers/playerHelper';
+import { changeTrack as phChangeTrack } from '../helpers/playerHelper';
 import { SocketContext } from '../reducers/socketContext';
 const useStyles = makeStyles(() => ({
   root: {
@@ -50,7 +50,7 @@ export default function PlayerControls() {
   const alert = useAlert()
 
   const handlePrevClick = () => {
-    const trackNumber = changeTrack(state, 'prev')
+    const trackNumber = phChangeTrack(state, 'prev')
     playerActions.changeTrack(state, dispatch, trackNumber);
     socket.emit('changeTrack', state.roomId, trackNumber);
     alert.success(`Track changed to ${state.tracks[trackNumber].title} by ${state.tracks[trackNumber].artist} `)
@@ -67,7 +67,7 @@ export default function PlayerControls() {
     }
   };
   const handleChangeTrack = () => {
-    const trackNumber = changeTrack(state, 'next')
+    const trackNumber = phChangeTrack(state, 'next')
     playerActions.changeTrack(state, dispatch, trackNumber);
     socket.emit('changeTrack', state.roomId, trackNumber);
     alert.success(`Track changed to ${state.tracks[trackNumber].title} by ${state.tracks[trackNumber].artist} `)
